@@ -6,13 +6,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 <template>
   <section
     id="hero"
-    class="overflow-hidden bg-cream px-8 pb-24 pt-[128px] max-[600px]:px-5 max-[600px]:pb-[72px] max-[600px]:pt-[100px]"
+    class="landing-hero-section overflow-hidden bg-cream"
     :style="{
       backgroundImage:
         'radial-gradient(ellipse 600px 400px at 70% 50%, var(--landing-hero-glow) 0%, transparent 70%)',
     }"
   >
-    <div class="mx-auto flex max-w-[1160px] items-center gap-20 max-[860px]:flex-col max-[860px]:gap-12">
+    <div class="landing-container flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-20">
       <div class="min-w-0 flex-1">
         <p
           class="mb-[1.125rem] block animate-[fade-up_.6s_ease_both] text-xs font-medium uppercase tracking-[0.12em] text-terra"
@@ -22,7 +22,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </p>
 
         <h1
-          class="mb-6 animate-[fade-up_.6s_ease_both] font-playfair text-[clamp(3rem,5.5vw,4.75rem)] font-medium leading-[1.08] tracking-[-0.025em] text-dark max-[600px]:text-[2.75rem]"
+          class="mb-6 animate-[fade-up_.6s_ease_both] font-playfair text-[2.75rem] font-medium leading-[1.08] tracking-[-0.025em] text-dark sm:text-[clamp(3rem,5.5vw,4.75rem)]"
           style="animation-delay: 0.15s"
         >
           Find out why<br>
@@ -39,7 +39,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </p>
 
         <div
-          class="mb-11 flex animate-[fade-up_.6s_ease_both] items-center gap-5 flex-wrap"
+          class="mb-11 flex animate-[fade-up_.6s_ease_both] flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5"
           style="animation-delay: 0.35s"
         >
           <LandingPrimaryButton :href="landingPrimaryActionHref" label="Take the free test" />
@@ -49,7 +49,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </div>
 
         <div
-          class="flex animate-[fade-up_.6s_ease_both] items-center gap-6"
+          class="flex animate-[fade-up_.6s_ease_both] flex-wrap items-center gap-4 sm:gap-6"
           style="animation-delay: 0.45s"
         >
           <template v-for="(stat, index) in heroStats" :key="stat.label">
@@ -60,17 +60,17 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
               </b>
               <span class="text-xs text-pale">{{ stat.label }}</span>
             </div>
-            <div v-if="index < heroStats.length - 1" class="h-7 w-px bg-border" />
+            <div v-if="index < heroStats.length - 1" class="hidden h-7 w-px bg-border sm:block" />
           </template>
         </div>
       </div>
 
       <div
         aria-hidden="true"
-        class="w-[340px] shrink-0 animate-[fade-up_.8s_ease_both] max-[860px]:flex max-[860px]:w-full max-[860px]:justify-center"
+        class="flex w-full animate-[fade-up_.8s_ease_both] justify-center lg:w-[340px] lg:shrink-0"
         style="animation-delay: 0.3s"
       >
-        <div class="relative h-[460px] w-[320px] max-[600px]:origin-top max-[600px]:scale-[0.88]">
+        <div class="relative h-[460px] w-[320px] origin-top scale-[0.88] sm:scale-100">
           <div
             class="absolute top-2 -left-2 z-[1] w-[252px] rounded-[18px] border border-secure-bd bg-secure-bg p-[22px] opacity-65"
             style="transform: rotate(-7.5deg)"

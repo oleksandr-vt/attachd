@@ -4,10 +4,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
-  <section class="bg-sec-bg px-8 py-24 max-[600px]:px-5 max-[600px]:py-[72px]">
-    <div
-      class="mx-auto flex max-w-[1160px] items-center gap-20 max-[1080px]:gap-12 max-[860px]:flex-col max-[860px]:gap-10"
-    >
+  <section class="landing-section bg-sec-bg">
+    <div class="landing-container flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-20">
       <div class="min-w-0 flex-1">
         <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
           Full in-depth report
@@ -34,15 +32,15 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           </li>
         </ul>
 
-        <div class="flex items-center gap-5 flex-wrap">
+        <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
           <LandingPrimaryButton :href="landingPrimaryActionHref" label="Start the free test" />
           <span class="text-[0.8125rem] text-pale">Free test &middot; $9 for the full report</span>
         </div>
       </div>
 
-      <div class="shrink-0 max-[860px]:flex max-[860px]:w-full max-[860px]:justify-center">
+      <div class="flex w-full justify-center xl:w-auto xl:shrink-0">
         <div
-          class="w-[300px] overflow-hidden rounded-[18px] border border-border bg-white shadow-report-card max-[860px]:w-full max-[860px]:max-w-[360px]"
+          class="w-full max-w-[360px] overflow-hidden rounded-[18px] border border-border bg-white shadow-report-card xl:w-[300px] xl:max-w-none"
         >
           <div class="flex items-center gap-[6px] border-b border-border bg-cream px-4 py-3">
             <span class="block h-[10px] w-[10px] rounded-full bg-border" />

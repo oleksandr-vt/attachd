@@ -1,11 +1,11 @@
 <template>
-  <footer class="border-t border-border bg-cream px-8 py-10 max-[600px]:px-5">
-    <div class="mx-auto flex max-w-[1160px] flex-wrap items-center gap-10">
+  <footer class="border-t border-border bg-cream py-10">
+    <div class="landing-container flex flex-wrap items-center gap-6 sm:gap-10">
       <a href="/" class="font-playfair text-2xl font-normal italic text-dark">
         {{ landingBrandName }}
       </a>
 
-      <nav class="ml-auto flex flex-wrap gap-7 max-[600px]:ml-0">
+      <nav class="flex w-full flex-wrap gap-5 sm:ml-auto sm:w-auto sm:gap-7">
         <a
           v-for="link in landingFooterLinks"
           :key="link.label"

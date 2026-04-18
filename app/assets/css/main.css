@@ -71,6 +71,80 @@
   }
 }
 
+@layer components {
+  .landing-container {
+    width: 100%;
+    max-width: calc(72.5rem + 2.5rem);
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  .landing-section {
+    padding-block: 4.5rem;
+  }
+
+  .landing-hero-section {
+    padding-top: 6.25rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .landing-finale-section {
+    padding-block: 6rem;
+  }
+
+  .landing-steps-grid {
+    position: relative;
+  }
+
+  .landing-steps-grid::before {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: calc(16.666% + 1rem);
+    right: calc(16.666% + 1rem);
+    display: none;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      var(--color-border) 0%,
+      var(--color-border) 45%,
+      transparent 50%,
+      var(--color-border) 55%,
+      var(--color-border) 100%
+    );
+  }
+}
+
+@media (min-width: 40rem) {
+  @layer components {
+    .landing-container {
+      max-width: calc(72.5rem + 4rem);
+      padding-inline: 2rem;
+    }
+
+    .landing-section {
+      padding-block: 6rem;
+    }
+
+    .landing-hero-section {
+      padding-top: 8rem;
+      padding-bottom: 6rem;
+    }
+
+    .landing-finale-section {
+      padding-block: 8rem;
+    }
+  }
+}
+
+@media (min-width: 64rem) {
+  @layer components {
+    .landing-steps-grid::before {
+      display: block;
+    }
+  }
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

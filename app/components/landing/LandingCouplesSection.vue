@@ -4,10 +4,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
-  <section id="couples" class="bg-cream px-8 py-24 max-[600px]:px-5 max-[600px]:py-[72px]">
-    <div
-      class="mx-auto flex max-w-[1160px] items-center gap-20 max-[1080px]:gap-12 max-[860px]:flex-col max-[860px]:gap-10"
-    >
+  <section id="couples" class="landing-section bg-cream">
+    <div class="landing-container flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-20">
       <div class="min-w-0 flex-1">
         <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
           For couples
@@ -34,15 +32,15 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           </li>
         </ul>
 
-        <div class="flex items-center gap-5 flex-wrap">
+        <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
           <LandingPrimaryButton :href="landingPrimaryActionHref" label="Get the couples report" />
           <span class="text-[0.8125rem] text-pale">$14 &middot; One-time &middot; Instant delivery</span>
         </div>
       </div>
 
-      <div class="shrink-0 max-[860px]:w-full">
+      <div class="w-full xl:w-auto xl:shrink-0">
         <div
-          class="min-w-[340px] rounded-[22px] border border-border bg-cream p-8 px-9 max-[860px]:w-full max-[860px]:min-w-0"
+          class="mx-auto w-full max-w-[380px] rounded-[22px] border border-border bg-cream p-6 sm:max-w-[400px] sm:p-8 sm:px-9 xl:mx-0 xl:max-w-none"
         >
           <p class="mb-6 text-xs font-medium uppercase tracking-[0.08em] text-pale">
             Compatibility preview

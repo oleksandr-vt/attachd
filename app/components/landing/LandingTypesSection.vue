@@ -4,8 +4,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
-  <section id="types" class="bg-sec-bg px-8 py-24 max-[600px]:px-5 max-[600px]:py-[72px]">
-    <div class="mx-auto max-w-[1160px]">
+  <section id="types" class="landing-section bg-sec-bg">
+    <div class="landing-container">
       <div class="mb-14 max-w-[600px]">
         <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
           The four styles
@@ -22,7 +22,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </p>
       </div>
 
-      <div class="grid grid-cols-4 gap-4 max-[1080px]:grid-cols-2 max-[600px]:grid-cols-1">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article
           v-for="card in attachmentStyleCards"
           :key="card.title"

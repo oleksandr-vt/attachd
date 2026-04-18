@@ -5,13 +5,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
 <template>
   <section
-    class="bg-dark px-8 py-[128px] text-center max-[600px]:px-5 max-[600px]:py-24"
+    class="landing-finale-section bg-dark text-center"
     :style="{
       backgroundImage:
         'radial-gradient(ellipse 600px 400px at 30% 50%, var(--landing-finale-glow) 0%, transparent 70%)',
     }"
   >
-    <div class="mx-auto flex max-w-[1160px] flex-col items-center gap-6">
+    <div class="landing-container flex flex-col items-center gap-6">
       <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra-soft">
         Ready when you are
       </p>
@@ -22,7 +22,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         your love life have a name.
       </h2>
       <p class="max-w-[480px] text-center text-[1.0625rem] leading-[1.7] text-muted">
-        Take the free assessment and finally understand<br>
+        Take the free assessment and finally understand<br class="hidden sm:block">
         why you feel what you feel in relationships.
       </p>
       <LandingPrimaryButton

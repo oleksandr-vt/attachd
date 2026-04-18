@@ -22,7 +22,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           safer for both people.
         </p>
 
-        <ul class="my-6 flex list-none flex-col gap-3">
+        <ul class="my-8 flex list-none flex-col gap-3">
           <li
             v-for="item in couplesChecklist"
             :key="item"

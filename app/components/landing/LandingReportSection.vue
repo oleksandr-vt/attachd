@@ -21,7 +21,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           up most often, and what more secure behavior can look like in real relationships.
         </p>
 
-        <ul class="my-6 flex list-none flex-col gap-3">
+        <ul class="my-8 flex list-none flex-col gap-3">
           <li
             v-for="item in reportChecklist"
             :key="item"

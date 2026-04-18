@@ -4,7 +4,7 @@
     :class="isScrolled ? 'bg-[rgba(250,248,244,0.94)] shadow-[0_1px_0_#E4DDD3] backdrop-blur-[10px]' : ''"
   >
     <div class="landing-container flex h-[68px] items-center gap-4 sm:gap-6">
-      <a href="/" class="shrink-0 font-playfair text-2xl font-normal italic text-dark">
+      <a href="/" class="shrink-0 font-display text-2xl font-normal italic text-dark">
         {{ landingBrandName }}
       </a>
 

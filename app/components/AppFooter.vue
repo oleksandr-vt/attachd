@@ -1,7 +1,7 @@
 <template>
   <footer class="border-t border-border bg-cream py-10">
     <div class="landing-container flex flex-wrap items-center gap-6 sm:gap-10">
-      <a href="/" class="font-playfair text-2xl font-normal italic text-dark">
+      <a href="/" class="font-display text-2xl font-normal italic text-dark">
         {{ landingBrandName }}
       </a>
 

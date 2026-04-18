@@ -1,0 +1,39 @@
+@import url('./fonts.css');
+@import "tailwindcss";
+
+@theme {
+  /* --font-display: 'Rajdhani', sans-serif;
+  --font-body: 'Outfit', sans-serif; */
+
+  /* --color-bg-deep: #0b0c14; */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* font-family: var(--font-body);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary); */
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* .container {
+  width: 100%;
+  max-width: 1248px;
+  padding-inline: 16px;
+  margin: 0 auto;
+}
+
+@media (width >= 40rem) {
+  .container {
+    padding-inline: 24px;
+  }
+} */

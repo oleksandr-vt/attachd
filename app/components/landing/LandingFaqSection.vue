@@ -11,29 +11,26 @@ const toggleFaq = (index: number) => {
 <template>
   <section id="faq" aria-labelledby="faq-heading" class="landing-section bg-cream">
     <div class="landing-container">
-      <header class="mx-auto mb-12 max-w-[680px] text-center">
-        <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
+      <header class="mx-auto mb-12 max-w-170 text-center">
+        <p class="landing-section-kicker">
           FAQ
         </p>
-        <h2
-          id="faq-heading"
-          class="mb-[1.125rem] font-display text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.1] tracking-[-0.03em] text-dark"
-        >
+        <h2 id="faq-heading" class="landing-section-title">
           Common questions about the attachment style test.
         </h2>
-        <p class="text-[1.0625rem] leading-[1.72] text-body">
+        <p class="landing-section-copy">
           These answers cover what the MVP does today, what the test is for, and what kind of
           result flow people should expect.
         </p>
       </header>
 
-      <dl class="mx-auto grid max-w-[860px] grid-cols-1 gap-4">
+      <dl class="mx-auto grid max-w-215 grid-cols-1 gap-4">
         <div
           v-for="(item, index) in faqItems"
           :key="item.question"
-          class="rounded-[18px] border bg-sec-bg p-6 transition-colors duration-200 sm:p-8"
+          class="faq-card border bg-sec-bg p-6 transition-colors duration-200 sm:p-8"
           :class="openIndex === index
-            ? 'border-[#d9cfc3]'
+            ? 'faq-card-open'
             : 'border-border'"
         >
           <dt>
@@ -44,7 +41,7 @@ const toggleFaq = (index: number) => {
               :aria-expanded="openIndex === index"
               @click="toggleFaq(index)"
             >
-              <span class="font-display text-[1.375rem] font-medium leading-[1.2] tracking-[-0.02em] text-dark">
+              <span class="faq-card-title">
                 {{ item.question }}
               </span>
               <span
@@ -75,7 +72,7 @@ const toggleFaq = (index: number) => {
               :id="`faq-panel-${index}`"
               class="overflow-hidden"
             >
-              <div class="mt-4 border-t border-border pt-4 text-[0.9375rem] leading-[1.75] text-body">
+              <div class="faq-answer-copy mt-4 border-t border-border pt-4">
                 {{ item.answer }}
               </div>
             </dd>
@@ -105,5 +102,28 @@ const toggleFaq = (index: number) => {
 .faq-answer-leave-from {
   opacity: 1;
   max-height: 14rem;
+}
+
+.faq-card {
+  border-radius: 18px;
+}
+
+.faq-card-open {
+  border-color: #d9cfc3;
+}
+
+.faq-card-title {
+  color: var(--color-dark);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.faq-answer-copy {
+  color: var(--color-body);
+  font-size: 15px;
+  line-height: 1.75;
 }
 </style>

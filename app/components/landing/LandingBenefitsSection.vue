@@ -5,35 +5,35 @@ import { benefitCards } from '~/data/landing'
 <template>
   <section id="results" aria-labelledby="results-heading" class="landing-section bg-sec-bg">
     <div class="landing-container">
-      <header class="mb-14 max-w-[640px]">
-        <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
+      <header class="mb-14 max-w-160">
+        <p class="landing-section-kicker">
           What you get
         </p>
-        <h2
-          id="results-heading"
-          class="mb-[1.125rem] font-display text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.1] tracking-[-0.03em] text-dark"
-        >
+        <h2 id="results-heading" class="landing-section-title">
           More useful than a vague personality score.
         </h2>
-        <p class="max-w-[560px] text-[1.0625rem] leading-[1.72] text-body">
+        <p class="landing-section-copy max-w-140">
           The landing is built to give you a fast, understandable first result and leave the deeper
           follow-ups optional instead of forcing a heavy profile upfront.
         </p>
       </header>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:gap-6 xl:grid-cols-3">
         <article
-          v-for="card in benefitCards"
+          v-for="(card, index) in benefitCards"
           :key="card.title"
-          class="flex flex-col gap-5 rounded-[18px] border border-border bg-cream p-6 sm:p-8"
+          class="benefit-card flex flex-col gap-4 border border-border bg-cream p-6 sm:gap-5 sm:p-8"
+          :class="index === benefitCards.length - 1
+            ? 'md:col-span-2 md:mx-auto md:max-w-125 xl:col-span-1 xl:mx-0 xl:max-w-none'
+            : ''"
         >
-          <p class="text-xs font-medium uppercase tracking-[0.12em] text-terra">
+          <p class="benefit-card-kicker text-xs font-medium uppercase text-terra">
             {{ card.eyebrow }}
           </p>
-          <h3 class="font-display text-[1.5rem] font-medium leading-[1.2] tracking-[-0.02em] text-dark">
+          <h3 class="benefit-card-title">
             {{ card.title }}
           </h3>
-          <p class="flex-1 text-[0.9375rem] leading-[1.75] text-body">
+          <p class="benefit-card-copy flex-1">
             {{ card.description }}
           </p>
         </article>
@@ -41,3 +41,28 @@ import { benefitCards } from '~/data/landing'
     </div>
   </section>
 </template>
+
+<style scoped>
+.benefit-card {
+  border-radius: 18px;
+}
+
+.benefit-card-kicker {
+  letter-spacing: 0.12em;
+}
+
+.benefit-card-title {
+  color: var(--color-dark);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.benefit-card-copy {
+  color: var(--color-body);
+  font-size: 15px;
+  line-height: 1.75;
+}
+</style>

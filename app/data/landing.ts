@@ -35,6 +35,20 @@ export type FaqItem = {
   answer: string
 }
 
+export type ReportPreviewSlide = {
+  title: string
+  summary: string
+  primaryPattern: string
+  coreFear: string
+  growthEdge: string
+  progress: number
+  badgeClass: string
+  surfaceClass: string
+  borderClass: string
+  accentClass: string
+  barClass: string
+}
+
 export const landingBrandName = 'attachd.'
 
 export const landingPrimaryActionHref = '/#hero'
@@ -157,6 +171,61 @@ export const reportChecklist = [
   'Conflict patterns to watch for',
   'What secure attachment looks like for you',
   'Practical exercises and reflection prompts',
+]
+
+export const reportPreviewSlides: ReportPreviewSlide[] = [
+  {
+    title: 'Avoidant',
+    summary: 'Self-protective and independence-first under emotional pressure.',
+    primaryPattern: 'Emotional deactivation under intimacy pressure',
+    coreFear: 'Loss of autonomy and being overwhelmed',
+    growthEdge: 'Tolerating vulnerability without withdrawal',
+    progress: 38,
+    badgeClass: 'bg-avoid-soft text-avoid',
+    surfaceClass: 'bg-avoid-bg',
+    borderClass: 'border-avoid-bd',
+    accentClass: 'text-avoid',
+    barClass: 'bg-avoid',
+  },
+  {
+    title: 'Anxious',
+    summary: 'Connection-seeking, hyper-alert, and quick to read distance as threat.',
+    primaryPattern: 'Protest behavior when reassurance feels inconsistent',
+    coreFear: 'Abandonment and emotional unpredictability',
+    growthEdge: 'Self-soothing before escalating for closeness',
+    progress: 57,
+    badgeClass: 'bg-anxious-soft text-anxious',
+    surfaceClass: 'bg-anxious-bg',
+    borderClass: 'border-anxious-bd',
+    accentClass: 'text-anxious',
+    barClass: 'bg-anxious',
+  },
+  {
+    title: 'Secure',
+    summary: 'Grounded, direct, and usually able to stay open through tension.',
+    primaryPattern: 'Balanced closeness and independence in relationships',
+    coreFear: 'Disconnection is manageable rather than defining',
+    growthEdge: 'Maintaining openness while holding healthy boundaries',
+    progress: 82,
+    badgeClass: 'bg-secure-bg text-secure',
+    surfaceClass: 'bg-secure-bg',
+    borderClass: 'border-secure-bd',
+    accentClass: 'text-secure',
+    barClass: 'bg-secure',
+  },
+  {
+    title: 'Fearful-Avoidant',
+    summary: 'Wanting intimacy deeply while bracing for hurt or rejection.',
+    primaryPattern: 'Push-pull closeness with sharp swings in trust',
+    coreFear: 'Being hurt, trapped, or left after opening up',
+    growthEdge: 'Building safety slowly enough to stay emotionally present',
+    progress: 49,
+    badgeClass: 'bg-fearful-bg text-fearful',
+    surfaceClass: 'bg-fearful-bg',
+    borderClass: 'border-fearful-bd',
+    accentClass: 'text-fearful',
+    barClass: 'bg-fearful',
+  },
 ]
 
 export const faqItems: FaqItem[] = [

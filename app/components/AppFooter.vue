@@ -16,7 +16,7 @@
         </a>
       </nav>
 
-      <p class="w-full text-xs leading-[1.6] text-pale">
+      <p class="footer-note w-full text-xs text-pale">
         &copy; {{ copyrightYear }} Attachd. For educational purposes only. This attachment style
         test is not a diagnosis and does not replace therapy, medical care, or professional mental
         health support.
@@ -30,3 +30,9 @@ import { landingBrandName, landingFooterLinks } from '~/data/landing'
 
 const copyrightYear = new Date().getFullYear()
 </script>
+
+<style scoped>
+.footer-note {
+  line-height: 1.6;
+}
+</style>

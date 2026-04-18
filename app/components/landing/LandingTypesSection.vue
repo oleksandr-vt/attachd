@@ -6,18 +6,15 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 <template>
   <section id="types" aria-labelledby="types-heading" class="landing-section bg-sec-bg">
     <div class="landing-container">
-      <header class="mb-14 max-w-[640px]">
-        <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
+      <header class="mb-14 max-w-160">
+        <p class="landing-section-kicker">
           The four styles
         </p>
-        <h2
-          id="types-heading"
-          class="mb-[1.125rem] font-display text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.1] tracking-[-0.03em] text-dark"
-        >
+        <h2 id="types-heading" class="landing-section-title">
           The four attachment styles.<br>
           Which one feels most familiar?
         </h2>
-        <p class="max-w-[500px] text-[1.0625rem] leading-[1.72] text-body">
+        <p class="landing-section-copy max-w-125">
           Attachment style describes how you tend to handle closeness, distance, and emotional
           safety. These four patterns come from attachment theory and help put familiar
           relationship reactions into words.
@@ -28,18 +25,18 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         <article
           v-for="card in attachmentStyleCards"
           :key="card.title"
-          class="flex flex-col gap-2 rounded-[18px] border p-[1.875rem] transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
+          class="types-card flex flex-col gap-2 border p-7.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
           :class="card.surfaceClass"
         >
           <span class="text-xs text-soft-muted">{{ card.eyebrow }}</span>
           <h3
-            class="my-1 font-display text-[1.625rem] font-medium leading-none tracking-[-0.02em]"
+            class="types-card-title my-1"
             :class="card.accentClass"
           >
             {{ card.title }}
           </h3>
-          <p class="text-[0.8125rem] font-medium leading-[1.45] text-dark2">{{ card.summary }}</p>
-          <p class="mt-1 flex-1 text-sm leading-[1.68] text-body">{{ card.description }}</p>
+          <p class="types-card-summary text-dark2">{{ card.summary }}</p>
+          <p class="types-card-copy mt-1 flex-1 text-body">{{ card.description }}</p>
           <a
             :href="card.href"
             class="mt-3 inline-block text-sm font-medium transition-opacity duration-200 hover:opacity-65"
@@ -50,9 +47,34 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </article>
       </div>
 
-      <div class="mt-14 flex items-center gap-5 flex-wrap">
+      <div class="mt-14 flex flex-wrap items-center gap-5">
         <LandingPrimaryButton :href="landingPrimaryActionHref" label="Find your style - it's free" />
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.types-card {
+  border-radius: 18px;
+}
+
+.types-card-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.types-card-summary {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.types-card-copy {
+  font-size: 0.875rem;
+  line-height: 1.68;
+}
+</style>

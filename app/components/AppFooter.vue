@@ -17,8 +17,9 @@
       </nav>
 
       <p class="w-full text-xs leading-[1.6] text-pale">
-        &copy; {{ copyrightYear }} Attachd. For educational purposes only - not a substitute for
-        professional psychological advice.
+        &copy; {{ copyrightYear }} Attachd. For educational purposes only. This attachment style
+        test is not a diagnosis and does not replace therapy, medical care, or professional mental
+        health support.
       </p>
     </div>
   </footer>

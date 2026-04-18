@@ -6,11 +6,10 @@ export type LandingLink = {
 export type HeroStat = {
   value: string
   label: string
-  icon?: 'star'
 }
 
 export type AttachmentStyleCard = {
-  prevalence: string
+  eyebrow: string
   title: string
   summary: string
   description: string
@@ -25,10 +24,15 @@ export type ProcessStep = {
   description: string
 }
 
-export type Testimonial = {
-  quote: string
-  author: string
-  tag: string
+export type BenefitCard = {
+  eyebrow: string
+  title: string
+  description: string
+}
+
+export type FaqItem = {
+  question: string
+  answer: string
 }
 
 export const landingBrandName = 'attachd.'
@@ -36,120 +40,149 @@ export const landingBrandName = 'attachd.'
 export const landingPrimaryActionHref = '/#hero'
 
 export const landingNavLinks: LandingLink[] = [
-  { label: 'The styles', href: '/#types' },
+  { label: 'Attachment styles', href: '/#types' },
   { label: 'How it works', href: '/#how' },
   { label: 'For couples', href: '/#couples' },
+  { label: 'FAQ', href: '/#faq' },
 ]
 
 export const landingFooterLinks: LandingLink[] = [
-  { label: 'Privacy', href: '#' },
-  { label: 'About', href: '#' },
-  { label: 'Blog', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'Attachment styles', href: '/#types' },
+  { label: 'How it works', href: '/#how' },
+  { label: 'For couples', href: '/#couples' },
+  { label: 'FAQ', href: '/#faq' },
 ]
 
 export const heroStats: HeroStat[] = [
-  { value: '500k+', label: 'tests taken' },
-  { value: '94%', label: "say it's accurate" },
-  { value: '4.9', label: 'average rating', icon: 'star' },
+  { value: '4 styles', label: 'secure, anxious, avoidant, fearful' },
+  { value: '25 questions', label: 'built for a quick first result' },
+  { value: 'Free result', label: 'clear first read of your pattern' },
 ]
 
 export const attachmentStyleCards: AttachmentStyleCard[] = [
   {
-    prevalence: '~35% of people',
+    eyebrow: 'Steady and open',
     title: 'Secure',
     summary: 'Comfortable with closeness and independence',
     description:
-      'You trust easily, communicate openly, and feel grounded in relationships. Love feels nourishing, not destabilising.',
+      'You usually feel safe with intimacy, recover from conflict more easily, and communicate needs more directly.',
     surfaceClass: 'bg-secure-bg border-secure-bd',
     accentClass: 'text-secure',
-    href: '/#types',
+    href: landingPrimaryActionHref,
   },
   {
-    prevalence: '~20% of people',
+    eyebrow: 'Closeness-seeking',
     title: 'Anxious',
     summary: 'Craving closeness, fearing abandonment',
     description:
-      'You love deeply and feel intensely. When connection feels threatened, anxiety spirals into a need for constant reassurance.',
+      'You may read distance as danger and look for extra reassurance when connection feels uncertain or inconsistent.',
     surfaceClass: 'bg-anxious-bg border-anxious-bd',
     accentClass: 'text-anxious',
-    href: '/#types',
+    href: landingPrimaryActionHref,
   },
   {
-    prevalence: '~25% of people',
+    eyebrow: 'Self-protective',
     title: 'Avoidant',
     summary: 'Fiercely independent, emotionally guarded',
     description:
-      'Self-sufficiency is your default. Intimacy can feel suffocating - but beneath the distance, connection is what you truly want.',
+      'You often protect yourself through self-reliance, especially when a relationship starts to feel emotionally demanding.',
     surfaceClass: 'bg-avoid-bg border-avoid-bd',
     accentClass: 'text-avoid',
-    href: '/#types',
+    href: landingPrimaryActionHref,
   },
   {
-    prevalence: '~20% of people',
+    eyebrow: 'Push-pull pattern',
     title: 'Fearful-Avoidant',
     summary: 'Wanting love, terrified of it too',
     description:
-      'You crave deep connection but fear both intimacy and rejection. This push-pull creates confusing patterns in your closest relationships.',
+      'You can want closeness deeply and still pull back when trust, vulnerability, or rejection feel risky.',
     surfaceClass: 'bg-fearful-bg border-fearful-bd',
     accentClass: 'text-fearful',
-    href: '/#types',
+    href: landingPrimaryActionHref,
   },
 ]
 
 export const processSteps: ProcessStep[] = [
   {
     number: '01',
-    title: '25 situational questions',
+    title: 'Answer 25 quick questions',
     description:
-      "Each question puts you in a real relationship moment and asks how you'd actually feel - not how you think you should.",
+      'Each prompt describes a familiar relationship moment so you respond based on what you actually do under stress, closeness, and uncertainty.',
   },
   {
     number: '02',
-    title: 'Instant, private results',
+    title: 'See your primary attachment style',
     description:
-      'Your attachment type appears immediately. Enter your email to receive your full in-depth report - yours to keep forever.',
+      'You get a free result summary showing whether your pattern looks most secure, anxious, avoidant, or fearful-avoidant.',
   },
   {
     number: '03',
-    title: 'A real growth roadmap',
+    title: 'Unlock the deeper breakdown',
     description:
-      'Every result includes your triggers, strengths, conflict patterns, and concrete steps toward more secure attachment.',
+      'Enter your email to receive the fuller result with triggers, strengths, conflict habits, and next steps toward more secure attachment.',
   },
 ]
 
-export const testimonials: Testimonial[] = [
+export const benefitCards: BenefitCard[] = [
   {
-    quote:
-      "I finally understand why I keep pushing people away. This changed how I see every relationship I've ever had.",
-    author: 'Maya R.',
-    tag: 'Avoidant',
+    eyebrow: 'Free result',
+    title: 'A clear label with real context',
+    description:
+      'The goal is not just to name your pattern, but to explain how it shapes closeness, reassurance, conflict, and emotional safety.',
   },
   {
-    quote:
-      'My therapist had been explaining this for months. Four minutes on this site and it finally clicked.',
-    author: 'James K.',
-    tag: 'Anxious',
+    eyebrow: 'Built to share',
+    title: 'A result people instantly recognize',
+    description:
+      'Attachment styles are easier to remember and talk about than abstract personality scores, which makes them useful for sharing and discussion.',
   },
   {
-    quote:
-      "We took it together as a couple. Understanding each other's styles completely transformed how we fight.",
-    author: 'Sofia & Tom',
-    tag: 'Couples report',
+    eyebrow: 'Next step',
+    title: 'More than a personality label',
+    description:
+      'The deeper breakdown focuses on your common triggers, protective habits, and the behaviors that move you toward a more secure pattern.',
   },
 ]
 
 export const couplesChecklist = [
-  'Why you trigger each other',
-  'Your core conflict loop',
-  "How to meet each other's needs",
-  'Your unique compatibility strengths',
+  'How your two patterns trigger each other',
+  'Your most common conflict loop',
+  'What helps each person feel safer',
+  'Where compatibility is strongest',
 ]
 
 export const reportChecklist = [
-  'Your attachment origin story',
-  'Your 5 core triggers, explained',
-  'How you behave in conflict',
+  'Core triggers and protective habits',
+  'Strengths and blind spots in relationships',
+  'Conflict patterns to watch for',
   'What secure attachment looks like for you',
-  'Exercises to rewire your patterns',
+  'Practical exercises and reflection prompts',
+]
+
+export const faqItems: FaqItem[] = [
+  {
+    question: 'What is an attachment style test?',
+    answer:
+      'It is a relationship-focused personality test designed to estimate which attachment pattern best matches how you handle closeness, reassurance, conflict, and vulnerability.',
+  },
+  {
+    question: 'How long does the test take?',
+    answer:
+      'The MVP flow is 25 questions and is designed to take about four minutes for most people.',
+  },
+  {
+    question: 'Do I need to create an account?',
+    answer:
+      'You can start the test for free without an account. Email is only requested before the fuller result breakdown is delivered.',
+  },
+  {
+    question: 'What do I get after the free result?',
+    answer:
+      'You get your primary attachment style and a short summary first, with the option to unlock a deeper breakdown and premium report afterward.',
+  },
+  {
+    question: 'Is this a diagnosis or therapy?',
+    answer:
+      'No. The test is educational and self-reflective. It is not a diagnosis, medical advice, or a substitute for therapy or mental health care.',
+  },
 ]

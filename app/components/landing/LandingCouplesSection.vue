@@ -4,21 +4,22 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
-  <section id="couples" class="landing-section bg-cream">
+  <section id="couples" aria-labelledby="couples-heading" class="landing-section bg-cream">
     <div class="landing-container flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-20">
-      <div class="min-w-0 flex-1">
+      <header class="min-w-0 flex-1">
         <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
           For couples
         </p>
         <h2
-          class="mb-[1.125rem] font-playfair text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.2] tracking-[-0.02em] text-dark"
+          id="couples-heading"
+          class="mb-[1.125rem] font-display text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.1] tracking-[-0.03em] text-dark"
         >
-          You've done your work.<br>
-          Now do it together.
+          Understand the dynamic between both styles.
         </h2>
         <p class="mb-8 max-w-[500px] text-[1.0625rem] leading-[1.72] text-body">
-          The Couples Compatibility Report maps both attachment styles side-by-side - revealing why
-          you clash, where you thrive, and exactly how to grow toward each other.
+          The couples report compares both attachment styles side by side so you can see where
+          conflict starts, what each person is protecting, and how to respond in a way that feels
+          safer for both people.
         </p>
 
         <ul class="my-6 flex list-none flex-col gap-3">
@@ -34,9 +35,9 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
         <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
           <LandingPrimaryButton :href="landingPrimaryActionHref" label="Get the couples report" />
-          <span class="text-[0.8125rem] text-pale">$14 &middot; One-time &middot; Instant delivery</span>
+          <span class="text-[0.8125rem] text-pale">$14 one-time</span>
         </div>
-      </div>
+      </header>
 
       <div class="w-full xl:w-auto xl:shrink-0">
         <div
@@ -49,7 +50,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           <div class="mb-6 flex items-center gap-5">
             <div class="flex flex-col items-center gap-2">
               <div
-                class="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-anxious-soft font-playfair text-[1.25rem] font-medium text-anxious"
+                class="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-anxious-soft font-display text-[1.25rem] font-medium text-anxious"
               >
                 A
               </div>
@@ -67,12 +68,12 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
                   class="h-full w-[78%] rounded-full bg-[linear-gradient(90deg,var(--color-anxious),var(--color-avoid))]"
                 />
               </div>
-              <span class="text-center text-xs text-muted">High growth potential</span>
+              <span class="text-center text-xs text-muted">Common tension point</span>
             </div>
 
             <div class="flex flex-col items-center gap-2">
               <div
-                class="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-avoid-soft font-playfair text-[1.25rem] font-medium text-avoid"
+                class="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-avoid-soft font-display text-[1.25rem] font-medium text-avoid"
               >
                 B
               </div>

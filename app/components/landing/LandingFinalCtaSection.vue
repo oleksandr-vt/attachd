@@ -5,6 +5,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
 <template>
   <section
+    aria-labelledby="final-cta-heading"
     class="landing-finale-section bg-dark text-center"
     :style="{
       backgroundImage:
@@ -13,25 +14,26 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
   >
     <div class="landing-container flex flex-col items-center gap-6">
       <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra-soft">
-        Ready when you are
+        Start with the free result
       </p>
       <h2
-        class="mb-5 font-playfair text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-[1.15] tracking-[-0.025em] text-cream"
+        id="final-cta-heading"
+        class="mb-5 font-display text-[clamp(2.15rem,3.8vw,3.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream"
       >
-        The patterns running<br>
-        your love life have a name.
+        Find your attachment style<br>
+        and get a clearer relationship map.
       </h2>
       <p class="max-w-[480px] text-center text-[1.0625rem] leading-[1.7] text-muted">
-        Take the free assessment and finally understand<br class="hidden sm:block">
-        why you feel what you feel in relationships.
+        Start with the 25-question test and see which attachment pattern fits best.<br class="hidden sm:block">
+        A clearer read of your relationship habits starts here.
       </p>
       <LandingPrimaryButton
         :href="landingPrimaryActionHref"
-        label="Discover your style - it's free"
+        label="Start the free test"
         size="lg"
       />
       <p class="max-w-[400px] text-center text-[0.8125rem] text-body">
-        No sign-up required. Enter your email after to receive your full report.
+        Educational, not diagnostic.
       </p>
     </div>
   </section>

@@ -4,23 +4,25 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
-  <section id="types" class="landing-section bg-sec-bg">
+  <section id="types" aria-labelledby="types-heading" class="landing-section bg-sec-bg">
     <div class="landing-container">
-      <div class="mb-14 max-w-[600px]">
+      <header class="mb-14 max-w-[640px]">
         <p class="mb-[1.125rem] block text-xs font-medium uppercase tracking-[0.12em] text-terra">
           The four styles
         </p>
         <h2
-          class="mb-[1.125rem] font-playfair text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.2] tracking-[-0.02em] text-dark"
+          id="types-heading"
+          class="mb-[1.125rem] font-display text-[clamp(2rem,3.5vw,3rem)] font-medium leading-[1.1] tracking-[-0.03em] text-dark"
         >
-          Every pattern has a name.<br>
-          Which one feels like you?
+          The four attachment styles.<br>
+          Which one feels most familiar?
         </h2>
         <p class="max-w-[500px] text-[1.0625rem] leading-[1.72] text-body">
-          Based on decades of research by Bowlby, Ainsworth, and Bartholomew. Your style formed
-          early - but it can absolutely evolve.
+          Attachment style describes how you tend to handle closeness, distance, and emotional
+          safety. These four patterns come from attachment theory and help put familiar
+          relationship reactions into words.
         </p>
-      </div>
+      </header>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article
@@ -29,9 +31,9 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           class="flex flex-col gap-2 rounded-[18px] border p-[1.875rem] transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
           :class="card.surfaceClass"
         >
-          <span class="text-xs text-soft-muted">{{ card.prevalence }}</span>
+          <span class="text-xs text-soft-muted">{{ card.eyebrow }}</span>
           <h3
-            class="my-1 font-playfair text-[1.625rem] font-medium leading-none"
+            class="my-1 font-display text-[1.625rem] font-medium leading-none tracking-[-0.02em]"
             :class="card.accentClass"
           >
             {{ card.title }}

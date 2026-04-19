@@ -28,12 +28,12 @@ withDefaults(
           </h2>
         </div>
 
-        <span class="rounded-full px-3 py-1 text-xs font-medium" :class="result.badgeClass">
+        <span class="rounded-full px-3 py-1 text-xs text-center font-medium" :class="result.badgeClass">
           {{ result.eyebrow }}
         </span>
       </div>
 
-      <p class="max-w-128 text-[15px] leading-7 text-dark2">
+      <p class="max-w-lg text-[15px] leading-7 text-dark2">
         {{ result.shortSummary }}
       </p>
     </div>

@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
           <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-[2.5rem]">
             {{ title }}
           </h2>
-          <p class="mt-4 max-w-112 text-[15px] leading-7 text-body">{{ description }}</p>
+          <p class="mt-4 max-w-md text-[15px] leading-7 text-body">{{ description }}</p>
 
           <form class="mt-6 grid gap-3" @submit.prevent="handleSubmit">
             <label class="grid gap-2">

@@ -3,20 +3,27 @@ import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import EmailGate from '~/components/EmailGate.vue'
 import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
-import { attachmentTest, isAttachmentStyleType } from '~/data/tests/attachment'
+import { attachmentTest, isAttachmentStyleType, type AttachmentStyleType } from '~/data/tests/attachment'
 import { attachmentResults } from '~/data/tests/results'
 import { useResults } from '~/composables/useResults'
 import { useTest } from '~/composables/useTest'
 
 const route = useRoute()
-const routeType = Array.isArray(route.params.type) ? route.params.type[0] : route.params.type
+const rawRouteType = computed(() => {
+  const value = Array.isArray(route.params.type) ? route.params.type[0] : route.params.type
+  return typeof value === 'string' ? value : ''
+})
 
-if (!routeType || !isAttachmentStyleType(routeType)) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Result type not found',
-  })
-}
+const routeType = computed<AttachmentStyleType>(() => {
+  if (!rawRouteType.value || !isAttachmentStyleType(rawRouteType.value)) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Result type not found',
+    })
+  }
+
+  return rawRouteType.value
+})
 
 const { getResultContent } = useResults()
 const {
@@ -24,10 +31,10 @@ const {
   isComplete,
   resetTest,
   session,
+  storageHydrated,
   unlockEmailGate,
 } = useTest('attachment')
 
-const resultContent = computed(() => getResultContent(routeType))
 const showEmailGate = ref(false)
 const showRetakeConfirm = ref(false)
 
@@ -43,27 +50,26 @@ const softKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest te
 
 const emailUnlocked = computed(() => session.value.emailUnlocked)
 const savedEmail = computed(() => session.value.email)
-const storedPersonalizedResult = computed(() => {
-  const storedResult = session.value.lastComputedResult
-
-  return storedResult?.type === routeType ? storedResult : null
-})
-
+const storedPersonalizedResult = computed(() => session.value.lastComputedResult)
 const livePersonalizedResult = computed(() =>
-  isComplete.value && computedResult.value?.type === routeType
-    ? computedResult.value
-    : null,
+  isComplete.value ? computedResult.value : null,
 )
-
-const personalizedResult = computed(() =>
-  livePersonalizedResult.value ?? storedPersonalizedResult.value,
-)
+const personalizedResult = computed(() => livePersonalizedResult.value ?? storedPersonalizedResult.value)
+const personalizedType = computed(() => personalizedResult.value?.type ?? null)
+const displayedType = computed<AttachmentStyleType>(() => personalizedType.value ?? routeType.value)
+const resultContent = computed(() => getResultContent(displayedType.value))
 
 const hasPersonalizedResult = computed(() => personalizedResult.value !== null)
+const hasDynamicProfile = computed(() => livePersonalizedResult.value !== null)
+const isResolvingStoredResult = computed(() =>
+  import.meta.client && !storageHydrated.value,
+)
 
-const showGuideSections = computed(() => !hasPersonalizedResult.value)
+const showGuideSections = computed(() =>
+  !isResolvingStoredResult.value && !hasPersonalizedResult.value,
+)
 const showExpandedSections = computed(() =>
-  hasPersonalizedResult.value && emailUnlocked.value,
+  hasDynamicProfile.value && emailUnlocked.value,
 )
 
 const secondaryLabel = computed(() => {
@@ -71,6 +77,13 @@ const secondaryLabel = computed(() => {
 
   return secondaryType ? attachmentResults[secondaryType].label : ''
 })
+const scoreNoteText = computed(() =>
+  livePersonalizedResult.value?.scoreNote
+    ?? 'These bars show your internal score profile inside this quiz. They are not population percentiles, validated cutoffs, or a clinical diagnosis.',
+)
+
+const formatScoreLevel = (level: string) =>
+  `${level.charAt(0).toUpperCase()}${level.slice(1)}`
 
 const openEmailGate = () => {
   showEmailGate.value = true
@@ -93,6 +106,20 @@ const handleRetake = async () => {
 
 const requestUrl = useRequestURL()
 const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+
+if (import.meta.client) {
+  watch(
+    [storageHydrated, personalizedType, routeType],
+    async ([hydrated, nextType, currentType]) => {
+      if (!hydrated || !nextType || nextType === currentType) {
+        return
+      }
+
+      await navigateTo(`/results/${nextType}`, { replace: true })
+    },
+    { immediate: true },
+  )
+}
 
 useSeoMeta({
   title: `${resultContent.value.label} Attachment Style`,
@@ -150,121 +177,221 @@ useHead({
           </header>
 
           <div class="mt-10 grid gap-5">
-            <div
-              v-if="hasPersonalizedResult && personalizedResult"
-              :class="[panelShellClass, 'bg-sec-bg']"
-            >
-              <p :class="noteKickerClass">Latest test read</p>
+            <div v-if="isResolvingStoredResult" :class="[panelShellClass, 'bg-sec-bg']">
+              <p :class="noteKickerClass">Loading saved result</p>
               <p :class="noteCopyClass">
-                Your strongest score landed in <strong>{{ resultContent.label }}</strong>.
-                Your second-strongest pattern was <strong>{{ secondaryLabel }}</strong>, which usually means your system can borrow a little from that style when stress rises.
+                Checking your last completed test so the score profile, email gate, and next-step blocks can render from your saved answers instead of the static guide.
               </p>
             </div>
 
-            <div class="grid gap-5 md:grid-cols-2">
-              <section :class="[panelShellClass, 'bg-white']">
-                <h2 :class="sectionTitleClass">What tends to work well</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.strengths" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
-
-              <section :class="[panelShellClass, 'bg-white']">
-                <h2 :class="sectionTitleClass">What can get protective</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.watchouts" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
-            </div>
-
-            <div
-              v-if="hasPersonalizedResult && !emailUnlocked"
-              :class="[panelShellClass, 'bg-dark text-cream']"
-            >
-              <p :class="softKickerClass">Next step</p>
-              <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
-                Unlock the fuller breakdown.
-              </h2>
-              <p class="mt-3.5 max-w-140 text-[15px] leading-7 text-pale">
-                {{ resultContent.reportPromo }}
-              </p>
-              <div class="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" :class="primaryButtonClass" @click="openEmailGate">
-                  Continue with email
-                </button>
-                <span class="text-sm text-pale">Frontend-ready now, API-ready next</span>
+            <template v-else>
+              <div
+                v-if="hasPersonalizedResult && personalizedResult"
+                :class="[panelShellClass, 'bg-sec-bg']"
+              >
+                <p :class="noteKickerClass">Latest test read</p>
+                <p :class="noteCopyClass">
+                  Your strongest score landed in <strong>{{ resultContent.label }}</strong>.
+                  Your second-strongest pattern was <strong>{{ secondaryLabel }}</strong>, which usually means your system can borrow a little from that style when stress rises.
+                </p>
               </div>
-            </div>
 
-            <div v-if="showExpandedSections" class="grid gap-5 md:grid-cols-2">
-              <section :class="[panelShellClass, 'bg-sec-bg']">
-                <h2 :class="sectionTitleClass">What helps you feel secure</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.relationshipNeeds" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+              <section
+                v-if="hasDynamicProfile && livePersonalizedResult"
+                :class="[panelShellClass, 'bg-white']"
+              >
+                <p :class="noteKickerClass">Answer-based subprofile</p>
+                <h2 :class="sectionTitleClass">{{ livePersonalizedResult.subprofileLabel }}</h2>
+                <p :class="bodyCopyClass">
+                  {{ livePersonalizedResult.subprofileSummary }}
+                </p>
+                <p class="mt-4 text-sm leading-6 text-muted">
+                  {{ livePersonalizedResult.stylePairSummary }}
+                </p>
+
+                <div class="mt-6 grid gap-4 md:grid-cols-2">
+                  <div
+                    v-for="dimension in livePersonalizedResult.dimensions"
+                    :key="dimension.key"
+                    class="rounded-3xl border border-border bg-sec-bg p-4"
+                  >
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="text-sm font-medium text-dark">{{ dimension.label }}</span>
+                      <span class="text-sm font-medium text-terra">
+                        {{ formatScoreLevel(dimension.level) }} / {{ dimension.percentage }}%
+                      </span>
+                    </div>
+                    <p class="mt-3 text-sm leading-6 text-dark2">
+                      {{ dimension.summary }}
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                v-if="hasDynamicProfile && livePersonalizedResult"
+                :class="[panelShellClass, 'bg-white']"
+              >
+                <p :class="noteKickerClass">Strongest trigger clusters</p>
+                <h2 :class="sectionTitleClass">What activates your system fastest</h2>
+                <ul class="grid gap-4">
+                  <li v-for="trigger in livePersonalizedResult.strongestTriggers" :key="trigger.key">
+                    <div class="rounded-3xl border border-border bg-sec-bg p-4">
+                      <div class="flex items-center justify-between gap-3">
+                        <span class="text-sm font-medium text-dark">{{ trigger.label }}</span>
+                        <span class="text-sm font-medium text-terra">{{ trigger.percentage }}%</span>
+                      </div>
+                      <p class="mt-3 text-sm leading-6 text-dark2">
+                        {{ trigger.summary }}
+                      </p>
                     </div>
                   </li>
                 </ul>
               </section>
 
-              <section :class="[panelShellClass, 'bg-sec-bg']">
-                <h2 :class="sectionTitleClass">Where to grow next</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.growthMoves" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
-            </div>
+              <div class="grid gap-5 md:grid-cols-2">
+                <section :class="[panelShellClass, 'bg-white']">
+                  <h2 :class="sectionTitleClass">What tends to work well</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.strengths" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
 
-            <div v-if="showGuideSections" :class="[panelShellClass, 'bg-sec-bg']">
-              <p :class="noteKickerClass">Direct visit</p>
-              <p :class="noteCopyClass">
-                This page works as a guide for the {{ resultContent.label.toLowerCase() }} pattern.
-                If you want a personalized read, take the {{ attachmentTest.questions.length }}-question test first and come back through your own result route.
-              </p>
-            </div>
+                <section :class="[panelShellClass, 'bg-white']">
+                  <h2 :class="sectionTitleClass">What can get protective</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.watchouts" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+              </div>
 
-            <div v-if="showGuideSections" class="grid gap-5 md:grid-cols-2">
-              <section :class="[panelShellClass, 'bg-white']">
-                <h2 :class="sectionTitleClass">In relationships you usually need</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.relationshipNeeds" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
+              <div
+                v-if="hasPersonalizedResult && !emailUnlocked"
+                :class="[panelShellClass, 'bg-dark text-cream']"
+              >
+                <p :class="softKickerClass">Next step</p>
+                <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
+                  Unlock the fuller breakdown.
+                </h2>
+                <p class="mt-3.5 max-w-140 text-[15px] leading-7 text-pale">
+                  {{ resultContent.reportPromo }}
+                </p>
+                <p class="mt-3 text-sm leading-6 text-pale">
+                  Ready next: your custom action steps, full trigger readout, and growth guidance keyed to this exact score mix.
+                </p>
+                <div class="mt-6 flex flex-wrap items-center gap-4">
+                  <button type="button" :class="primaryButtonClass" @click="openEmailGate">
+                    Continue with email
+                  </button>
+                  <span class="text-sm text-pale">Frontend-ready now, API-ready next</span>
+                </div>
+              </div>
 
-              <section :class="[panelShellClass, 'bg-white']">
-                <h2 :class="sectionTitleClass">What moves you toward secure attachment</h2>
-                <ul class="grid gap-3.5">
-                  <li v-for="item in resultContent.growthMoves" :key="item">
-                    <div class="flex items-start gap-3">
-                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
-                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
-            </div>
+              <div v-if="showExpandedSections" class="grid gap-5 md:grid-cols-2">
+                <section :class="[panelShellClass, 'bg-sec-bg']">
+                  <h2 :class="sectionTitleClass">What helps you feel secure</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.relationshipNeeds" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+
+                <section
+                  v-if="livePersonalizedResult"
+                  :class="[panelShellClass, 'bg-sec-bg']"
+                >
+                  <h2 :class="sectionTitleClass">Next steps prepared for this mix</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in livePersonalizedResult.nextSteps" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+
+              <div
+                v-if="showExpandedSections && livePersonalizedResult"
+                class="grid gap-5 md:grid-cols-2"
+              >
+                <section :class="[panelShellClass, 'bg-sec-bg']">
+                  <h2 :class="sectionTitleClass">Full trigger readout</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="trigger in livePersonalizedResult.triggerClusters" :key="trigger.key">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">
+                          <strong>{{ trigger.label }} ({{ trigger.percentage }}%)</strong>
+                          {{ ' ' }}{{ trigger.summary }}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+
+                <section :class="[panelShellClass, 'bg-sec-bg']">
+                  <h2 :class="sectionTitleClass">Where to grow next</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.growthMoves" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+
+              <div v-if="showGuideSections" :class="[panelShellClass, 'bg-sec-bg']">
+                <p :class="noteKickerClass">Direct visit</p>
+                <p :class="noteCopyClass">
+                  This page works as a guide for the {{ resultContent.label.toLowerCase() }} pattern.
+                  If you want a personalized read, take the {{ attachmentTest.questions.length }}-question test first and come back through your own result route.
+                </p>
+              </div>
+
+              <div v-if="showGuideSections" class="grid gap-5 md:grid-cols-2">
+                <section :class="[panelShellClass, 'bg-white']">
+                  <h2 :class="sectionTitleClass">In relationships you usually need</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.relationshipNeeds" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+
+                <section :class="[panelShellClass, 'bg-white']">
+                  <h2 :class="sectionTitleClass">What moves you toward secure attachment</h2>
+                  <ul class="grid gap-3.5">
+                    <li v-for="item in resultContent.growthMoves" :key="item">
+                      <div class="flex items-start gap-3">
+                        <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                        <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+            </template>
 
             <div class="grid gap-5 md:grid-cols-2">
               <section :class="[panelShellClass, 'bg-cream']">
@@ -292,6 +419,12 @@ useHead({
             :ranking="personalizedResult?.ranking ?? []"
             :eyebrow="hasPersonalizedResult ? 'Your attachment results' : 'Attachment style overview'"
           />
+          <p
+            v-if="hasPersonalizedResult"
+            class="mt-3 px-1 text-sm leading-6 text-muted"
+          >
+            {{ scoreNoteText }}
+          </p>
 
           <div :class="[panelShellClass, 'mt-4 bg-sec-bg']">
             <p :class="noteKickerClass">Share hook</p>

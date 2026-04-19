@@ -330,6 +330,7 @@ export const useTest = (slug: string = 'attachment') => {
   return {
     attachmentTest,
     session,
+    storageHydrated,
     totalQuestions,
     answeredCount,
     currentIndex,

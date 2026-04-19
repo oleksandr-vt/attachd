@@ -72,7 +72,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'When someone I care about seems distant, I start to worry the relationship may be changing.',
       weights: {
         anxious: 1,
-        'fearful-avoidant': 0.35,
+        'fearful-avoidant': 0.2,
       },
     },
     {
@@ -87,7 +87,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'After conflict, I keep replaying what happened and worry I may be rejected.',
       weights: {
         anxious: 0.95,
-        'fearful-avoidant': 0.45,
+        'fearful-avoidant': 0.25,
       },
     },
     {
@@ -102,7 +102,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'Conflict makes me fear the relationship itself may be at risk.',
       weights: {
         anxious: 1,
-        'fearful-avoidant': 0.4,
+        'fearful-avoidant': 0.25,
       },
     },
     {
@@ -110,7 +110,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'When emotional closeness becomes intense, I want more space.',
       weights: {
         avoidant: 1,
-        'fearful-avoidant': 0.35,
+        'fearful-avoidant': 0.2,
       },
     },
     {
@@ -146,7 +146,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'I want close connection, but I get scared when it starts to feel emotionally real.',
       weights: {
         'fearful-avoidant': 1,
-        anxious: 0.35,
+        anxious: 0.25,
       },
     },
     {
@@ -154,7 +154,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'Even when I want support, opening up can feel unsafe.',
       weights: {
         'fearful-avoidant': 0.95,
-        anxious: 0.3,
+        anxious: 0.2,
       },
     },
     {
@@ -162,8 +162,8 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'I can swing between wanting reassurance and wanting to withdraw.',
       weights: {
         'fearful-avoidant': 1,
-        anxious: 0.45,
-        avoidant: 0.45,
+        anxious: 0.25,
+        avoidant: 0.25,
       },
     },
     {
@@ -178,7 +178,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'I expect closeness to end in hurt or disappointment.',
       weights: {
         'fearful-avoidant': 1,
-        anxious: 0.4,
+        anxious: 0.25,
       },
     },
     {
@@ -235,7 +235,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'I sometimes test whether someone cares before I fully trust the relationship.',
       weights: {
         anxious: 0.8,
-        'fearful-avoidant': 0.35,
+        'fearful-avoidant': 0.2,
       },
     },
     {
@@ -243,7 +243,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'When a relationship becomes very serious, part of me wants more distance.',
       weights: {
         avoidant: 0.85,
-        'fearful-avoidant': 0.4,
+        'fearful-avoidant': 0.25,
       },
     },
     {
@@ -251,7 +251,7 @@ export const attachmentTest: AttachmentTestDefinition = {
       prompt: 'I can imagine deep love, but I do not fully trust it to remain safe.',
       weights: {
         'fearful-avoidant': 0.8,
-        anxious: 0.45,
+        anxious: 0.25,
       },
     },
   ],

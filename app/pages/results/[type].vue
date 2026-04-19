@@ -38,9 +38,12 @@ const personalizedResult = computed(() =>
   hasPersonalizedResult.value ? computedResult.value : null,
 )
 
+const emailUnlocked = computed(() => session.value.emailUnlocked)
+const savedEmail = computed(() => session.value.email)
+
 const showGuideSections = computed(() => !hasPersonalizedResult.value)
 const showExpandedSections = computed(() =>
-  hasPersonalizedResult.value && session.emailUnlocked,
+  hasPersonalizedResult.value && emailUnlocked.value,
 )
 
 const secondaryLabel = computed(() => {
@@ -155,7 +158,7 @@ useHead({
             </div>
 
             <div
-              v-if="hasPersonalizedResult && !session.emailUnlocked"
+              v-if="hasPersonalizedResult && !emailUnlocked"
               class="results-gate-card border border-border bg-dark"
             >
               <p class="results-note-kicker results-note-kicker-soft">Next step</p>
@@ -258,7 +261,7 @@ useHead({
 
     <EmailGate
       :open="showEmailGate"
-      :initial-email="session.email"
+      :initial-email="savedEmail"
       @close="showEmailGate = false"
       @submit="handleEmailSubmit"
     />

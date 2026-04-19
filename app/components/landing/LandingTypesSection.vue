@@ -37,13 +37,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           </h3>
           <p class="types-card-summary text-dark2">{{ card.summary }}</p>
           <p class="types-card-copy mt-1 flex-1 text-body">{{ card.description }}</p>
-          <a
-            :href="card.href"
+          <NuxtLink
+            :to="card.href"
             class="mt-3 inline-block text-sm font-medium transition-opacity duration-200 hover:opacity-65"
             :class="card.accentClass"
           >
             Learn more &rarr;
-          </a>
+          </NuxtLink>
         </article>
       </div>
 

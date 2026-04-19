@@ -1,4 +1,4 @@
-import { attachmentTest, isAttachmentStyleType, type AttachmentStyleType } from '~/data/tests/attachment'
+import { attachmentTest, isAttachmentStyleType, type AttachmentQuestion, type AttachmentStyleType } from '~/data/tests/attachment'
 import { useResults, type AttachmentAnswerMap, type AttachmentComputedResult } from '~/composables/useResults'
 
 type AttachmentTestSession = {
@@ -13,6 +13,11 @@ type AttachmentTestSession = {
 }
 
 const STORAGE_KEY = 'attachd:attachment-test'
+const firstQuestion = attachmentTest.questions[0]
+
+if (!firstQuestion) {
+  throw new Error('Attachment test requires at least one question.')
+}
 
 const createEmptyAnswers = (): AttachmentAnswerMap =>
   Object.fromEntries(
@@ -130,10 +135,12 @@ export const useTest = (slug: string = 'attachment') => {
     Math.min(session.value.currentIndex, totalQuestions - 1),
   )
 
-  const currentQuestion = computed(() => attachmentTest.questions[currentIndex.value] ?? attachmentTest.questions[0])
+  const currentQuestion = computed<AttachmentQuestion>(() =>
+    attachmentTest.questions[currentIndex.value] ?? firstQuestion,
+  )
 
-  const currentAnswer = computed(() =>
-    currentQuestion.value ? session.value.answers[currentQuestion.value.id] : null,
+  const currentAnswer = computed<number | null>(() =>
+    session.value.answers[currentQuestion.value.id] ?? null,
   )
 
   const currentQuestionNumber = computed(() => currentIndex.value + 1)

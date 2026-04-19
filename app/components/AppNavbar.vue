@@ -4,27 +4,27 @@
     :class="isScrolled ? 'site-header-scrolled' : ''"
   >
     <div class="landing-container flex h-17 items-center gap-4 sm:gap-6">
-      <a href="/" class="shrink-0 font-display text-2xl font-normal italic text-dark">
+      <NuxtLink to="/" class="shrink-0 font-display text-2xl font-normal italic text-dark">
         {{ landingBrandName }}
-      </a>
+      </NuxtLink>
 
       <nav class="hidden items-center gap-8 lg:ml-auto lg:flex">
-        <a
+        <NuxtLink
           v-for="link in landingNavLinks"
           :key="link.label"
-          :href="link.href"
+          :to="link.href"
           class="text-sm text-muted transition-colors duration-200 hover:text-dark"
         >
           {{ link.label }}
-        </a>
+        </NuxtLink>
       </nav>
 
-      <a
-        :href="landingPrimaryActionHref"
+      <NuxtLink
+        :to="landingPrimaryActionHref"
         class="site-header-cta ml-auto shrink-0 whitespace-nowrap rounded-full bg-dark px-4 py-2 font-medium text-cream transition-colors duration-200 hover:bg-dark2 sm:px-5 sm:text-sm lg:ml-0"
       >
         Start free test &rarr;
-      </a>
+      </NuxtLink>
     </div>
   </header>
 </template>

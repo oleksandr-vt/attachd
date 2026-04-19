@@ -1,19 +1,19 @@
 <template>
   <footer class="border-t border-border bg-cream py-10">
     <div class="landing-container flex flex-wrap items-center gap-6 sm:gap-10">
-      <a href="/" class="font-display text-2xl font-normal italic text-dark">
+      <NuxtLink to="/" class="font-display text-2xl font-normal italic text-dark">
         {{ landingBrandName }}
-      </a>
+      </NuxtLink>
 
       <nav class="flex w-full flex-wrap gap-5 sm:ml-auto sm:w-auto sm:gap-7">
-        <a
+        <NuxtLink
           v-for="link in landingFooterLinks"
           :key="link.label"
-          :href="link.href"
+          :to="link.href"
           class="text-sm text-muted transition-colors duration-200 hover:text-dark"
         >
           {{ link.label }}
-        </a>
+        </NuxtLink>
       </nav>
 
       <p class="footer-note w-full text-xs text-pale">

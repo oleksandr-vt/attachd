@@ -21,7 +21,7 @@ defineEmits<{
         <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra">
           Question {{ questionNumber }} of {{ totalQuestions }}
         </p>
-        <h2 class="font-display text-3xl leading-tight font-medium tracking-tight text-dark sm:text-4xl lg:text-[2.35rem]">
+        <h2 class="font-display text-[1.7rem] leading-[1.14] font-medium tracking-tight text-dark sm:text-[2.15rem] lg:text-[2.35rem]">
           {{ question.prompt }}
         </h2>
       </div>

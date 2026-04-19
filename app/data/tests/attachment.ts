@@ -69,7 +69,7 @@ export const attachmentTest: AttachmentTestDefinition = {
   questions: [
     {
       id: 'q01',
-      prompt: 'When someone I care about feels distant, I quickly worry that something is wrong.',
+      prompt: 'When someone I care about seems distant, I start to worry the relationship may be changing.',
       weights: {
         anxious: 1,
         'fearful-avoidant': 0.35,
@@ -77,14 +77,14 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q02',
-      prompt: 'I need frequent reassurance to feel secure in a relationship.',
+      prompt: 'I need frequent reassurance that the relationship is okay.',
       weights: {
         anxious: 1,
       },
     },
     {
       id: 'q03',
-      prompt: 'After a tense conversation, I replay it in my head looking for signs I may be rejected.',
+      prompt: 'After conflict, I keep replaying what happened and worry I may be rejected.',
       weights: {
         anxious: 0.95,
         'fearful-avoidant': 0.45,
@@ -92,14 +92,14 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q04',
-      prompt: 'If a message is not answered quickly, my mind often jumps to the worst-case explanation.',
+      prompt: 'When I do not hear back from someone I care about, I quickly assume something is wrong.',
       weights: {
         anxious: 0.9,
       },
     },
     {
       id: 'q05',
-      prompt: 'Conflict makes me fear that the relationship itself may be in danger.',
+      prompt: 'Conflict makes me fear the relationship itself may be at risk.',
       weights: {
         anxious: 1,
         'fearful-avoidant': 0.4,
@@ -107,7 +107,7 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q06',
-      prompt: 'When emotional closeness feels intense, part of me wants to pull back or create space.',
+      prompt: 'When emotional closeness becomes intense, I want more space.',
       weights: {
         avoidant: 1,
         'fearful-avoidant': 0.35,
@@ -115,35 +115,35 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q07',
-      prompt: 'I prefer to handle stress on my own rather than lean on a partner.',
+      prompt: 'I prefer to handle stress on my own rather than rely on a partner.',
       weights: {
         avoidant: 1,
       },
     },
     {
       id: 'q08',
-      prompt: 'I feel uncomfortable when someone depends on me too much emotionally.',
+      prompt: 'I feel uncomfortable when a partner depends heavily on me for emotional support.',
       weights: {
         avoidant: 0.9,
       },
     },
     {
       id: 'q09',
-      prompt: 'After moments of intimacy, I often need distance to feel like myself again.',
+      prompt: 'After strong intimacy, I often need distance to feel settled again.',
       weights: {
         avoidant: 1,
       },
     },
     {
       id: 'q10',
-      prompt: 'I tend to downplay my feelings so I can stay in control.',
+      prompt: 'I keep my feelings contained so I can stay in control.',
       weights: {
         avoidant: 0.95,
       },
     },
     {
       id: 'q11',
-      prompt: 'I want deep closeness, but I can get scared when it starts to feel real.',
+      prompt: 'I want close connection, but I get scared when it starts to feel emotionally real.',
       weights: {
         'fearful-avoidant': 1,
         anxious: 0.35,
@@ -151,7 +151,7 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q12',
-      prompt: 'I can want support and still expect that opening up will get me hurt.',
+      prompt: 'Even when I want support, opening up can feel unsafe.',
       weights: {
         'fearful-avoidant': 0.95,
         anxious: 0.3,
@@ -159,7 +159,7 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q13',
-      prompt: 'I swing between craving reassurance and wanting to disappear for a while.',
+      prompt: 'I can swing between wanting reassurance and wanting to withdraw.',
       weights: {
         'fearful-avoidant': 1,
         anxious: 0.45,
@@ -168,14 +168,14 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q14',
-      prompt: 'Being fully known by someone can feel both comforting and dangerous.',
+      prompt: 'Being deeply known by someone can feel both comforting and risky.',
       weights: {
         'fearful-avoidant': 0.95,
       },
     },
     {
       id: 'q15',
-      prompt: 'Part of me expects that closeness will eventually lead to pain or disappointment.',
+      prompt: 'I expect closeness to end in hurt or disappointment.',
       weights: {
         'fearful-avoidant': 1,
         anxious: 0.4,
@@ -197,14 +197,14 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q18',
-      prompt: 'I feel comfortable with closeness and independence at the same time.',
+      prompt: 'I am comfortable with both closeness and independence in relationships.',
       weights: {
         secure: 1,
       },
     },
     {
       id: 'q19',
-      prompt: 'After tension in a relationship, I tend to recover fairly quickly instead of staying stuck.',
+      prompt: 'After relationship tension, I usually recover without staying stuck for long.',
       weights: {
         secure: 0.9,
       },
@@ -218,21 +218,21 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q21',
-      prompt: 'When someone needs space, I can usually respect it without panicking or retaliating.',
+      prompt: 'When someone needs space, I can usually respect it without panicking or pushing back.',
       weights: {
         secure: 0.9,
       },
     },
     {
       id: 'q22',
-      prompt: 'I let people support me without feeling weak, trapped, or exposed for doing so.',
+      prompt: 'I can accept support without feeling weak, trapped, or overly exposed.',
       weights: {
         secure: 0.9,
       },
     },
     {
       id: 'q23',
-      prompt: 'I sometimes test whether someone really cares before I fully relax.',
+      prompt: 'I sometimes test whether someone cares before I fully trust the relationship.',
       weights: {
         anxious: 0.8,
         'fearful-avoidant': 0.35,
@@ -240,7 +240,7 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q24',
-      prompt: 'If a relationship starts to feel very serious, part of me wants an escape route.',
+      prompt: 'When a relationship becomes very serious, part of me wants more distance.',
       weights: {
         avoidant: 0.85,
         'fearful-avoidant': 0.4,
@@ -248,7 +248,7 @@ export const attachmentTest: AttachmentTestDefinition = {
     },
     {
       id: 'q25',
-      prompt: 'I can imagine deep love, but I do not fully trust that it will stay safe for long.',
+      prompt: 'I can imagine deep love, but I do not fully trust it to remain safe.',
       weights: {
         'fearful-avoidant': 0.8,
         anxious: 0.45,
@@ -259,4 +259,3 @@ export const attachmentTest: AttachmentTestDefinition = {
 
 export const isAttachmentStyleType = (value: string): value is AttachmentStyleType =>
   attachmentStyleTypes.includes(value as AttachmentStyleType)
-

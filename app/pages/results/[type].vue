@@ -47,6 +47,7 @@ const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
 const softKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft'
+const subtleDetailsClass = 'mt-3 rounded-2xl border border-border bg-white/70 px-4 py-3 text-sm leading-6 text-muted'
 
 const emailUnlocked = computed(() => session.value.emailUnlocked)
 const savedEmail = computed(() => session.value.email)
@@ -58,11 +59,12 @@ const personalizedResult = computed(() => livePersonalizedResult.value ?? stored
 const personalizedType = computed(() => personalizedResult.value?.type ?? null)
 const displayedType = computed<AttachmentStyleType>(() => personalizedType.value ?? routeType.value)
 const resultContent = computed(() => getResultContent(displayedType.value))
+const pageMounted = ref(false)
 
 const hasPersonalizedResult = computed(() => personalizedResult.value !== null)
 const hasDynamicProfile = computed(() => livePersonalizedResult.value !== null)
 const isResolvingStoredResult = computed(() =>
-  import.meta.client && !storageHydrated.value,
+  pageMounted.value && !storageHydrated.value,
 )
 
 const showGuideSections = computed(() =>
@@ -106,6 +108,10 @@ const handleRetake = async () => {
 
 const requestUrl = useRequestURL()
 const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+
+onMounted(() => {
+  pageMounted.value = true
+})
 
 if (import.meta.client) {
   watch(
@@ -419,12 +425,15 @@ useHead({
             :ranking="personalizedResult?.ranking ?? []"
             :eyebrow="hasPersonalizedResult ? 'Your attachment results' : 'Attachment style overview'"
           />
-          <p
+          <details
             v-if="hasPersonalizedResult"
-            class="mt-3 px-1 text-sm leading-6 text-muted"
+            :class="subtleDetailsClass"
           >
-            {{ scoreNoteText }}
-          </p>
+            <summary class="cursor-pointer font-medium text-dark">How to read these bars</summary>
+            <p class="mt-2">
+              {{ scoreNoteText }}
+            </p>
+          </details>
 
           <div :class="[panelShellClass, 'mt-4 bg-sec-bg']">
             <p :class="noteKickerClass">Share hook</p>

@@ -171,7 +171,7 @@ useHead({
 </script>
 
 <template>
-  <section class="landing-section bg-cream">
+  <section class="landing-page-section bg-cream">
     <div class="landing-container">
       <div class="grid gap-8">
         <div

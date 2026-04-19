@@ -41,16 +41,25 @@ const noteCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
 const softKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft'
 
-const hasPersonalizedResult = computed(() =>
-  isComplete.value && computedResult.value?.type === routeType,
+const emailUnlocked = computed(() => session.value.emailUnlocked)
+const savedEmail = computed(() => session.value.email)
+const storedPersonalizedResult = computed(() => {
+  const storedResult = session.value.lastComputedResult
+
+  return storedResult?.type === routeType ? storedResult : null
+})
+
+const livePersonalizedResult = computed(() =>
+  isComplete.value && computedResult.value?.type === routeType
+    ? computedResult.value
+    : null,
 )
 
 const personalizedResult = computed(() =>
-  hasPersonalizedResult.value ? computedResult.value : null,
+  livePersonalizedResult.value ?? storedPersonalizedResult.value,
 )
 
-const emailUnlocked = computed(() => session.value.emailUnlocked)
-const savedEmail = computed(() => session.value.email)
+const hasPersonalizedResult = computed(() => personalizedResult.value !== null)
 
 const showGuideSections = computed(() => !hasPersonalizedResult.value)
 const showExpandedSections = computed(() =>
@@ -104,7 +113,7 @@ useHead({
 </script>
 
 <template>
-  <section class="landing-section bg-cream">
+  <section class="landing-page-section bg-cream">
     <div class="landing-container">
       <div class="grid gap-8 lg:grid-cols-3">
         <div class="min-w-0 lg:col-span-2">

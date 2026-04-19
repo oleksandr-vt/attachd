@@ -1,5 +1,11 @@
 import { attachmentTest, isAttachmentStyleType, type AttachmentQuestion, type AttachmentStyleType } from '~/data/tests/attachment'
-import { useResults, type AttachmentAnswerMap, type AttachmentComputedResult } from '~/composables/useResults'
+import { useResults, type AttachmentAnswerMap, type AttachmentComputedResult, type AttachmentRankingItem } from '~/composables/useResults'
+
+type AttachmentStoredResult = {
+  type: AttachmentStyleType
+  secondaryType: AttachmentStyleType
+  ranking: AttachmentRankingItem[]
+}
 
 type AttachmentTestSession = {
   slug: 'attachment'
@@ -8,6 +14,7 @@ type AttachmentTestSession = {
   startedAt: string | null
   completedAt: string | null
   lastResultType: AttachmentStyleType | null
+  lastComputedResult: AttachmentStoredResult | null
   email: string
   emailUnlocked: boolean
 }
@@ -31,9 +38,68 @@ const createDefaultSession = (): AttachmentTestSession => ({
   startedAt: null,
   completedAt: null,
   lastResultType: null,
+  lastComputedResult: null,
   email: '',
   emailUnlocked: false,
 })
+
+const normalizeStoredRanking = (value: unknown): AttachmentRankingItem[] => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== 'object') {
+      return []
+    }
+
+    const candidate = item as Partial<AttachmentRankingItem>
+
+    if (
+      typeof candidate.type !== 'string'
+      || !isAttachmentStyleType(candidate.type)
+      || typeof candidate.label !== 'string'
+      || typeof candidate.score !== 'number'
+      || typeof candidate.percentage !== 'number'
+      || typeof candidate.accentClass !== 'string'
+      || typeof candidate.barClass !== 'string'
+    ) {
+      return []
+    }
+
+    return [{
+      type: candidate.type,
+      label: candidate.label,
+      score: candidate.score,
+      percentage: candidate.percentage,
+      accentClass: candidate.accentClass,
+      barClass: candidate.barClass,
+    }]
+  })
+}
+
+const normalizeStoredResult = (value: unknown): AttachmentStoredResult | null => {
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  const candidate = value as Partial<AttachmentStoredResult>
+
+  if (
+    typeof candidate.type !== 'string'
+    || !isAttachmentStyleType(candidate.type)
+    || typeof candidate.secondaryType !== 'string'
+    || !isAttachmentStyleType(candidate.secondaryType)
+  ) {
+    return null
+  }
+
+  return {
+    type: candidate.type,
+    secondaryType: candidate.secondaryType,
+    ranking: normalizeStoredRanking(candidate.ranking),
+  }
+}
 
 const normalizeAnswers = (value: unknown): AttachmentAnswerMap => {
   const baseAnswers = createEmptyAnswers()
@@ -72,6 +138,7 @@ const normalizeSession = (value: unknown): AttachmentTestSession => {
     lastResultType: typeof candidate.lastResultType === 'string' && isAttachmentStyleType(candidate.lastResultType)
       ? candidate.lastResultType
       : null,
+    lastComputedResult: normalizeStoredResult(candidate.lastComputedResult),
     email: typeof candidate.email === 'string' ? candidate.email : '',
     emailUnlocked: Boolean(candidate.emailUnlocked),
   }
@@ -180,6 +247,7 @@ export const useTest = (slug: string = 'attachment') => {
     session.value.answers[questionId] = value
     session.value.completedAt = null
     session.value.lastResultType = null
+    session.value.lastComputedResult = null
   }
 
   const goToQuestion = (index: number) => {
@@ -211,6 +279,11 @@ export const useTest = (slug: string = 'attachment') => {
     const result = getResultFromAnswers(session.value.answers)
     session.value.completedAt = new Date().toISOString()
     session.value.lastResultType = result.type
+    session.value.lastComputedResult = {
+      type: result.type,
+      secondaryType: result.secondaryType,
+      ranking: result.ranking,
+    }
     session.value.currentIndex = totalQuestions - 1
 
     return result

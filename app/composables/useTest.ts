@@ -154,24 +154,34 @@ export const useTest = (slug: string = 'attachment') => {
 
   const { getResultFromAnswers } = useResults()
   const session = useState<AttachmentTestSession>('attachment-test-session', createDefaultSession)
-  const storageReady = useState<boolean>('attachment-test-storage-ready', () => false)
+  const storageHydrated = useState<boolean>('attachment-test-storage-hydrated', () => false)
 
-  if (import.meta.client && !storageReady.value) {
-    storageReady.value = true
-
-    const savedSession = window.localStorage.getItem(STORAGE_KEY)
-
-    if (savedSession) {
-      try {
-        session.value = normalizeSession(JSON.parse(savedSession))
-      } catch {
-        session.value = createDefaultSession()
+  if (import.meta.client) {
+    onMounted(() => {
+      if (storageHydrated.value) {
+        return
       }
-    }
+
+      const savedSession = window.localStorage.getItem(STORAGE_KEY)
+
+      if (savedSession) {
+        try {
+          session.value = normalizeSession(JSON.parse(savedSession))
+        } catch {
+          session.value = createDefaultSession()
+        }
+      }
+
+      storageHydrated.value = true
+    })
 
     watch(
       session,
       (value) => {
+        if (!storageHydrated.value) {
+          return
+        }
+
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
       },
       { deep: true },

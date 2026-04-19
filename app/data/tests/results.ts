@@ -59,7 +59,7 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
     accentClass: 'text-secure',
     surfaceClass: 'bg-secure-bg',
     borderClass: 'border-secure-bd',
-    badgeClass: 'bg-secure-bg text-secure',
+    badgeClass: 'bg-secure-bd text-secure',
     barClass: 'bg-secure',
     seoTitle: 'Secure Attachment Style',
     seoDescription:

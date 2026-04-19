@@ -148,9 +148,9 @@ useHead({
 <template>
   <section class="landing-page-section bg-cream">
     <div class="landing-container">
-      <div class="grid gap-8 lg:grid-cols-3">
-        <div class="min-w-0 lg:col-span-2">
-          <header class="max-w-170">
+      <div class="relative grid gap-8 lg:grid-cols-3">
+        <div class="min-w-0 lg:col-span-2 max-lg:contents">
+          <header class="max-w-170 max-lg:order-1">
             <p class="landing-section-kicker">
               {{ hasPersonalizedResult ? 'Your results' : 'Attachment style guide' }}
             </p>
@@ -182,7 +182,7 @@ useHead({
             </div>
           </header>
 
-          <div class="mt-10 grid gap-5">
+          <div class="lg:mt-10 grid gap-5 max-lg:order-3">
             <div v-if="isResolvingStoredResult" :class="[panelShellClass, 'bg-sec-bg']">
               <p :class="noteKickerClass">Loading saved result</p>
               <p :class="noteCopyClass">
@@ -419,7 +419,7 @@ useHead({
           </div>
         </div>
 
-        <aside class="lg:sticky lg:top-26 lg:self-start">
+        <aside class="lg:sticky lg:top-26 lg:self-start max-lg:order-2">
           <ResultCard
             :result="resultContent"
             :ranking="personalizedResult?.ranking ?? []"

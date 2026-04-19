@@ -4,6 +4,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   css: ['~/assets/css/main.css'],
+  nitro: {
+    prerender: {
+      routes: [
+        '/test/attachment',
+        '/results/secure',
+        '/results/anxious',
+        '/results/avoidant',
+        '/results/fearful-avoidant',
+      ],
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

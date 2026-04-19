@@ -24,7 +24,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
         <h1
           id="hero-heading"
-          class="hero-title mb-6 landing-fade-up"
+          class="mb-6 font-display text-4xl leading-none font-medium tracking-tight text-dark landing-fade-up sm:text-5xl lg:text-6xl"
           style="animation-delay: 0.15s"
         >
           Attachment style test<br>
@@ -69,54 +69,57 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         class="landing-fade-up-slow flex w-full justify-center lg:w-85 lg:shrink-0"
         style="animation-delay: 0.3s"
       >
-        <div class="hero-stack relative">
+        <div class="relative h-115 w-80 origin-top scale-90 sm:scale-100">
           <div
-            class="hero-panel hero-panel-back absolute top-2 -left-2 w-63 border border-secure-bd bg-secure-bg p-5.5 opacity-65"
+            class="absolute top-2 -left-2 z-0 w-63 rounded-2xl border border-secure-bd bg-secure-bg p-5.5 opacity-65"
+            style="transform: rotate(-7.5deg)"
           >
             <p class="mb-3.5 font-display text-base font-medium text-dark">Secure</p>
-            <div class="hero-meter-stack flex flex-col">
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+            <div class="flex flex-col gap-2">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-secure" style="width: 78%" />
               </div>
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-secure opacity-45" style="width: 55%" />
               </div>
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-secure opacity-25" style="width: 88%" />
               </div>
             </div>
           </div>
 
           <div
-            class="hero-panel hero-panel-mid absolute top-7 -right-0.5 w-63 border border-anxious-bd bg-anxious-bg p-5.5 opacity-80"
+            class="absolute top-7 -right-0.5 z-10 w-63 rounded-2xl border border-anxious-bd bg-anxious-bg p-5.5 opacity-80"
+            style="transform: rotate(5.5deg)"
           >
             <p class="mb-3.5 font-display text-base font-medium text-dark">Anxious</p>
-            <div class="hero-meter-stack flex flex-col">
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+            <div class="flex flex-col gap-2">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-anxious" style="width: 82%" />
               </div>
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-anxious opacity-45" style="width: 44%" />
               </div>
-              <div class="hero-meter overflow-hidden rounded-full bg-bar-bg">
+              <div class="h-1.75 overflow-hidden rounded-full bg-bar-bg">
                 <div class="h-full rounded-full bg-anxious opacity-25" style="width: 70%" />
               </div>
             </div>
           </div>
 
           <div
-            class="hero-panel hero-panel-front landing-float-card absolute bottom-0 left-1/2 border border-border bg-white p-5.5 shadow-floating-card"
+            class="landing-float-card absolute bottom-0 left-1/2 z-20 w-76 -translate-x-1/2 rounded-2xl border border-border bg-white p-5.5 shadow-floating-card"
+            style="transform: translateX(-50%) rotate(-1.5deg)"
           >
             <div class="mb-3.5 flex items-center justify-between">
-              <span class="hero-example-label font-medium uppercase text-pale">
+              <span class="text-xs font-medium uppercase tracking-widest text-pale">
                 Example result
               </span>
-              <span class="hero-chip rounded-full bg-avoid-bg px-3 py-1 font-medium text-avoid">
+              <span class="rounded-full bg-avoid-bg px-3 py-1 text-xs font-medium text-avoid">
                 Avoidant
               </span>
             </div>
 
-            <p class="hero-copy mb-4 text-body">
+            <p class="mb-4 text-xs leading-5 text-body">
               You value independence and can pull back when closeness feels intense. The full
               result explains the triggers behind that response and what more secure connection can
               look like.
@@ -130,13 +133,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
             </div>
 
             <div class="flex flex-wrap gap-1.5">
-              <span class="hero-tag rounded-full bg-fearful-bg px-2.5 py-1 text-muted">
+              <span class="rounded-full bg-fearful-bg px-2.5 py-1 text-xs text-muted">
                 Autonomy
               </span>
-              <span class="hero-tag rounded-full bg-fearful-bg px-2.5 py-1 text-muted">
+              <span class="rounded-full bg-fearful-bg px-2.5 py-1 text-xs text-muted">
                 Distance
               </span>
-              <span class="hero-tag rounded-full bg-fearful-bg px-2.5 py-1 text-muted">
+              <span class="rounded-full bg-fearful-bg px-2.5 py-1 text-xs text-muted">
                 Guarded
               </span>
             </div>
@@ -146,81 +149,3 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
     </div>
   </section>
 </template>
-
-<style scoped>
-.hero-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.02;
-}
-
-.hero-stat-value {
-  letter-spacing: -0.01em;
-}
-
-.hero-stack {
-  height: 28.75rem;
-  transform: scale(0.88);
-  transform-origin: top;
-  width: 20rem;
-}
-
-.hero-panel {
-  border-radius: 18px;
-}
-
-.hero-panel-back {
-  transform: rotate(-7.5deg);
-  z-index: 1;
-}
-
-.hero-panel-mid {
-  transform: rotate(5.5deg);
-  z-index: 2;
-}
-
-.hero-panel-front {
-  transform: translateX(-50%) rotate(-1.5deg);
-  width: 306px;
-  z-index: 3;
-}
-
-.hero-meter-stack {
-  gap: 7px;
-}
-
-.hero-meter {
-  height: 7px;
-}
-
-.hero-example-label,
-.hero-tag {
-  font-size: 11px;
-}
-
-.hero-example-label {
-  letter-spacing: 0.1em;
-}
-
-.hero-chip,
-.hero-copy {
-  font-size: 13px;
-}
-
-.hero-copy {
-  line-height: 1.65;
-}
-
-@media (min-width: 40rem) {
-  .hero-title {
-    font-size: clamp(2.75rem, 4.8vw, 4.1rem);
-  }
-
-  .hero-stack {
-    transform: none;
-  }
-}
-</style>

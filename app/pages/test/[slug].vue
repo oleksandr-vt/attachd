@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
+import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import ProgressBar from '~/components/ProgressBar.vue'
 import TestQuestion from '~/components/TestQuestion.vue'
 import { attachmentResults } from '~/data/tests/results'
@@ -26,6 +26,7 @@ const {
   goToNextQuestion,
   goToPreviousQuestion,
   hasStarted,
+  hasSubmittedResults,
   isComplete,
   progressPercentage,
   remainingQuestions,
@@ -38,13 +39,16 @@ const {
 
 const requestUrl = useRequestURL()
 const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const showRestartConfirm = ref(false)
+const continueLocked = ref(false)
+let continueUnlockTimeout: ReturnType<typeof window.setTimeout> | null = null
 
 const beginLabel = computed(() =>
   answeredCount.value > 0 ? `Resume at question ${currentQuestionNumber.value}` : 'Start the test',
 )
 
 const progressCaption = computed(() =>
-  isComplete.value
+  hasSubmittedResults.value
     ? `All ${totalQuestions} questions answered`
     : hasStarted.value
       ? `Question ${currentQuestionNumber.value} of ${totalQuestions}`
@@ -52,15 +56,15 @@ const progressCaption = computed(() =>
 )
 
 const progressMeta = computed(() =>
-  isComplete.value
-    ? 'Result ready'
+  hasSubmittedResults.value
+    ? 'Results ready'
     : hasStarted.value
       ? `${remainingQuestions.value} left - about ${estimatedMinutesLeft.value} min`
       : 'No account needed',
 )
 
 const continueLabel = computed(() =>
-  currentQuestionNumber.value === totalQuestions ? 'See my result' : 'Next question',
+  currentQuestionNumber.value === totalQuestions ? 'See my results' : 'Next question',
 )
 
 const primaryButtonClass =
@@ -72,12 +76,34 @@ const secondaryButtonClass =
 const tertiaryButtonClass =
   'inline-flex items-center justify-center whitespace-nowrap rounded-full border border-border bg-white px-6 py-4 text-sm font-medium text-muted transition-all duration-200 hover:-translate-y-px hover:border-soft-muted hover:text-dark'
 
+const canContinue = computed(() =>
+  currentAnswer.value !== null && !continueLocked.value,
+)
+
+const lockContinue = () => {
+  continueLocked.value = true
+
+  if (import.meta.client) {
+    if (continueUnlockTimeout) {
+      window.clearTimeout(continueUnlockTimeout)
+    }
+
+    continueUnlockTimeout = window.setTimeout(() => {
+      continueLocked.value = false
+      continueUnlockTimeout = null
+    }, 180)
+  } else {
+    continueLocked.value = false
+  }
+}
+
 const handleSelect = (value: number) => {
+  lockContinue()
   setAnswer(currentQuestion.value.id, value)
 }
 
 const handleContinue = async () => {
-  if (currentAnswer.value === null) {
+  if (!canContinue.value) {
     return
   }
 
@@ -94,9 +120,20 @@ const handleContinue = async () => {
   goToNextQuestion()
 }
 
-const handleRestart = () => {
+const openRestartConfirm = () => {
+  showRestartConfirm.value = true
+}
+
+const confirmRestart = () => {
+  showRestartConfirm.value = false
+  continueLocked.value = false
+
+  if (continueUnlockTimeout) {
+    window.clearTimeout(continueUnlockTimeout)
+    continueUnlockTimeout = null
+  }
+
   resetTest()
-  startTest()
 }
 
 const handleViewResult = async () => {
@@ -107,13 +144,19 @@ const handleViewResult = async () => {
   await navigateTo(`/results/${computedResult.value.type}`)
 }
 
+onBeforeUnmount(() => {
+  if (continueUnlockTimeout) {
+    window.clearTimeout(continueUnlockTimeout)
+  }
+})
+
 useSeoMeta({
   title: 'Attachment Style Test',
   description:
-    'Take the 25-question attachment style test to see whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant.',
+    'Take the 25-question attachment style test to see whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant and get clear results.',
   ogTitle: 'Attachment Style Test | Attachd.',
   ogDescription:
-    'A fast 25-question attachment style test with a clear result and a polished follow-up results flow.',
+    'A fast 25-question attachment style test with clear results and a polished follow-up flow.',
   twitterCard: 'summary',
 })
 
@@ -147,15 +190,12 @@ useHead({
                 same experience without redesigning it later.
               </p>
 
-              <div class="mt-8 flex flex-wrap items-center gap-4">
-                <LandingPrimaryButton :href="'/'" label="Back to landing" />
-                <span class="text-sm text-muted">
-                  25 questions, about four minutes, four attachment styles.
-                </span>
-              </div>
+              <p class="mt-8 text-sm text-muted">
+                25 questions, about four minutes, four attachment styles.
+              </p>
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-2">
+            <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
               <div class="rounded-3xl border border-border bg-white p-4">
                 <span class="landing-section-kicker mb-1.5">Length</span>
                 <strong class="block text-sm font-medium text-dark">25 questions</strong>
@@ -165,10 +205,10 @@ useHead({
                 <strong class="block text-sm font-medium text-dark">About 4 minutes</strong>
               </div>
               <div class="rounded-3xl border border-border bg-white p-4">
-                <span class="landing-section-kicker mb-1.5">Result</span>
+                <span class="landing-section-kicker mb-1.5">Results</span>
                 <strong class="block text-sm font-medium text-dark">4 attachment styles</strong>
               </div>
-              <div class="rounded-3xl border border-border bg-white p-4 sm:col-span-3 xl:col-span-2">
+              <div class="rounded-3xl border border-border bg-white p-4 sm:col-span-3 lg:col-span-1">
                 <p class="landing-section-kicker mb-3">Styles you may see</p>
                 <div class="flex flex-wrap gap-2">
                   <span
@@ -226,7 +266,7 @@ useHead({
                   You can move back and revise earlier answers before finishing.
                 </li>
                 <li class="rounded-3xl border border-border bg-white px-4 py-4 text-sm leading-7 text-dark2">
-                  The result is educational, not diagnostic.
+                  The results are educational, not diagnostic.
                 </li>
               </ul>
 
@@ -239,24 +279,24 @@ useHead({
             </div>
 
             <div
-              v-else-if="isComplete && computedResult"
+              v-else-if="hasSubmittedResults && computedResult"
               key="complete"
               class="rounded-3xl border border-border bg-sec-bg p-6 md:p-8"
             >
-              <p class="landing-section-kicker">Result ready</p>
+              <p class="landing-section-kicker">Results ready</p>
               <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-5xl">
                 Your answers are complete.
               </h2>
               <p class="landing-section-copy mt-4 max-w-140">
-                You can go straight to your attachment result or restart the full 25-question flow
+                You can go straight to your attachment results or restart the full 25-question flow
                 if you want a fresh pass.
               </p>
 
               <div class="mt-8 flex flex-wrap items-center gap-4">
                 <button type="button" :class="primaryButtonClass" @click="handleViewResult">
-                  View my result
+                  View my results
                 </button>
-                <button type="button" :class="secondaryButtonClass" @click="handleRestart">
+                <button type="button" :class="secondaryButtonClass" @click="openRestartConfirm">
                   Retake the test
                 </button>
               </div>
@@ -282,7 +322,7 @@ useHead({
                   >
                     Back
                   </button>
-                  <button type="button" :class="tertiaryButtonClass" @click="handleRestart">
+                  <button type="button" :class="tertiaryButtonClass" @click="openRestartConfirm">
                     Restart
                   </button>
                 </div>
@@ -291,11 +331,14 @@ useHead({
                   <span v-if="currentAnswer === null" class="text-sm text-muted">
                     Pick one answer to continue
                   </span>
+                  <span v-else-if="continueLocked" class="text-sm text-muted">
+                    Review your choice, then continue
+                  </span>
 
                   <button
                     type="button"
                     :class="primaryButtonClass"
-                    :disabled="currentAnswer === null"
+                    :disabled="!canContinue"
                     @click="handleContinue"
                   >
                     {{ continueLabel }}
@@ -307,5 +350,16 @@ useHead({
         </div>
       </div>
     </div>
+
+    <ConfirmDialog
+      :open="showRestartConfirm"
+      kicker="Restart test"
+      title="Start over from the beginning?"
+      description="This will clear your current progress and bring back the intro and before-you-begin sections."
+      confirm-label="Yes, restart"
+      cancel-label="Keep current progress"
+      @close="showRestartConfirm = false"
+      @confirm="confirmRestart"
+    />
   </section>
 </template>

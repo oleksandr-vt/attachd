@@ -22,18 +22,18 @@ import { benefitCards } from '~/data/landing'
         <article
           v-for="(card, index) in benefitCards"
           :key="card.title"
-          class="benefit-card flex flex-col gap-4 border border-border bg-cream p-6 sm:gap-5 sm:p-8"
+          class="flex flex-col gap-4 rounded-2xl border border-border bg-cream p-6 sm:gap-5 sm:p-8"
           :class="index === benefitCards.length - 1
             ? 'md:col-span-2 md:mx-auto md:max-w-125 xl:col-span-1 xl:mx-0 xl:max-w-none'
             : ''"
         >
-          <p class="benefit-card-kicker text-xs font-medium uppercase text-terra">
+          <p class="text-xs font-medium uppercase tracking-widest text-terra">
             {{ card.eyebrow }}
           </p>
-          <h3 class="benefit-card-title">
+          <h3 class="font-display text-2xl leading-tight font-medium tracking-tight text-dark">
             {{ card.title }}
           </h3>
-          <p class="benefit-card-copy flex-1">
+          <p class="flex-1 text-sm leading-7 text-body">
             {{ card.description }}
           </p>
         </article>
@@ -41,28 +41,3 @@ import { benefitCards } from '~/data/landing'
     </div>
   </section>
 </template>
-
-<style scoped>
-.benefit-card {
-  border-radius: 18px;
-}
-
-.benefit-card-kicker {
-  letter-spacing: 0.12em;
-}
-
-.benefit-card-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.benefit-card-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.75;
-}
-</style>

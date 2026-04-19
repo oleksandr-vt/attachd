@@ -28,9 +28,9 @@ const toggleFaq = (index: number) => {
         <div
           v-for="(item, index) in faqItems"
           :key="item.question"
-          class="faq-card border bg-sec-bg p-6 transition-colors duration-200 sm:p-8"
+          class="rounded-2xl border bg-sec-bg p-6 transition-colors duration-200 sm:p-8"
           :class="openIndex === index
-            ? 'faq-card-open'
+            ? 'border-pale'
             : 'border-border'"
         >
           <dt>
@@ -41,7 +41,7 @@ const toggleFaq = (index: number) => {
               :aria-expanded="openIndex === index"
               @click="toggleFaq(index)"
             >
-              <span class="faq-card-title">
+              <span class="font-display text-2xl leading-tight font-medium tracking-tight text-dark">
                 {{ item.question }}
               </span>
               <span
@@ -66,13 +66,20 @@ const toggleFaq = (index: number) => {
               </span>
             </button>
           </dt>
-          <Transition name="faq-answer">
+          <Transition
+            enter-active-class="overflow-hidden transition-all duration-200 ease-out"
+            enter-from-class="max-h-0 opacity-0"
+            enter-to-class="max-h-56 opacity-100"
+            leave-active-class="overflow-hidden transition-all duration-200 ease-in"
+            leave-from-class="max-h-56 opacity-100"
+            leave-to-class="max-h-0 opacity-0"
+          >
             <dd
               v-if="openIndex === index"
               :id="`faq-panel-${index}`"
               class="overflow-hidden"
             >
-              <div class="faq-answer-copy mt-4 border-t border-border pt-4">
+              <div class="mt-4 border-t border-border pt-4 text-sm leading-7 text-body">
                 {{ item.answer }}
               </div>
             </dd>
@@ -82,48 +89,3 @@ const toggleFaq = (index: number) => {
     </div>
   </section>
 </template>
-
-<style scoped>
-.faq-answer-enter-active,
-.faq-answer-leave-active {
-  overflow: hidden;
-  transition:
-    opacity 0.18s ease,
-    max-height 0.18s ease;
-}
-
-.faq-answer-enter-from,
-.faq-answer-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-
-.faq-answer-enter-to,
-.faq-answer-leave-from {
-  opacity: 1;
-  max-height: 14rem;
-}
-
-.faq-card {
-  border-radius: 18px;
-}
-
-.faq-card-open {
-  border-color: #d9cfc3;
-}
-
-.faq-card-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.faq-answer-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.75;
-}
-</style>

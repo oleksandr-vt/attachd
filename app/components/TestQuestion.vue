@@ -15,18 +15,18 @@ defineEmits<{
 </script>
 
 <template>
-  <article class="question-card border border-border bg-white shadow-report-card">
+  <article class="rounded-3xl border border-border bg-white p-7 shadow-report-card sm:p-8">
     <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
       <div class="max-w-140">
-        <p class="question-kicker">
+        <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra">
           Question {{ questionNumber }} of {{ totalQuestions }}
         </p>
-        <h2 class="question-title">
+        <h2 class="font-display text-3xl leading-tight font-medium tracking-tight text-dark sm:text-4xl lg:text-[2.35rem]">
           {{ question.prompt }}
         </h2>
       </div>
 
-      <span class="question-note">
+      <span class="rounded-full border border-border bg-sec-bg px-3.5 py-2 text-xs text-muted">
         Choose what feels most true on average
       </span>
     </div>
@@ -36,118 +36,21 @@ defineEmits<{
         v-for="option in options"
         :key="option.value"
         type="button"
-        class="question-option text-left transition-all duration-200"
-        :class="selectedValue === option.value ? 'question-option-active' : 'question-option-idle'"
-        @click="$emit('select', option.value)"
+        class="flex w-full items-center gap-4 rounded-2xl border px-4.5 py-4 text-left transition-all duration-200"
+        :class="selectedValue === option.value
+          ? 'border-soft-muted bg-sec-bg shadow-[0_10px_24px_rgba(28,23,18,0.06)]'
+          : 'border-border bg-cream hover:-translate-y-px hover:border-[#d9cfc3]'"
+        @click.stop="$emit('select', option.value)"
       >
-        <span class="question-option-number">
+        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-white/80 text-[13px] font-medium text-dark">
           {{ option.value + 1 }}
         </span>
 
         <span class="min-w-0 flex-1">
-          <span class="question-option-label">{{ option.label }}</span>
-          <span class="question-option-hint">{{ option.hint }}</span>
+          <span class="mb-0.5 block text-[15px] font-medium text-dark">{{ option.label }}</span>
+          <span class="block text-[13px] text-muted">{{ option.hint }}</span>
         </span>
       </button>
     </div>
   </article>
 </template>
-
-<style scoped>
-.question-card {
-  border-radius: 24px;
-  padding: 1.75rem;
-}
-
-.question-kicker {
-  color: var(--color-terra);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.625rem;
-  text-transform: uppercase;
-}
-
-.question-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3.2vw, 2.35rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
-}
-
-.question-note {
-  background-color: var(--color-sec-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-muted);
-  font-size: 12px;
-  padding: 0.5rem 0.875rem;
-  white-space: nowrap;
-}
-
-.question-option {
-  align-items: center;
-  border-radius: 20px;
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.1rem;
-  width: 100%;
-}
-
-.question-option-idle {
-  background-color: var(--color-cream);
-  border: 1px solid var(--color-border);
-}
-
-.question-option-idle:hover {
-  border-color: #d9cfc3;
-  transform: translateY(-1px);
-}
-
-.question-option-active {
-  background-color: var(--color-sec-bg);
-  border: 1px solid #d9cfc3;
-  box-shadow: 0 10px 24px rgba(28, 23, 18, 0.06);
-  transform: translateY(-1px);
-}
-
-.question-option-number {
-  align-items: center;
-  background-color: rgb(255 255 255 / 80%);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-dark);
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: 13px;
-  font-weight: 500;
-  height: 2.25rem;
-  justify-content: center;
-  width: 2.25rem;
-}
-
-.question-option-label,
-.question-option-hint {
-  display: block;
-}
-
-.question-option-label {
-  color: var(--color-dark);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  margin-bottom: 0.125rem;
-}
-
-.question-option-hint {
-  color: var(--color-muted);
-  font-size: 13px;
-}
-
-@media (min-width: 40rem) {
-  .question-card {
-    padding: 2rem;
-  }
-}
-</style>

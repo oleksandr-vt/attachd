@@ -19,12 +19,12 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         <article
           v-for="(step, index) in processSteps"
           :key="step.number"
-          class="how-step-card border border-border bg-sec-bg p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
+          class="rounded-2xl border border-border bg-sec-bg p-5 sm:p-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
         >
           <div class="flex gap-4 lg:block">
             <div class="flex w-10 shrink-0 flex-col items-center lg:hidden">
               <span class="landing-step-badge">{{ step.number }}</span>
-              <span class="how-step-line mt-3 w-px flex-1 bg-linear-to-b from-terra/45 via-border to-border" />
+              <span class="mt-3 min-h-8 w-px flex-1 bg-linear-to-b from-terra/45 via-border to-border" />
             </div>
 
             <div class="min-w-0 flex-1">
@@ -42,10 +42,10 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
                 />
               </div>
 
-              <h3 class="how-step-title mb-3 lg:text-center">
+              <h3 class="mb-3 font-display text-2xl leading-tight font-medium tracking-tight text-dark lg:text-center">
                 {{ step.title }}
               </h3>
-              <p class="how-step-copy lg:text-center">{{ step.description }}</p>
+              <p class="text-sm leading-7 text-body lg:text-center">{{ step.description }}</p>
             </div>
           </div>
         </article>
@@ -60,28 +60,3 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
     </div>
   </section>
 </template>
-
-<style scoped>
-.how-step-card {
-  border-radius: 18px;
-}
-
-.how-step-line {
-  min-height: 2rem;
-}
-
-.how-step-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
-}
-
-.how-step-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.7;
-}
-</style>

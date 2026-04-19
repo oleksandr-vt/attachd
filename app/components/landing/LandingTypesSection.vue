@@ -25,18 +25,18 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         <article
           v-for="card in attachmentStyleCards"
           :key="card.title"
-          class="types-card flex flex-col gap-2 border p-7.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
+          class="flex flex-col gap-2 rounded-2xl border p-7.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
           :class="card.surfaceClass"
         >
           <span class="text-xs text-soft-muted">{{ card.eyebrow }}</span>
           <h3
-            class="types-card-title my-1"
+            class="my-1 font-display text-3xl leading-none font-medium tracking-tight"
             :class="card.accentClass"
           >
             {{ card.title }}
           </h3>
-          <p class="types-card-summary text-dark2">{{ card.summary }}</p>
-          <p class="types-card-copy mt-1 flex-1 text-body">{{ card.description }}</p>
+          <p class="text-xs font-medium leading-5 text-dark2">{{ card.summary }}</p>
+          <p class="mt-1 flex-1 text-sm leading-6 text-body">{{ card.description }}</p>
           <NuxtLink
             :to="card.href"
             class="mt-3 inline-block text-sm font-medium transition-opacity duration-200 hover:opacity-65"
@@ -53,28 +53,3 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
     </div>
   </section>
 </template>
-
-<style scoped>
-.types-card {
-  border-radius: 18px;
-}
-
-.types-card-title {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.types-card-summary {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.45;
-}
-
-.types-card-copy {
-  font-size: 0.875rem;
-  line-height: 1.68;
-}
-</style>

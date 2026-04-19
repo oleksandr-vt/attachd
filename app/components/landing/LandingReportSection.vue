@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
 
       <div class="flex w-full justify-center xl:w-auto xl:shrink-0">
         <div
-          class="report-card w-full max-w-90 overflow-hidden border bg-white shadow-report-card transition-colors duration-500 xl:w-75 xl:max-w-none"
+          class="w-full max-w-90 overflow-hidden rounded-2xl border bg-white shadow-report-card transition-colors duration-500 xl:w-75 xl:max-w-none"
           :class="activePreview.borderClass"
         >
           <div class="flex items-center gap-1.5 border-b border-border bg-cream px-4 py-3">
@@ -136,36 +136,44 @@ onBeforeUnmount(() => {
             <span class="block h-2.5 w-2.5 rounded-full bg-border" />
           </div>
 
-          <Transition name="report-preview" mode="out-in">
+          <Transition
+            mode="out-in"
+            :enter-active-class="prefersReducedMotion ? '' : 'transition duration-500 ease-out'"
+            :enter-from-class="prefersReducedMotion ? '' : 'translate-x-6 scale-95 opacity-0'"
+            :enter-to-class="prefersReducedMotion ? '' : 'translate-x-0 scale-100 opacity-100'"
+            :leave-active-class="prefersReducedMotion ? '' : 'transition duration-500 ease-in'"
+            :leave-from-class="prefersReducedMotion ? '' : 'translate-x-0 scale-100 opacity-100'"
+            :leave-to-class="prefersReducedMotion ? '' : '-translate-x-6 scale-95 opacity-0'"
+          >
             <div :key="activePreview.title" class="p-6">
               <div class="mb-5 flex items-start justify-between gap-3">
                 <div class="min-w-0">
-                  <p class="report-kicker mb-1.5 font-medium uppercase text-terra">
+                  <p class="mb-1.5 text-xs font-medium uppercase tracking-widest text-terra">
                     Example full report
                   </p>
-                  <h3 class="report-title">
+                  <h3 class="font-display text-3xl leading-tight font-medium tracking-tight text-dark">
                     {{ activePreview.title }}
                   </h3>
                 </div>
 
                 <span
-                  class="report-chip rounded-full px-3 py-1 text-center text-xs font-medium"
+                  class="rounded-full px-3 py-1 text-center text-xs font-medium leading-tight"
                   :class="activePreview.badgeClass"
                 >
                   {{ activePreview.title }}
                 </span>
               </div>
 
-              <p class="report-summary mb-5 text-body">
+              <p class="mb-5 text-sm leading-6 text-body">
                 {{ activePreview.summary }}
               </p>
 
               <div
-                class="report-surface space-y-4 p-4 transition-colors duration-500"
+                class="space-y-4 rounded-2xl p-4 transition-colors duration-500"
                 :class="activePreview.surfaceClass"
               >
                 <div>
-                  <p class="report-meta-label mb-1 font-medium uppercase text-pale">
+                  <p class="mb-1 text-xs font-medium uppercase tracking-widest text-pale">
                     Primary pattern
                   </p>
                   <p class="text-sm leading-normal text-dark2">
@@ -174,7 +182,7 @@ onBeforeUnmount(() => {
                 </div>
 
                 <div>
-                  <p class="report-meta-label mb-1 font-medium uppercase text-pale">
+                  <p class="mb-1 text-xs font-medium uppercase tracking-widest text-pale">
                     Core fear
                   </p>
                   <p class="text-sm leading-normal text-dark2">
@@ -183,7 +191,7 @@ onBeforeUnmount(() => {
                 </div>
 
                 <div>
-                  <p class="report-meta-label mb-1 font-medium uppercase text-pale">
+                  <p class="mb-1 text-xs font-medium uppercase tracking-widest text-pale">
                     Growth edge
                   </p>
                   <p class="text-sm leading-normal text-dark2">
@@ -195,7 +203,7 @@ onBeforeUnmount(() => {
               <div class="mt-5">
                 <div class="mb-3 flex items-center justify-between gap-3">
                   <p class="text-xs font-medium text-muted">Journey to secure</p>
-                  <span class="report-progress-value font-medium" :class="activePreview.accentClass">
+                  <span class="text-xs font-medium" :class="activePreview.accentClass">
                     {{ activePreview.progress }}%
                   </span>
                 </div>
@@ -233,69 +241,3 @@ onBeforeUnmount(() => {
     </div>
   </section>
 </template>
-
-<style scoped>
-.report-preview-enter-active,
-.report-preview-leave-active {
-  transition:
-    opacity 0.45s ease,
-    transform 0.45s ease;
-}
-
-.report-preview-enter-from {
-  opacity: 0;
-  transform: translateX(24px) scale(0.985);
-}
-
-.report-preview-leave-to {
-  opacity: 0;
-  transform: translateX(-24px) scale(0.985);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .report-preview-enter-active,
-  .report-preview-leave-active {
-    transition: none;
-  }
-}
-
-.report-card {
-  border-radius: 18px;
-}
-
-.report-kicker {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-}
-
-.report-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
-}
-
-.report-progress-value {
-  font-size: 13px;
-}
-
-.report-chip {
-  line-height: 1.2;
-}
-
-.report-summary {
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-.report-surface {
-  border-radius: 16px;
-}
-
-.report-meta-label {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-</style>

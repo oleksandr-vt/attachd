@@ -65,38 +65,54 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
-    <Transition name="email-gate">
-      <div v-if="open" class="email-gate-overlay" @click.self="$emit('close')">
-        <div class="email-gate-panel border border-border bg-cream shadow-floating-card">
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="open"
+        class="fixed inset-0 z-100 flex items-center justify-center bg-dark/55 p-5"
+        @click.self="$emit('close')"
+      >
+        <div class="relative w-full max-w-lg rounded-3xl border border-border bg-cream p-7 shadow-floating-card sm:p-8">
           <button
             type="button"
-            class="email-gate-close"
+            class="absolute top-4 right-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white/80 text-xl text-dark transition-colors duration-200 hover:bg-white"
             aria-label="Close email gate"
             @click="$emit('close')"
           >
             &times;
           </button>
 
-          <p class="email-gate-kicker">Email gate</p>
-          <h2 class="email-gate-title">{{ title }}</h2>
-          <p class="email-gate-copy">{{ description }}</p>
+          <p class="mb-3 text-xs font-medium uppercase tracking-widest text-terra">Email gate</p>
+          <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-[2.5rem]">
+            {{ title }}
+          </h2>
+          <p class="mt-4 max-w-112 text-[15px] leading-7 text-body">{{ description }}</p>
 
           <form class="mt-6 grid gap-3" @submit.prevent="handleSubmit">
             <label class="grid gap-2">
-              <span class="email-gate-label">Email address</span>
+              <span class="text-sm font-medium text-dark">Email address</span>
               <input
                 v-model="email"
                 type="email"
                 autocomplete="email"
-                class="email-gate-input"
+                class="rounded-[18px] border border-border bg-white px-4 py-4 text-dark outline-none transition-all duration-200 focus:border-[#c9b8a9] focus:shadow-[0_0_0_3px_rgba(184,92,56,0.12)]"
                 placeholder="you@example.com"
               >
             </label>
 
-            <p v-if="errorMessage" class="email-gate-error">{{ errorMessage }}</p>
+            <p v-if="errorMessage" class="text-sm text-terra-dk">{{ errorMessage }}</p>
 
-            <button type="submit" class="email-gate-submit">
-              Continue to full breakdown
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center rounded-full bg-terra px-5 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk"
+            >
+              Continue to full results
             </button>
           </form>
         </div>
@@ -104,139 +120,3 @@ onBeforeUnmount(() => {
     </Transition>
   </Teleport>
 </template>
-
-<style scoped>
-.email-gate-overlay {
-  align-items: center;
-  background-color: rgb(28 23 18 / 52%);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  padding: 1.25rem;
-  position: fixed;
-  z-index: 120;
-}
-
-.email-gate-panel {
-  border-radius: 24px;
-  max-width: 32rem;
-  padding: 1.75rem;
-  position: relative;
-  width: 100%;
-}
-
-.email-gate-close {
-  align-items: center;
-  background-color: rgb(255 255 255 / 72%);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-dark);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 1.25rem;
-  height: 2.25rem;
-  justify-content: center;
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  width: 2.25rem;
-}
-
-.email-gate-kicker {
-  color: var(--color-terra);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
-  text-transform: uppercase;
-}
-
-.email-gate-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  margin-bottom: 0.75rem;
-}
-
-.email-gate-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.75;
-  max-width: 28rem;
-}
-
-.email-gate-label {
-  color: var(--color-dark);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.email-gate-input {
-  background-color: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  color: var(--color-dark);
-  outline: none;
-  padding: 0.95rem 1rem;
-}
-
-.email-gate-input:focus {
-  border-color: #c9b8a9;
-  box-shadow: 0 0 0 3px rgba(184, 92, 56, 0.12);
-}
-
-.email-gate-error {
-  color: var(--color-terra-dk);
-  font-size: 13px;
-}
-
-.email-gate-submit {
-  background-color: var(--color-terra);
-  border-radius: 999px;
-  color: var(--color-cream);
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 0.95rem 1.25rem;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.email-gate-submit:hover {
-  background-color: var(--color-terra-dk);
-  transform: translateY(-1px);
-}
-
-.email-gate-enter-active,
-.email-gate-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.email-gate-enter-active .email-gate-panel,
-.email-gate-leave-active .email-gate-panel {
-  transition:
-    opacity 0.24s ease,
-    transform 0.24s ease;
-}
-
-.email-gate-enter-from,
-.email-gate-leave-to {
-  opacity: 0;
-}
-
-.email-gate-enter-from .email-gate-panel,
-.email-gate-leave-to .email-gate-panel {
-  opacity: 0;
-  transform: translateY(12px);
-}
-
-@media (min-width: 40rem) {
-  .email-gate-panel {
-    padding: 2rem;
-  }
-}
-</style>

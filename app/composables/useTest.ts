@@ -130,6 +130,7 @@ export const useTest = (slug: string = 'attachment') => {
   )
 
   const isComplete = computed(() => answeredCount.value === totalQuestions)
+  const hasSubmittedResults = computed(() => session.value.completedAt !== null)
 
   const currentIndex = computed(() =>
     Math.min(session.value.currentIndex, totalQuestions - 1),
@@ -257,6 +258,7 @@ export const useTest = (slug: string = 'attachment') => {
     estimatedMinutesLeft,
     hasStarted,
     isComplete,
+    hasSubmittedResults,
     computedResult,
     startTest,
     setAnswer,

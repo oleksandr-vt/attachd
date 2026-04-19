@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import EmailGate from '~/components/EmailGate.vue'
 import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
@@ -23,12 +24,22 @@ const {
   isComplete,
   resetTest,
   session,
-  startTest,
   unlockEmailGate,
 } = useTest('attachment')
 
 const resultContent = computed(() => getResultContent(routeType))
 const showEmailGate = ref(false)
+const showRetakeConfirm = ref(false)
+
+const primaryButtonClass =
+  'inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk'
+
+const panelShellClass = 'rounded-3xl border border-border p-6'
+const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
+const bodyCopyClass = 'text-[15px] leading-7 text-body'
+const noteCopyClass = 'text-[15px] leading-7 text-body'
+const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
+const softKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft'
 
 const hasPersonalizedResult = computed(() =>
   isComplete.value && computedResult.value?.type === routeType,
@@ -61,9 +72,13 @@ const handleEmailSubmit = (email: string) => {
   showEmailGate.value = false
 }
 
+const openRetakeConfirm = () => {
+  showRetakeConfirm.value = true
+}
+
 const handleRetake = async () => {
+  showRetakeConfirm.value = false
   resetTest()
-  startTest()
   await navigateTo('/test/attachment')
 }
 
@@ -91,11 +106,11 @@ useHead({
 <template>
   <section class="landing-section bg-cream">
     <div class="landing-container">
-      <div class="results-layout">
-        <div class="min-w-0">
+      <div class="grid gap-8 lg:grid-cols-3">
+        <div class="min-w-0 lg:col-span-2">
           <header class="max-w-170">
             <p class="landing-section-kicker">
-              {{ hasPersonalizedResult ? 'Your result' : 'Attachment style guide' }}
+              {{ hasPersonalizedResult ? 'Your results' : 'Attachment style guide' }}
             </p>
             <h1 class="landing-section-title">
               {{ resultContent.label }} attachment.
@@ -108,8 +123,8 @@ useHead({
               <button
                 v-if="hasPersonalizedResult"
                 type="button"
-                class="results-primary-button"
-                @click="handleRetake"
+                :class="primaryButtonClass"
+                @click="openRetakeConfirm"
               >
                 Retake the test
               </button>
@@ -128,30 +143,36 @@ useHead({
           <div class="mt-10 grid gap-5">
             <div
               v-if="hasPersonalizedResult && personalizedResult"
-              class="results-note-card border border-border bg-sec-bg"
+              :class="[panelShellClass, 'bg-sec-bg']"
             >
-              <p class="results-note-kicker">Latest test read</p>
-              <p class="results-note-copy">
+              <p :class="noteKickerClass">Latest test read</p>
+              <p :class="noteCopyClass">
                 Your strongest score landed in <strong>{{ resultContent.label }}</strong>.
                 Your second-strongest pattern was <strong>{{ secondaryLabel }}</strong>, which usually means your system can borrow a little from that style when stress rises.
               </p>
             </div>
 
-            <div class="results-grid">
-              <section class="results-panel border border-border bg-white">
-                <h2 class="results-section-title">What tends to work well</h2>
-                <ul class="results-list">
+            <div class="grid gap-5 md:grid-cols-2">
+              <section :class="[panelShellClass, 'bg-white']">
+                <h2 :class="sectionTitleClass">What tends to work well</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.strengths" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
 
-              <section class="results-panel border border-border bg-white">
-                <h2 class="results-section-title">What can get protective</h2>
-                <ul class="results-list">
+              <section :class="[panelShellClass, 'bg-white']">
+                <h2 :class="sectionTitleClass">What can get protective</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.watchouts" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
@@ -159,82 +180,96 @@ useHead({
 
             <div
               v-if="hasPersonalizedResult && !emailUnlocked"
-              class="results-gate-card border border-border bg-dark"
+              :class="[panelShellClass, 'bg-dark text-cream']"
             >
-              <p class="results-note-kicker results-note-kicker-soft">Next step</p>
-              <h2 class="results-gate-title">Unlock the fuller breakdown.</h2>
-              <p class="results-gate-copy">
+              <p :class="softKickerClass">Next step</p>
+              <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
+                Unlock the fuller breakdown.
+              </h2>
+              <p class="mt-3.5 max-w-140 text-[15px] leading-7 text-pale">
                 {{ resultContent.reportPromo }}
               </p>
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" class="results-primary-button" @click="openEmailGate">
+                <button type="button" :class="primaryButtonClass" @click="openEmailGate">
                   Continue with email
                 </button>
-                <span class="results-gate-note">Frontend-ready now, API-ready next</span>
+                <span class="text-sm text-pale">Frontend-ready now, API-ready next</span>
               </div>
             </div>
 
-            <div v-if="showExpandedSections" class="results-grid">
-              <section class="results-panel border border-border bg-sec-bg">
-                <h2 class="results-section-title">What helps you feel secure</h2>
-                <ul class="results-list">
+            <div v-if="showExpandedSections" class="grid gap-5 md:grid-cols-2">
+              <section :class="[panelShellClass, 'bg-sec-bg']">
+                <h2 :class="sectionTitleClass">What helps you feel secure</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.relationshipNeeds" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
 
-              <section class="results-panel border border-border bg-sec-bg">
-                <h2 class="results-section-title">Where to grow next</h2>
-                <ul class="results-list">
+              <section :class="[panelShellClass, 'bg-sec-bg']">
+                <h2 :class="sectionTitleClass">Where to grow next</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.growthMoves" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
             </div>
 
-            <div v-if="showGuideSections" class="results-note-card border border-border bg-sec-bg">
-              <p class="results-note-kicker">Direct visit</p>
-              <p class="results-note-copy">
+            <div v-if="showGuideSections" :class="[panelShellClass, 'bg-sec-bg']">
+              <p :class="noteKickerClass">Direct visit</p>
+              <p :class="noteCopyClass">
                 This page works as a guide for the {{ resultContent.label.toLowerCase() }} pattern.
                 If you want a personalized read, take the {{ attachmentTest.questions.length }}-question test first and come back through your own result route.
               </p>
             </div>
 
-            <div v-if="showGuideSections" class="results-grid">
-              <section class="results-panel border border-border bg-white">
-                <h2 class="results-section-title">In relationships you usually need</h2>
-                <ul class="results-list">
+            <div v-if="showGuideSections" class="grid gap-5 md:grid-cols-2">
+              <section :class="[panelShellClass, 'bg-white']">
+                <h2 :class="sectionTitleClass">In relationships you usually need</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.relationshipNeeds" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
 
-              <section class="results-panel border border-border bg-white">
-                <h2 class="results-section-title">What moves you toward secure attachment</h2>
-                <ul class="results-list">
+              <section :class="[panelShellClass, 'bg-white']">
+                <h2 :class="sectionTitleClass">What moves you toward secure attachment</h2>
+                <ul class="grid gap-3.5">
                   <li v-for="item in resultContent.growthMoves" :key="item">
-                    {{ item }}
+                    <div class="flex items-start gap-3">
+                      <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-terra" aria-hidden="true" />
+                      <span class="text-[15px] leading-7 text-dark2">{{ item }}</span>
+                    </div>
                   </li>
                 </ul>
               </section>
             </div>
 
-            <div class="results-grid">
-              <section class="results-panel border border-border bg-cream">
-                <p class="results-note-kicker">Premium report</p>
-                <h2 class="results-section-title">Go deeper than the label.</h2>
-                <p class="results-panel-copy">
+            <div class="grid gap-5 md:grid-cols-2">
+              <section :class="[panelShellClass, 'bg-cream']">
+                <p :class="noteKickerClass">Premium report</p>
+                <h2 :class="sectionTitleClass">Go deeper than the label.</h2>
+                <p :class="bodyCopyClass">
                   {{ resultContent.reportPromo }}
                 </p>
               </section>
 
-              <section class="results-panel border border-border bg-cream">
-                <p class="results-note-kicker">Partner flow</p>
-                <h2 class="results-section-title">Turn it into a couples read.</h2>
-                <p class="results-panel-copy">
+              <section :class="[panelShellClass, 'bg-cream']">
+                <p :class="noteKickerClass">Partner flow</p>
+                <h2 :class="sectionTitleClass">Turn it into a couples read.</h2>
+                <p :class="bodyCopyClass">
                   {{ resultContent.partnerPrompt }}
                 </p>
               </section>
@@ -242,16 +277,16 @@ useHead({
           </div>
         </div>
 
-        <aside class="results-sidebar">
+        <aside class="lg:sticky lg:top-26 lg:self-start">
           <ResultCard
             :result="resultContent"
             :ranking="personalizedResult?.ranking ?? []"
-            :eyebrow="hasPersonalizedResult ? 'Your attachment result' : 'Attachment style overview'"
+            :eyebrow="hasPersonalizedResult ? 'Your attachment results' : 'Attachment style overview'"
           />
 
-          <div class="results-share-card border border-border bg-sec-bg">
-            <p class="results-note-kicker">Share hook</p>
-            <p class="results-panel-copy">
+          <div :class="[panelShellClass, 'mt-4 bg-sec-bg']">
+            <p :class="noteKickerClass">Share hook</p>
+            <p :class="bodyCopyClass">
               {{ resultContent.sharePrompt }}
             </p>
           </div>
@@ -265,154 +300,16 @@ useHead({
       @close="showEmailGate = false"
       @submit="handleEmailSubmit"
     />
+
+    <ConfirmDialog
+      :open="showRetakeConfirm"
+      kicker="Retake test"
+      title="Start the test over?"
+      description="This will clear your saved progress and take you back to the beginning with the intro and before-you-begin sections visible again."
+      confirm-label="Yes, retake"
+      cancel-label="Keep my progress"
+      @close="showRetakeConfirm = false"
+      @confirm="handleRetake"
+    />
   </section>
 </template>
-
-<style scoped>
-.results-layout {
-  display: grid;
-  gap: 2rem;
-}
-
-.results-grid {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.results-panel,
-.results-note-card,
-.results-gate-card,
-.results-share-card {
-  border-radius: 24px;
-  padding: 1.5rem;
-}
-
-.results-section-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.12;
-  margin-bottom: 1rem;
-}
-
-.results-panel-copy,
-.results-note-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.75;
-}
-
-.results-note-kicker {
-  color: var(--color-terra);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.625rem;
-  text-transform: uppercase;
-}
-
-.results-note-kicker-soft {
-  color: var(--color-terra-soft);
-}
-
-.results-list {
-  display: grid;
-  gap: 0.875rem;
-}
-
-.results-list li {
-  color: var(--color-dark2);
-  line-height: 1.65;
-  list-style: none;
-  padding-left: 1.2rem;
-  position: relative;
-}
-
-.results-list li::before {
-  background-color: var(--color-terra);
-  border-radius: 999px;
-  content: '';
-  height: 0.35rem;
-  left: 0;
-  position: absolute;
-  top: 0.68rem;
-  width: 0.35rem;
-}
-
-.results-gate-card {
-  color: var(--color-cream);
-}
-
-.results-gate-title {
-  color: var(--color-cream);
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.7rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-}
-
-.results-gate-copy {
-  color: var(--color-pale);
-  font-size: 15px;
-  line-height: 1.75;
-  margin-top: 0.875rem;
-  max-width: 38rem;
-}
-
-.results-gate-note {
-  color: var(--color-pale);
-  font-size: 13px;
-}
-
-.results-primary-button,
-.results-ghost-button {
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 0.95rem 1.35rem;
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.results-primary-button {
-  background-color: var(--color-terra);
-  color: var(--color-cream);
-}
-
-.results-primary-button:hover,
-.results-ghost-button:hover {
-  transform: translateY(-1px);
-}
-
-.results-ghost-button {
-  background-color: var(--color-sec-bg);
-  border: 1px solid var(--color-border);
-  color: var(--color-dark);
-}
-
-.results-share-card {
-  margin-top: 1rem;
-}
-
-@media (min-width: 64rem) {
-  .results-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(19rem, 24rem);
-  }
-
-  .results-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .results-sidebar {
-    position: sticky;
-    top: 6.5rem;
-    align-self: start;
-  }
-}
-</style>

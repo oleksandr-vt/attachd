@@ -13,8 +13,8 @@ const props = withDefaults(
 
 const sizeClasses = computed(() =>
   props.size === 'lg'
-    ? 'button-size-lg px-9.5 py-4.5'
-    : 'button-size-md px-7.5 py-3.5',
+    ? 'px-9.5 py-4.5 text-[17px]'
+    : 'px-7.5 py-3.5 text-[15px]',
 )
 
 const isExternal = computed(() =>
@@ -43,13 +43,3 @@ const isExternal = computed(() =>
     <span aria-hidden="true">&rarr;</span>
   </a>
 </template>
-
-<style scoped>
-.button-size-lg {
-  font-size: 17px;
-}
-
-.button-size-md {
-  font-size: 15px;
-}
-</style>

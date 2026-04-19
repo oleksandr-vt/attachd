@@ -25,7 +25,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
             :key="item"
             class="landing-checklist-item"
           >
-            <span class="couples-star mt-1.5 text-terra" aria-hidden="true">&#10022;</span>
+            <span class="mt-1.5 text-xs text-terra" aria-hidden="true">&#10022;</span>
             <span>{{ item }}</span>
           </li>
         </ul>
@@ -38,9 +38,9 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
       <div class="w-full xl:w-auto xl:shrink-0">
         <div
-          class="couples-card mx-auto w-full max-w-95 border border-border bg-cream p-6 sm:max-w-100 sm:p-8 sm:px-9 xl:mx-0 xl:max-w-none"
+          class="mx-auto w-full max-w-95 rounded-3xl border border-border bg-cream p-6 sm:max-w-100 sm:p-8 sm:px-9 xl:mx-0 xl:max-w-none"
         >
-          <p class="couples-card-kicker mb-6 text-xs font-medium uppercase text-pale">
+          <p class="mb-6 text-xs font-medium uppercase tracking-widest text-pale">
             Compatibility preview
           </p>
 
@@ -85,13 +85,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
           <div class="flex flex-col gap-3.5 border-t border-border pt-5">
             <div class="flex flex-col gap-px">
-              <span class="couples-meta-label font-medium uppercase text-pale">
+              <span class="text-xs font-medium uppercase tracking-widest text-pale">
                 Clash point
               </span>
               <span class="text-sm text-dark2">Withdrawal vs. pursuit cycle</span>
             </div>
             <div class="flex flex-col gap-px">
-              <span class="couples-meta-label font-medium uppercase text-pale">
+              <span class="text-xs font-medium uppercase tracking-widest text-pale">
                 Strength
               </span>
               <span class="text-sm text-dark2">Deep loyalty when trust is built</span>
@@ -102,22 +102,3 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
     </div>
   </section>
 </template>
-
-<style scoped>
-.couples-star {
-  font-size: 10px;
-}
-
-.couples-card {
-  border-radius: 22px;
-}
-
-.couples-card-kicker,
-.couples-meta-label {
-  letter-spacing: 0.08em;
-}
-
-.couples-meta-label {
-  font-size: 11px;
-}
-</style>

@@ -18,12 +18,12 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
       </p>
       <h2
         id="final-cta-heading"
-        class="finale-title mb-5"
+        class="mb-5 font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-5xl lg:text-6xl"
       >
         Find your attachment style<br>
         and get a clearer relationship map.
       </h2>
-      <p class="finale-copy max-w-120 text-center text-muted">
+      <p class="max-w-120 text-center text-base leading-7 text-muted">
         Start with the 25-question test and see which attachment pattern fits best.<br class="hidden sm:block">
         A clearer read of your relationship habits starts here.
       </p>
@@ -32,29 +32,9 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         label="Start the free test"
         size="lg"
       />
-      <p class="finale-note max-w-100 text-center text-body">
+      <p class="max-w-100 text-center text-sm text-body">
         Educational, not diagnostic.
       </p>
     </div>
   </section>
 </template>
-
-<style scoped>
-.finale-title {
-  color: var(--color-cream);
-  font-family: var(--font-display);
-  font-size: clamp(2.15rem, 3.8vw, 3.2rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-}
-
-.finale-copy {
-  font-size: 17px;
-  line-height: 1.7;
-}
-
-.finale-note {
-  font-size: 13px;
-}
-</style>

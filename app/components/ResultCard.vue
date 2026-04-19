@@ -18,12 +18,12 @@ withDefaults(
 </script>
 
 <template>
-  <article class="result-card overflow-hidden border bg-white shadow-report-card" :class="result.borderClass">
-    <div class="result-card-head border-b px-6 py-5" :class="result.surfaceClass">
+  <article class="overflow-hidden rounded-3xl border bg-white shadow-report-card" :class="result.borderClass">
+    <div class="min-h-48 border-b px-6 py-5" :class="result.surfaceClass">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="result-kicker">{{ eyebrow }}</p>
-          <h2 class="result-title">
+          <p class="mb-2 text-xs font-medium uppercase tracking-widest text-terra">{{ eyebrow }}</p>
+          <h2 class="mb-3.5 font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-[2.75rem]">
             <span v-if="titlePrefix">{{ titlePrefix }} </span>{{ result.label }}
           </h2>
         </div>
@@ -33,13 +33,13 @@ withDefaults(
         </span>
       </div>
 
-      <p class="result-summary">
+      <p class="max-w-128 text-[15px] leading-7 text-dark2">
         {{ result.shortSummary }}
       </p>
     </div>
 
     <div class="px-6 py-6">
-      <p class="result-copy">
+      <p class="text-[15px] leading-7 text-body">
         {{ result.longSummary }}
       </p>
 
@@ -47,7 +47,7 @@ withDefaults(
         <div
           v-for="item in ranking"
           :key="item.type"
-          class="result-score-row"
+          class="grid gap-2"
         >
           <div class="mb-2 flex items-center justify-between gap-3">
             <span class="text-sm font-medium text-dark">{{ item.label }}</span>
@@ -66,45 +66,3 @@ withDefaults(
     </div>
   </article>
 </template>
-
-<style scoped>
-.result-card {
-  border-radius: 24px;
-}
-
-.result-card-head {
-  min-height: 12rem;
-}
-
-.result-kicker {
-  color: var(--color-terra);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-}
-
-.result-title {
-  color: var(--color-dark);
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  margin-bottom: 0.875rem;
-}
-
-.result-summary {
-  color: var(--color-dark2);
-  font-size: 15px;
-  line-height: 1.65;
-  max-width: 32rem;
-}
-
-.result-copy {
-  color: var(--color-body);
-  font-size: 15px;
-  line-height: 1.75;
-}
-</style>

@@ -1,54 +1,61 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { eq } from 'drizzle-orm'
 import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
+import { getDb } from '~~/server/db/client'
+import {
+  attachmentResults,
+  mapAttachmentResultRecordToRow,
+  mapAttachmentResultRowToRecord,
+} from '~~/server/db/schema'
 
-const resultsDirectory = join(process.cwd(), '.data', 'attachment-results')
-
-const getResultFilePath = (token: string) => join(resultsDirectory, `${token}.json`)
-
-const ensureResultsDirectory = async () => {
-  await mkdir(resultsDirectory, { recursive: true })
+const getUpdatableAttachmentResultRow = (record: AttachmentPersistedResultRecord) => {
+  const { token: _token, ...row } = mapAttachmentResultRecordToRow(record)
+  return row
 }
 
 export const getAttachmentResultRecord = async (token: string) => {
-  try {
-    const file = await readFile(getResultFilePath(token), 'utf8')
-    return JSON.parse(file) as AttachmentPersistedResultRecord
-  } catch (error) {
-    if (
-      error
-      && typeof error === 'object'
-      && 'code' in error
-      && error.code === 'ENOENT'
-    ) {
-      return null
-    }
+  const db = getDb()
+  const record = await db.query.attachmentResults.findFirst({
+    where: eq(attachmentResults.token, token),
+  })
 
-    throw error
-  }
+  return record ? mapAttachmentResultRowToRecord(record) : null
 }
 
 export const saveAttachmentResultRecord = async (record: AttachmentPersistedResultRecord) => {
-  await ensureResultsDirectory()
-  await writeFile(
-    getResultFilePath(record.token),
-    JSON.stringify(record, null, 2),
-    'utf8',
-  )
+  const db = getDb()
+  const row = mapAttachmentResultRecordToRow(record)
+
+  await db
+    .insert(attachmentResults)
+    .values(row)
+    .onConflictDoUpdate({
+      target: attachmentResults.token,
+      set: getUpdatableAttachmentResultRow(record),
+    })
 }
 
 export const updateAttachmentResultRecord = async (
   token: string,
   updater: (record: AttachmentPersistedResultRecord) => AttachmentPersistedResultRecord,
 ) => {
-  const currentRecord = await getAttachmentResultRecord(token)
+  const db = getDb()
 
-  if (!currentRecord) {
-    return null
-  }
+  return db.transaction(async (tx) => {
+    const currentRecord = await tx.query.attachmentResults.findFirst({
+      where: eq(attachmentResults.token, token),
+    })
 
-  const nextRecord = updater(currentRecord)
-  await saveAttachmentResultRecord(nextRecord)
+    if (!currentRecord) {
+      return null
+    }
 
-  return nextRecord
+    const nextRecord = updater(mapAttachmentResultRowToRecord(currentRecord))
+
+    await tx
+      .update(attachmentResults)
+      .set(getUpdatableAttachmentResultRow(nextRecord))
+      .where(eq(attachmentResults.token, token))
+
+    return nextRecord
+  })
 }

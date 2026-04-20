@@ -27,6 +27,7 @@ const fetchPersistedResult = () =>
 const payload = ref(await fetchPersistedResult())
 const showEmailGate = ref(false)
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
+const pageMounted = ref(false)
 
 const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
@@ -44,7 +45,14 @@ const result = computed(() => record.value.result)
 const resultContent = computed(() => result.value.content)
 const secondaryLabel = computed(() => result.value.ranking[1]?.label ?? resultContent.value.label)
 const scoreNoteText = computed(() => result.value.scoreNote)
-const shareUrl = computed(() => payload.value.shareUrl)
+const sharePath = computed(() => `/r/${routeToken.value}`)
+const shareUrl = computed(() => {
+  if (!pageMounted.value || !import.meta.client) {
+    return sharePath.value
+  }
+
+  return `${window.location.origin}${sharePath.value}`
+})
 const unlocked = computed(() => record.value.emailUnlocked)
 
 const openEmailGate = () => {
@@ -77,6 +85,10 @@ const copyShareLink = async () => {
 
 watch(routeToken, async () => {
   payload.value = await fetchPersistedResult()
+})
+
+onMounted(() => {
+  pageMounted.value = true
 })
 
 useSeoMeta({

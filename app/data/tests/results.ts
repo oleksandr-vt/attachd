@@ -182,7 +182,7 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
     accentClass: 'text-fearful',
     surfaceClass: 'bg-fearful-bg',
     borderClass: 'border-fearful-bd',
-    badgeClass: 'bg-fearful-bg text-fearful',
+    badgeClass: 'bg-fearful-bd text-fearful',
     barClass: 'bg-fearful',
     seoTitle: 'Fearful-Avoidant Attachment Style',
     seoDescription:

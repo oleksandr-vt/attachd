@@ -4,6 +4,7 @@ import ProgressBar from '~/components/ProgressBar.vue'
 import TestQuestion from '~/components/TestQuestion.vue'
 import { attachmentResults } from '~/data/tests/results'
 import { useTest } from '~/composables/useTest'
+import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
 const route = useRoute()
 const slugParam = Array.isArray(route.params.slug) ? route.params.slug[0] : route.params.slug
@@ -31,7 +32,9 @@ const {
   progressPercentage,
   remainingQuestions,
   resetTest,
+  session,
   setAnswer,
+  setSharedResultToken,
   totalQuestions,
   completeTest,
   startTest,
@@ -41,7 +44,8 @@ const requestUrl = useRequestURL()
 const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
 const showRestartConfirm = ref(false)
 const continueLocked = ref(false)
-let continueUnlockTimeout: ReturnType<typeof window.setTimeout> | null = null
+const resultPublishError = ref('')
+let continueUnlockTimeout: number | null = null
 
 const beginLabel = computed(() =>
   answeredCount.value > 0 ? `Resume at question ${currentQuestionNumber.value}` : 'Start the test',
@@ -111,7 +115,22 @@ const handleContinue = async () => {
     const result = completeTest()
 
     if (result) {
-      await navigateTo(`/results/${result.type}`)
+      resultPublishError.value = ''
+
+      try {
+        const response = await $fetch<AttachmentPersistedResultResponse>('/api/results', {
+          method: 'POST',
+          body: {
+            answers: session.value.answers,
+          },
+        })
+
+        setSharedResultToken(response.record.token)
+        await navigateTo(`/r/${response.record.token}`)
+      } catch {
+        resultPublishError.value = 'We could not create a shareable result link just now, so the app opened the local guide page instead.'
+        await navigateTo(`/results/${result.type}`)
+      }
     }
 
     return
@@ -137,6 +156,11 @@ const confirmRestart = () => {
 }
 
 const handleViewResult = async () => {
+  if (session.value.lastSharedResultToken) {
+    await navigateTo(`/r/${session.value.lastSharedResultToken}`)
+    return
+  }
+
   if (!computedResult.value) {
     return
   }
@@ -290,6 +314,9 @@ useHead({
               <p class="landing-section-copy mt-4 max-w-140">
                 You can go straight to your attachment results or restart the full 25-question flow
                 if you want a fresh pass.
+              </p>
+              <p v-if="resultPublishError" class="mt-4 max-w-140 text-sm leading-6 text-muted">
+                {{ resultPublishError }}
               </p>
 
               <div class="mt-8 flex flex-wrap items-center gap-4">

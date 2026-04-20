@@ -1,5 +1,6 @@
 import { attachmentTest, isAttachmentStyleType, type AttachmentQuestion, type AttachmentStyleType } from '~/data/tests/attachment'
 import { useResults, type AttachmentAnswerMap, type AttachmentComputedResult, type AttachmentRankingItem } from '~/composables/useResults'
+import { createEmptyAttachmentAnswers, normalizeAttachmentAnswers } from '~~/shared/attachment/scoring'
 
 type AttachmentStoredResult = {
   type: AttachmentStyleType
@@ -15,6 +16,7 @@ type AttachmentTestSession = {
   completedAt: string | null
   lastResultType: AttachmentStyleType | null
   lastComputedResult: AttachmentStoredResult | null
+  lastSharedResultToken: string | null
   email: string
   emailUnlocked: boolean
 }
@@ -26,19 +28,15 @@ if (!firstQuestion) {
   throw new Error('Attachment test requires at least one question.')
 }
 
-const createEmptyAnswers = (): AttachmentAnswerMap =>
-  Object.fromEntries(
-    attachmentTest.questions.map((question) => [question.id, null]),
-  ) as AttachmentAnswerMap
-
 const createDefaultSession = (): AttachmentTestSession => ({
   slug: 'attachment',
   currentIndex: 0,
-  answers: createEmptyAnswers(),
+  answers: createEmptyAttachmentAnswers(),
   startedAt: null,
   completedAt: null,
   lastResultType: null,
   lastComputedResult: null,
+  lastSharedResultToken: null,
   email: '',
   emailUnlocked: false,
 })
@@ -101,23 +99,6 @@ const normalizeStoredResult = (value: unknown): AttachmentStoredResult | null =>
   }
 }
 
-const normalizeAnswers = (value: unknown): AttachmentAnswerMap => {
-  const baseAnswers = createEmptyAnswers()
-
-  if (!value || typeof value !== 'object') {
-    return baseAnswers
-  }
-
-  for (const question of attachmentTest.questions) {
-    const rawAnswer = (value as Record<string, unknown>)[question.id]
-    baseAnswers[question.id] = typeof rawAnswer === 'number' && rawAnswer >= 0 && rawAnswer <= 4
-      ? rawAnswer
-      : null
-  }
-
-  return baseAnswers
-}
-
 const normalizeSession = (value: unknown): AttachmentTestSession => {
   const baseSession = createDefaultSession()
 
@@ -132,13 +113,16 @@ const normalizeSession = (value: unknown): AttachmentTestSession => {
     currentIndex: typeof candidate.currentIndex === 'number'
       ? Math.min(Math.max(candidate.currentIndex, 0), attachmentTest.questions.length - 1)
       : 0,
-    answers: normalizeAnswers(candidate.answers),
+    answers: normalizeAttachmentAnswers(candidate.answers),
     startedAt: typeof candidate.startedAt === 'string' ? candidate.startedAt : null,
     completedAt: typeof candidate.completedAt === 'string' ? candidate.completedAt : null,
     lastResultType: typeof candidate.lastResultType === 'string' && isAttachmentStyleType(candidate.lastResultType)
       ? candidate.lastResultType
       : null,
     lastComputedResult: normalizeStoredResult(candidate.lastComputedResult),
+    lastSharedResultToken: typeof candidate.lastSharedResultToken === 'string'
+      ? candidate.lastSharedResultToken
+      : null,
     email: typeof candidate.email === 'string' ? candidate.email : '',
     emailUnlocked: Boolean(candidate.emailUnlocked),
   }
@@ -258,6 +242,7 @@ export const useTest = (slug: string = 'attachment') => {
     session.value.completedAt = null
     session.value.lastResultType = null
     session.value.lastComputedResult = null
+    session.value.lastSharedResultToken = null
   }
 
   const goToQuestion = (index: number) => {
@@ -302,6 +287,10 @@ export const useTest = (slug: string = 'attachment') => {
   const unlockEmailGate = (email: string) => {
     session.value.email = email.trim()
     session.value.emailUnlocked = true
+  }
+
+  const setSharedResultToken = (token: string) => {
+    session.value.lastSharedResultToken = token
   }
 
   const lockEmailGate = () => {
@@ -352,6 +341,7 @@ export const useTest = (slug: string = 'attachment') => {
     completeTest,
     unlockEmailGate,
     lockEmailGate,
+    setSharedResultToken,
     resetTest,
     clearStoredSession,
   }

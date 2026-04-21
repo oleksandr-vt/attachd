@@ -126,15 +126,15 @@ export const processSteps: ProcessStep[] = [
   },
   {
     number: '02',
-    title: 'See your primary attachment style',
+    title: 'Open your personalized result',
     description:
-      'You get a free result summary showing whether your pattern looks most secure, anxious, avoidant, or fearful-avoidant.',
+      'After the last question, add your email to open a saved result page you can revisit and share.',
   },
   {
     number: '03',
-    title: 'Unlock the deeper breakdown',
+    title: 'See your primary attachment style',
     description:
-      'Enter your email to receive the fuller result with triggers, strengths, conflict habits, and next steps toward more secure attachment.',
+      'You get your attachment style, a more personal read of your patterns, and clear next steps in one clean result page.',
   },
 ]
 
@@ -243,12 +243,12 @@ export const faqItems: FaqItem[] = [
   {
     question: 'Do I need to create an account?',
     answer:
-      'You can start the test for free without an account. Email is only requested before the fuller result breakdown is delivered.',
+      'No account is needed to start. The test begins right away, and there is just one quick step before your personalized result opens.',
   },
   {
     question: 'What do I get after the free result?',
     answer:
-      'You get your primary attachment style and a short summary first, with the option to unlock a deeper breakdown and full report afterward.',
+      'You get your primary attachment style, a more detailed interpretation of your relationship patterns, and a result page you can revisit or share.',
   },
   {
     question: 'Is this a diagnosis or therapy?',

@@ -36,6 +36,7 @@ const {
   session,
   setAnswer,
   setSharedResultToken,
+  unlockEmailGate,
   totalQuestions,
   completeTest,
   startTest,
@@ -46,7 +47,11 @@ const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
 const showRestartConfirm = ref(false)
 const continueLocked = ref(false)
 const resultPublishError = ref('')
+const emailError = ref('')
+const savingResult = ref(false)
+const emailInput = ref(session.value.email)
 let continueUnlockTimeout: number | null = null
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const beginLabel = computed(() =>
   answeredCount.value > 0 ? `Resume at question ${currentQuestionNumber.value}` : 'Start the test',
@@ -62,14 +67,16 @@ const progressCaption = computed(() =>
 
 const progressMeta = computed(() =>
   hasSubmittedResults.value
-    ? 'Results ready'
+    ? session.value.lastSharedResultToken
+      ? 'Results ready'
+      : 'Email required'
     : hasStarted.value
       ? `${remainingQuestions.value} left - about ${estimatedMinutesLeft.value} min`
       : 'No account needed',
 )
 
 const continueLabel = computed(() =>
-  currentQuestionNumber.value === totalQuestions ? 'See my results' : 'Next question',
+  currentQuestionNumber.value === totalQuestions ? 'Finish the test' : 'Next question',
 )
 
 const canContinue = computed(() =>
@@ -104,25 +111,9 @@ const handleContinue = async () => {
   }
 
   if (currentQuestionNumber.value === totalQuestions) {
-    const result = completeTest()
-
-    if (result) {
+    if (completeTest()) {
+      emailError.value = ''
       resultPublishError.value = ''
-
-      try {
-        const response = await $fetch<AttachmentPersistedResultResponse>('/api/results', {
-          method: 'POST',
-          body: {
-            answers: session.value.answers,
-          },
-        })
-
-        setSharedResultToken(response.record.token)
-        await navigateTo(`/r/${response.record.token}`)
-      } catch {
-        resultPublishError.value = 'We could not create a shareable result link just now, so the app opened the local guide page instead.'
-        await navigateTo(`/results/${result.type}`)
-      }
     }
 
     return
@@ -138,6 +129,8 @@ const openRestartConfirm = () => {
 const confirmRestart = () => {
   showRestartConfirm.value = false
   continueLocked.value = false
+  resultPublishError.value = ''
+  emailError.value = ''
 
   if (continueUnlockTimeout) {
     window.clearTimeout(continueUnlockTimeout)
@@ -148,16 +141,46 @@ const confirmRestart = () => {
 }
 
 const handleViewResult = async () => {
-  if (session.value.lastSharedResultToken) {
-    await navigateTo(`/r/${session.value.lastSharedResultToken}`)
+  if (!session.value.lastSharedResultToken) {
     return
   }
 
-  if (!computedResult.value) {
+  await navigateTo(`/r/${session.value.lastSharedResultToken}`)
+}
+
+const submitEmailForResults = async () => {
+  if (!hasSubmittedResults.value || !computedResult.value) {
     return
   }
 
-  await navigateTo(`/results/${computedResult.value.type}`)
+  const email = emailInput.value.trim()
+
+  if (!emailPattern.test(email)) {
+    emailError.value = 'Enter a valid email address to continue to your result.'
+    return
+  }
+
+  emailError.value = ''
+  resultPublishError.value = ''
+  savingResult.value = true
+
+  try {
+    const response = await $fetch<AttachmentPersistedResultResponse>('/api/results', {
+      method: 'POST',
+      body: {
+        answers: session.value.answers,
+        email,
+      },
+    })
+
+    unlockEmailGate(email)
+    setSharedResultToken(response.record.token)
+    await navigateTo(`/r/${response.record.token}`)
+  } catch {
+    resultPublishError.value = 'We could not save your result just now. Please try again.'
+  } finally {
+    savingResult.value = false
+  }
 }
 
 onBeforeUnmount(() => {
@@ -295,6 +318,50 @@ useHead({
             </div>
 
             <div
+              v-else-if="hasSubmittedResults && computedResult && !session.lastSharedResultToken"
+              key="capture"
+              class="rounded-3xl border border-border bg-sec-bg p-6 md:p-8"
+            >
+              <p class="landing-section-kicker">One more step</p>
+              <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-5xl">
+                Your answers are complete.
+              </h2>
+              <p class="landing-section-copy mt-4 max-w-140">
+                Add your email to open your result, keep a saved link for later, and continue to
+                your full attachment breakdown.
+              </p>
+
+              <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitEmailForResults">
+                <label class="grid gap-2">
+                  <span class="text-sm font-medium text-dark">Email address</span>
+                  <input
+                    v-model="emailInput"
+                    type="email"
+                    autocomplete="email"
+                    class="rounded-[18px] border border-border bg-white px-4 py-4 text-dark outline-none transition-all duration-200 focus:border-[#c9b8a9] focus:shadow-[0_0_0_3px_rgba(184,92,56,0.12)]"
+                    placeholder="you@example.com"
+                  >
+                </label>
+
+                <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
+                  {{ emailError }}
+                </p>
+                <p v-if="resultPublishError" class="text-sm leading-6 text-terra-dk">
+                  {{ resultPublishError }}
+                </p>
+
+                <div class="mt-2 flex flex-wrap items-center gap-4">
+                  <AppButton type="submit" size="sm" :disabled="savingResult">
+                    {{ savingResult ? 'Saving your result' : 'Continue to my results' }}
+                  </AppButton>
+                  <AppButton variant="outline" size="sm" @click="openRestartConfirm">
+                    Retake the test
+                  </AppButton>
+                </div>
+              </form>
+            </div>
+
+            <div
               v-else-if="hasSubmittedResults && computedResult"
               key="complete"
               class="rounded-3xl border border-border bg-sec-bg p-6 md:p-8"
@@ -304,11 +371,8 @@ useHead({
                 Your answers are complete.
               </h2>
               <p class="landing-section-copy mt-4 max-w-140">
-                You can go straight to your attachment results or restart the full 25-question flow
-                if you want a fresh pass.
-              </p>
-              <p v-if="resultPublishError" class="mt-4 max-w-140 text-sm leading-6 text-muted">
-                {{ resultPublishError }}
+                Your result has been saved. You can open it again now or restart the full
+                25-question flow if you want a fresh pass.
               </p>
 
               <div class="mt-6 flex flex-wrap items-center gap-4">

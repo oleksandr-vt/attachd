@@ -23,7 +23,7 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
   if (!emailPattern.test(email)) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Enter a valid email address to unlock the full result.',
+      statusMessage: 'Enter a valid email address to update this result.',
     })
   }
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AppButton from '~/components/AppButton.vue'
-import EmailGate from '~/components/EmailGate.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
@@ -25,7 +24,6 @@ const fetchPersistedResult = () =>
   $fetch<AttachmentPersistedResultResponse>(`/api/results/${routeToken.value}`)
 
 const payload = ref(await fetchPersistedResult())
-const showEmailGate = ref(false)
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 const pageMounted = ref(false)
 
@@ -48,20 +46,8 @@ const shareUrl = computed(() => {
 
   return `${window.location.origin}${sharePath.value}`
 })
+const paidReportHref = '/#report'
 const couplesReportHref = computed(() => `/couples?self=${routeToken.value}`)
-const unlocked = computed(() => record.value.emailUnlocked)
-
-const openEmailGate = () => {
-  showEmailGate.value = true
-}
-
-const handleEmailSubmit = async (email: string) => {
-  payload.value = await $fetch<AttachmentPersistedResultResponse>(`/api/results/${routeToken.value}/email`, {
-    method: 'POST',
-    body: { email },
-  })
-  showEmailGate.value = false
-}
 
 const copyShareLink = async () => {
   if (!import.meta.client) {
@@ -219,29 +205,27 @@ useHead({
               </section>
             </div>
 
-            <div
-              v-if="!unlocked"
-              :class="[panelShellClass, 'bg-dark text-cream']"
-            >
-              <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft">Next step</p>
+            <div :class="[panelShellClass, 'bg-dark text-cream']">
+              <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft">Paid PDF report</p>
               <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
-                Unlock the fuller breakdown.
+                Get the full PDF report.
               </h2>
               <p class="mt-3.5 max-w-140 text-[15px] leading-7 text-pale">
                 {{ resultContent.reportPromo }}
               </p>
               <p class="mt-3 text-sm leading-6 text-pale">
-                Unlocking saves the expanded guidance to this result link, including the prepared next steps and full trigger readout.
+                A paid 15-page add-on can go deeper into your triggers, protective patterns,
+                relationship dynamics, and practical growth moves.
               </p>
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <AppButton size="sm" @click="openEmailGate">
-                  Continue with email
+                <AppButton :href="paidReportHref" size="sm" show-arrow>
+                  Get the paid PDF report
                 </AppButton>
-                <span class="text-sm text-pale">Backend-backed and share-ready</span>
+                <span class="text-sm text-pale">$9 · full downloadable breakdown</span>
               </div>
             </div>
 
-            <div v-if="unlocked" class="grid gap-5 md:grid-cols-2">
+            <div class="grid gap-5 md:grid-cols-2">
               <section :class="[panelShellClass, 'bg-sec-bg']">
                 <h2 :class="sectionTitleClass">What helps you feel secure</h2>
                 <ul class="grid gap-3.5">
@@ -267,7 +251,7 @@ useHead({
               </section>
             </div>
 
-            <div v-if="unlocked" class="grid gap-5 md:grid-cols-2">
+            <div class="grid gap-5 md:grid-cols-2">
               <section :class="[panelShellClass, 'bg-sec-bg']">
                 <h2 :class="sectionTitleClass">Full trigger readout</h2>
                 <ul class="grid gap-3.5">
@@ -298,11 +282,17 @@ useHead({
 
             <div class="grid gap-5 md:grid-cols-2">
               <section :class="[panelShellClass, 'bg-cream']">
-                <p :class="noteKickerClass">Premium report</p>
-                <h2 :class="sectionTitleClass">Go deeper than the label.</h2>
+                <p :class="noteKickerClass">Full PDF report</p>
+                <h2 :class="sectionTitleClass">Take this beyond the share page.</h2>
                 <p :class="bodyCopyClass">
                   {{ resultContent.reportPromo }}
                 </p>
+                <div class="mt-6 flex flex-wrap items-center gap-4">
+                  <AppButton :href="paidReportHref" size="sm" show-arrow>
+                    Get the paid PDF report
+                  </AppButton>
+                  <span class="text-sm text-muted">15-page paid add-on.</span>
+                </div>
               </section>
 
               <section :class="[panelShellClass, 'bg-cream']">
@@ -347,12 +337,5 @@ useHead({
         </aside>
       </div>
     </div>
-
-    <EmailGate
-      :open="showEmailGate"
-      :initial-email="record.email"
-      @close="showEmailGate = false"
-      @submit="handleEmailSubmit"
-    />
   </section>
 </template>

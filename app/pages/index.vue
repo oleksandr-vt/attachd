@@ -26,7 +26,7 @@ const requestUrl = useRequestURL()
 const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
 const pageTitle = 'Attachment Style Test'
 const pageDescription =
-  'Take a 25-question attachment style test to learn whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant. Free summary first, deeper results by email.'
+  'Take a 25-question attachment style test to learn whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant, then open a personalized result you can revisit or share.'
 
 useSeoMeta({
   title: pageTitle,

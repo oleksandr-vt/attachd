@@ -95,7 +95,7 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
       'Build self-trust so distance does not automatically mean danger.',
     ],
     sharePrompt: 'I got Anxious Attachment. What did you get?',
-    reportPromo: 'Unlock the triggers, protest patterns, and stabilizers that matter most for you.',
+    reportPromo: 'See the triggers, protest patterns, and stabilizers that matter most for you.',
     partnerPrompt: 'A partner comparison can show where pursuit starts and how to slow the loop down.',
     accentClass: 'text-anxious',
     surfaceClass: 'bg-anxious-bg',

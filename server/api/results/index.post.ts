@@ -18,9 +18,11 @@ import {
 
 type CreateAttachmentResultBody = {
   answers?: unknown
+  email?: string
 }
 
 const createShareToken = () => randomBytes(8).toString('hex')
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const createUniqueShareToken = async () => {
   let token = createShareToken()
@@ -35,11 +37,19 @@ const createUniqueShareToken = async () => {
 export default defineEventHandler(async (event): Promise<AttachmentPersistedResultResponse> => {
   const body = await readBody<CreateAttachmentResultBody>(event)
   const answers = normalizeAttachmentAnswers(body.answers)
+  const email = body.email?.trim() ?? ''
 
   if (!isAttachmentAnswerComplete(answers)) {
     throw createError({
       statusCode: 400,
       statusMessage: `Complete all ${attachmentTest.questions.length} questions before creating a result.`,
+    })
+  }
+
+  if (!emailPattern.test(email)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Enter a valid email address before viewing your result.',
     })
   }
 
@@ -59,8 +69,8 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
     result,
     primaryType: result.type,
     secondaryType: result.secondaryType,
-    email: '',
-    emailUnlocked: false,
+    email,
+    emailUnlocked: true,
   }
 
   await saveAttachmentResultRecord(record)

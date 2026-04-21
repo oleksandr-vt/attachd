@@ -2,11 +2,11 @@
 
 ## Overview
 
-A web app for personality self-discovery, built around psychologically grounded tests with a viral sharing mechanic and a clear monetization funnel. The MVP focuses exclusively on the **Attachment Style test**.
+A web app for personality self-discovery, built around psychologically grounded tests with a viral sharing mechanic and a clear monetization funnel. The initial launch focuses exclusively on the **Attachment Style test**.
 
 ## Test Selection Rationale
 
-### Chosen for MVP: Attachment Style
+### Chosen for launch: Attachment Style
 - **4 result types:** Secure, Anxious, Avoidant, Fearful-Avoidant
 - Each type comes with a clear description, strengths, challenges, and relationship advice
 - Trending heavily in therapy and social content, where the result itself becomes an identity label
@@ -18,14 +18,14 @@ A web app for personality self-discovery, built around psychologically grounded 
 - Harder to share meaningfully
 - Market is crowded
 
-## MVP User Journey
+## Launch User Journey
 
 ```text
 Ad / organic link
   -> Landing page
   -> Test (25 questions)
-  -> Persisted result snapshot + share URL
-  -> Email gate (required for full breakdown)
+  -> Completion screen
+  -> Email capture + persisted result snapshot + share URL
   -> Personalized result page (/r/:token)
   -> Upsell (deep report / partner test)
   -> Share
@@ -35,7 +35,7 @@ Ad / organic link
 
 | Stream | Details |
 |---|---|
-| **Email gate** | Collect email before showing the fuller breakdown. |
+| **Email capture** | Collect email before creating and showing the personalized result. |
 | **Premium PDF report** | One-time purchase for a deeper analysis with triggers, patterns, and a growth plan. |
 | **Couples / partner test** | Paid compatibility breakdown. |
 | **Affiliate** | Wellness / therapy products fit naturally after the result flow. |
@@ -46,14 +46,14 @@ Ad / organic link
 
 ## Phased Roadmap
 
-### Phase 1 - MVP (frontend + lightweight backend)
+### Phase 1 - Launch (frontend + lightweight backend)
 - Landing page with strong hook copy
 - Attachment Style test (25 questions)
 - Animated progress bar and question transitions
 - Static type guide pages for secure / anxious / avoidant / fearful-avoidant
 - Persisted result snapshots with generated share URLs
 - Personalized result route separate from static guide routes
-- Email gate before the full breakdown
+- Email capture before the first personalized result
 - Shareable link and shareable result card
 - Basic Stripe payment link for PDF report
 - Shared scoring logic used by both client and server
@@ -103,7 +103,6 @@ shared/attachment/
 server/api/results/
   index.post.ts            - create persisted result snapshot
   [token].get.ts           - load a shareable result snapshot
-  [token]/email.post.ts    - unlock the fuller result by email
 ```
 
 ## Viral Mechanics
@@ -114,7 +113,7 @@ server/api/results/
 - **Partner test CTA** - "Send to your partner" on the result page.
 - **SEO content** - Static type guide pages double as long-form search pages.
 - **Progress motivation** - Visible question count and progress bar.
-- **Email retargeting** - Email unlock creates a follow-up channel for retakes and upsells.
+- **Email retargeting** - Email capture creates a follow-up channel for retakes and upsells.
 
 ## Tech Decisions
 
@@ -126,8 +125,8 @@ server/api/results/
 | **CSS** | Tailwind v4 |
 | **State** | Local state for in-progress answers; backend persistence for completed shareable results |
 | **Persistence** | Start with app-owned persisted result snapshots; move to Drizzle + Postgres for hosted durability |
-| **Email gate** | App backend unlocks fuller result access; third-party email sync can follow later |
+| **Email capture** | App backend stores email during result creation; third-party email sync can follow later |
 | **Payments** | Stripe Payment Links |
 | **Analytics** | Plausible or Umami |
 | **Hosting** | Use durable server-side storage once share URLs matter; Postgres-backed hosting is the target path |
-| **OG images** | Pre-generated static images for the 4 base types in MVP |
+| **OG images** | Pre-generated static images for the 4 base types at launch |

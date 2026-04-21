@@ -19,8 +19,8 @@ const toggleFaq = (index: number) => {
           Common questions about the attachment style test.
         </h2>
         <p class="landing-section-copy">
-          These answers cover what the MVP does today, what the test is for, and what kind of
-          result flow people should expect.
+          These answers explain what the test is designed to measure, how the results work, and
+          what kind of result flow people should expect.
         </p>
       </header>
 
@@ -36,7 +36,7 @@ const toggleFaq = (index: number) => {
           <dt>
             <button
               type="button"
-              class="flex w-full items-center justify-between gap-4 text-left"
+              class="flex w-full cursor-pointer items-center justify-between gap-4 text-left"
               :aria-controls="`faq-panel-${index}`"
               :aria-expanded="openIndex === index"
               @click="toggleFaq(index)"

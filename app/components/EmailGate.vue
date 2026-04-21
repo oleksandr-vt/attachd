@@ -12,7 +12,7 @@ const props = withDefaults(
     initialEmail: '',
     title: 'Unlock your fuller breakdown',
     description:
-      'Enter your email to continue to the expanded interpretation, relationship patterns, and growth directions. For now this stays frontend-only and is ready for API wiring next.',
+      'Enter your email to continue to your expanded interpretation, relationship patterns, and growth directions.',
   },
 )
 

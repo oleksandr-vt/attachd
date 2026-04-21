@@ -83,7 +83,7 @@ export const attachmentStyleCards: AttachmentStyleCard[] = [
       'You usually feel safe with intimacy, recover from conflict more easily, and communicate needs more directly.',
     surfaceClass: 'bg-secure-bg border-secure-bd',
     accentClass: 'text-secure',
-    href: landingPrimaryActionHref,
+    href: '/results/secure',
   },
   {
     eyebrow: 'Closeness-seeking',
@@ -93,7 +93,7 @@ export const attachmentStyleCards: AttachmentStyleCard[] = [
       'You may read distance as danger and look for extra reassurance when connection feels uncertain or inconsistent.',
     surfaceClass: 'bg-anxious-bg border-anxious-bd',
     accentClass: 'text-anxious',
-    href: landingPrimaryActionHref,
+    href: '/results/anxious',
   },
   {
     eyebrow: 'Self-protective',
@@ -103,7 +103,7 @@ export const attachmentStyleCards: AttachmentStyleCard[] = [
       'You often protect yourself through self-reliance, especially when a relationship starts to feel emotionally demanding.',
     surfaceClass: 'bg-avoid-bg border-avoid-bd',
     accentClass: 'text-avoid',
-    href: landingPrimaryActionHref,
+    href: '/results/avoidant',
   },
   {
     eyebrow: 'Push-pull pattern',
@@ -113,7 +113,7 @@ export const attachmentStyleCards: AttachmentStyleCard[] = [
       'You can want closeness deeply and still pull back when trust, vulnerability, or rejection feel risky.',
     surfaceClass: 'bg-fearful-bg border-fearful-bd',
     accentClass: 'text-fearful',
-    href: landingPrimaryActionHref,
+    href: '/results/fearful-avoidant',
   },
 ]
 
@@ -238,7 +238,7 @@ export const faqItems: FaqItem[] = [
   {
     question: 'How long does the test take?',
     answer:
-      'The MVP flow is 25 questions and is designed to take about four minutes for most people.',
+      'The test is 25 questions and is designed to take about four minutes for most people.',
   },
   {
     question: 'Do I need to create an account?',
@@ -248,7 +248,7 @@ export const faqItems: FaqItem[] = [
   {
     question: 'What do I get after the free result?',
     answer:
-      'You get your primary attachment style and a short summary first, with the option to unlock a deeper breakdown and premium report afterward.',
+      'You get your primary attachment style and a short summary first, with the option to unlock a deeper breakdown and full report afterward.',
   },
   {
     question: 'Is this a diagnosis or therapy?',

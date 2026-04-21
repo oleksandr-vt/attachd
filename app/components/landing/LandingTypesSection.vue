@@ -39,7 +39,7 @@ import { attachmentStyleCards, landingPrimaryActionHref } from '~/data/landing'
           <p class="mt-1 flex-1 text-sm leading-6 text-body">{{ card.description }}</p>
           <NuxtLink
             :to="card.href"
-            class="mt-3 inline-block text-sm font-medium transition-opacity duration-200 hover:opacity-65"
+            class="mt-2 inline-flex items-center py-1 text-sm font-medium transition-opacity duration-200 hover:opacity-65"
             :class="card.accentClass"
           >
             Learn more &rarr;

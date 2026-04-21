@@ -201,9 +201,9 @@ useHead({
                 Read the pattern behind how you do closeness.
               </h1>
               <p class="landing-section-copy max-w-150">
-                Move quickly, answer honestly, and lean on your first instinct. This flow is
-                structured so the email gate, deeper report, and next paid steps can plug into the
-                same experience without redesigning it later.
+                Move quickly, answer honestly, and lean on your first instinct. The questions are
+                designed to surface how you respond when closeness, conflict, reassurance, and
+                space start to feel emotionally charged.
               </p>
 
               <p class="mt-8 text-sm text-muted">

@@ -129,12 +129,6 @@ useHead({
                 size="sm"
                 show-arrow
               />
-              <AppButton
-                :href="`/results/${record.primaryType}`"
-                label="Open type guide"
-                size="sm"
-                show-arrow
-              />
             </div>
 
             <p v-if="copyState === 'failed'" class="mt-3 text-sm text-muted">

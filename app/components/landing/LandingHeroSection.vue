@@ -13,7 +13,7 @@ import { heroStats, landingPrimaryActionHref } from '~/data/landing'
         'radial-gradient(ellipse 600px 400px at 70% 50%, var(--landing-hero-glow) 0%, transparent 70%)',
     }"
   >
-    <div class="landing-container flex flex-col gap-10 sm:gap-12 lg:flex-row lg:items-center lg:gap-20">
+    <div class="landing-container flex flex-col gap-10 sm:gap-12 xl:flex-row xl:items-center xl:gap-20">
       <header class="min-w-0 flex-1">
         <p
           class="landing-section-kicker landing-fade-up"
@@ -66,10 +66,10 @@ import { heroStats, landingPrimaryActionHref } from '~/data/landing'
 
       <div
         aria-hidden="true"
-        class="landing-fade-up-slow flex w-full justify-center lg:w-85 lg:shrink-0"
+        class="landing-fade-up-slow flex w-full justify-center xl:w-85 xl:shrink-0"
         style="animation-delay: 0.3s"
       >
-        <div class="relative h-115 w-80 origin-top scale-90 sm:scale-100">
+        <div class="relative h-115 w-80 origin-top scale-85 sm:scale-100 -mr-40 xl:mr-0">
           <div
             class="absolute top-2 -left-2 z-0 w-63 rounded-2xl border border-secure-bd bg-secure-bg p-5.5 opacity-65"
             style="transform: rotate(-7.5deg)"

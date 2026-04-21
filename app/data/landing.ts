@@ -52,6 +52,7 @@ export type ReportPreviewSlide = {
 export const landingBrandName = 'attachd.'
 
 export const landingPrimaryActionHref = '/test/attachment'
+export const landingCouplesActionHref = '/couples'
 
 export const landingNavLinks: LandingLink[] = [
   { label: 'Attachment styles', href: '/#types' },

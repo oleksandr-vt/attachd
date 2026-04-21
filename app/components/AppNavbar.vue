@@ -17,15 +17,18 @@
       </nav>
 
       <NuxtLink
-        :to="landingPrimaryActionHref"
+        :to="primaryActionHref"
         class="ml-auto shrink-0 whitespace-nowrap rounded-full bg-dark px-4 py-2 text-xs font-medium text-cream transition-colors duration-200 hover:bg-dark2 sm:px-5 sm:text-sm lg:ml-0"
       >
-        Start free test &rarr;
+        {{ primaryActionLabel }} &rarr;
       </NuxtLink>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { landingBrandName, landingNavLinks, landingPrimaryActionHref } from '~/data/landing'
+import { useAttachmentPrimaryAction } from '~/composables/useAttachmentPrimaryAction'
+import { landingBrandName, landingNavLinks } from '~/data/landing'
+
+const { href: primaryActionHref, label: primaryActionLabel } = useAttachmentPrimaryAction()
 </script>

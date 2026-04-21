@@ -53,6 +53,7 @@ const shareUrl = computed(() => {
 
   return `${window.location.origin}${sharePath.value}`
 })
+const couplesReportHref = computed(() => `/couples?self=${routeToken.value}`)
 const unlocked = computed(() => record.value.emailUnlocked)
 
 const openEmailGate = () => {
@@ -317,6 +318,13 @@ useHead({
                 <p :class="bodyCopyClass">
                   {{ resultContent.partnerPrompt }}
                 </p>
+                <div class="mt-6 flex flex-wrap items-center gap-4">
+                  <LandingPrimaryButton
+                    :href="couplesReportHref"
+                    label="Compare with partner"
+                  />
+                  <span class="text-sm text-muted">Paste your partner result link there.</span>
+                </div>
               </section>
             </div>
           </div>

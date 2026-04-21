@@ -79,6 +79,9 @@ const secondaryLabel = computed(() => {
 
   return secondaryType ? attachmentResults[secondaryType].label : ''
 })
+const couplesReportHref = computed(() =>
+  session.value.lastSharedResultToken ? `/couples?self=${session.value.lastSharedResultToken}` : '/couples',
+)
 const scoreNoteText = computed(() =>
   livePersonalizedResult.value?.scoreNote
     ?? 'These bars show your internal score profile inside this quiz. They are not population percentiles, validated cutoffs, or a clinical diagnosis.',
@@ -414,6 +417,13 @@ useHead({
                 <p :class="bodyCopyClass">
                   {{ resultContent.partnerPrompt }}
                 </p>
+                <div class="mt-6 flex flex-wrap items-center gap-4">
+                  <LandingPrimaryButton
+                    :href="couplesReportHref"
+                    :label="hasPersonalizedResult ? 'Compare with partner' : 'Open couples report'"
+                  />
+                  <span class="text-sm text-muted">Use two completed result links.</span>
+                </div>
               </section>
             </div>
           </div>

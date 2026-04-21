@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { couplesChecklist, landingPrimaryActionHref } from '~/data/landing'
+import { couplesChecklist, landingCouplesActionHref } from '~/data/landing'
 import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
@@ -14,9 +14,9 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
           Understand the dynamic between both styles.
         </h2>
         <p class="landing-section-copy mb-8 max-w-125">
-          The couples report compares both attachment styles side by side so you can see where
-          conflict starts, what each person is protecting, and how to respond in a way that feels
-          safer for both people.
+          Compare two completed attachment results side by side so you can see where conflict
+          starts, what each person is protecting, and what kind of repair is most likely to help
+          both people feel safer.
         </p>
 
         <ul class="my-8 flex list-none flex-col gap-3">
@@ -31,8 +31,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </ul>
 
         <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-          <LandingPrimaryButton :href="landingPrimaryActionHref" label="Get the couples report" />
-          <span class="landing-action-note">$14 one-time</span>
+          <LandingPrimaryButton :href="landingCouplesActionHref" label="Open couples report" />
+          <span class="landing-action-note">Use two completed result links</span>
         </div>
       </header>
 

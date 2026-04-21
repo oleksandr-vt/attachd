@@ -1,9 +1,7 @@
 <template>
   <header class="fixed inset-x-0 top-0 z-100 border-b border-border bg-cream/95 backdrop-blur-sm transition-all duration-300">
     <div class="landing-container flex h-17 items-center gap-4 sm:gap-6">
-      <NuxtLink to="/" class="shrink-0 font-display text-2xl font-normal italic text-dark">
-        {{ landingBrandName }}
-      </NuxtLink>
+      <AppBrand />
 
       <nav class="hidden items-center gap-8 lg:ml-auto lg:flex">
         <NuxtLink
@@ -28,7 +26,7 @@
 
 <script setup lang="ts">
 import { useAttachmentPrimaryAction } from '~/composables/useAttachmentPrimaryAction'
-import { landingBrandName, landingNavLinks } from '~/data/landing'
+import { landingNavLinks } from '~/data/landing'
 
 const { href: primaryActionHref, label: primaryActionLabel } = useAttachmentPrimaryAction()
 </script>

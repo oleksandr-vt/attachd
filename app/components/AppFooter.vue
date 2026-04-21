@@ -1,9 +1,7 @@
 <template>
   <footer class="border-t border-border bg-cream py-10">
     <div class="landing-container flex flex-wrap items-center gap-6 sm:gap-10">
-      <NuxtLink to="/" class="font-display text-2xl font-normal italic text-dark">
-        {{ landingBrandName }}
-      </NuxtLink>
+      <AppBrand />
 
       <nav class="flex w-full flex-wrap gap-5 sm:ml-auto sm:w-auto sm:gap-7">
         <NuxtLink
@@ -26,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { landingBrandName, landingFooterLinks } from '~/data/landing'
+import { landingFooterLinks } from '~/data/landing'
 
 const copyrightYear = new Date().getFullYear()
 </script>

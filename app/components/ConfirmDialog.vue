@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
+
 const props = withDefaults(
   defineProps<{
     open: boolean
@@ -82,20 +84,12 @@ onBeforeUnmount(() => {
             </p>
 
             <div class="mt-8 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                class="inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk"
-                @click="$emit('confirm')"
-              >
+              <AppButton size="sm" @click="$emit('confirm')">
                 {{ confirmLabel }}
-              </button>
-              <button
-                type="button"
-                class="inline-flex items-center justify-center rounded-full border border-border bg-white px-6 py-4 text-sm font-medium text-dark transition-all duration-200 hover:-translate-y-px hover:border-soft-muted"
-                @click="$emit('close')"
-              >
+              </AppButton>
+              <AppButton variant="outline" size="sm" @click="$emit('close')">
                 {{ cancelLabel }}
-              </button>
+              </AppButton>
             </div>
           </div>
         </Transition>

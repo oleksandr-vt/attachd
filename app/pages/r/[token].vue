@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import EmailGate from '~/components/EmailGate.vue'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
@@ -35,11 +35,6 @@ const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
 const subtleDetailsClass = 'mt-3 rounded-2xl border border-border bg-white/70 px-4 py-3 text-sm leading-6 text-muted'
-const primaryButtonClass =
-  'inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk'
-const secondaryButtonClass =
-  'inline-flex items-center justify-center rounded-full border border-border bg-white px-6 py-4 text-sm font-medium text-dark transition-all duration-200 hover:-translate-y-px hover:border-soft-muted'
-
 const record = computed(() => payload.value.record)
 const result = computed(() => record.value.result)
 const resultContent = computed(() => result.value.content)
@@ -125,16 +120,20 @@ useHead({
             </p>
 
             <div class="mt-6 flex flex-wrap items-center gap-4">
-              <button type="button" :class="primaryButtonClass" @click="copyShareLink">
+              <AppButton size="sm" @click="copyShareLink">
                 {{ copyState === 'copied' ? 'Link copied' : 'Copy share link' }}
-              </button>
-              <LandingPrimaryButton
+              </AppButton>
+              <AppButton
                 href="/test/attachment"
                 label="Retake the test"
+                size="sm"
+                show-arrow
               />
-              <LandingPrimaryButton
+              <AppButton
                 :href="`/results/${record.primaryType}`"
                 label="Open type guide"
+                size="sm"
+                show-arrow
               />
             </div>
 
@@ -241,9 +240,9 @@ useHead({
                 Unlocking saves the expanded guidance to this result link, including the prepared next steps and full trigger readout.
               </p>
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" :class="primaryButtonClass" @click="openEmailGate">
+                <AppButton size="sm" @click="openEmailGate">
                   Continue with email
-                </button>
+                </AppButton>
                 <span class="text-sm text-pale">Backend-backed and share-ready</span>
               </div>
             </div>
@@ -319,9 +318,11 @@ useHead({
                   {{ resultContent.partnerPrompt }}
                 </p>
                 <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <LandingPrimaryButton
+                  <AppButton
                     :href="couplesReportHref"
                     label="Compare with partner"
+                    size="sm"
+                    show-arrow
                   />
                   <span class="text-sm text-muted">Paste your partner result link there.</span>
                 </div>

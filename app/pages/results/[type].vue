@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import EmailGate from '~/components/EmailGate.vue'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import { attachmentTest, isAttachmentStyleType, type AttachmentStyleType } from '~/data/tests/attachment'
 import { attachmentResults } from '~/data/tests/results'
@@ -37,9 +37,6 @@ const {
 
 const showEmailGate = ref(false)
 const showRetakeConfirm = ref(false)
-
-const primaryButtonClass =
-  'inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk'
 
 const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
@@ -165,22 +162,25 @@ useHead({
             </p>
 
             <div class="mt-6 flex flex-wrap items-center gap-4">
-              <button
+              <AppButton
                 v-if="hasPersonalizedResult"
-                type="button"
-                :class="primaryButtonClass"
+                size="sm"
                 @click="openRetakeConfirm"
               >
                 Retake the test
-              </button>
-              <LandingPrimaryButton
+              </AppButton>
+              <AppButton
                 v-else
                 :href="'/test/attachment'"
                 label="Take the 25-question test"
+                size="sm"
+                show-arrow
               />
-              <LandingPrimaryButton
+              <AppButton
                 :href="'/'"
                 :label="hasPersonalizedResult ? 'Back to landing' : 'See the landing page'"
+                size="sm"
+                show-arrow
               />
             </div>
           </header>
@@ -299,9 +299,9 @@ useHead({
                   Ready next: your custom action steps, full trigger readout, and growth guidance keyed to this exact score mix.
                 </p>
                 <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <button type="button" :class="primaryButtonClass" @click="openEmailGate">
+                  <AppButton size="sm" @click="openEmailGate">
                     Continue with email
-                  </button>
+                  </AppButton>
                   <span class="text-sm text-pale">Frontend-ready now, API-ready next</span>
                 </div>
               </div>
@@ -418,9 +418,11 @@ useHead({
                   {{ resultContent.partnerPrompt }}
                 </p>
                 <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <LandingPrimaryButton
+                  <AppButton
                     :href="couplesReportHref"
                     :label="hasPersonalizedResult ? 'Compare with partner' : 'Open couples report'"
+                    size="sm"
+                    show-arrow
                   />
                   <span class="text-sm text-muted">Use two completed result links.</span>
                 </div>

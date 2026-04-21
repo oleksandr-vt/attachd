@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import CouplesReportView from '~/components/CouplesReportView.vue'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import type { AttachmentCouplesPersistedReportResponse } from '~~/shared/attachment/couples-persistence'
 
 const route = useRoute()
@@ -31,9 +31,6 @@ const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
 const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
-const primaryButtonClass =
-  'inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk'
-
 const record = computed(() => payload.value.record)
 const report = computed(() => record.value.report)
 const sharePath = computed(() => `/couples/${routeToken.value}`)
@@ -121,12 +118,14 @@ useHead({
           </p>
 
           <div class="mt-6 flex flex-wrap items-center gap-4">
-            <button type="button" :class="primaryButtonClass" @click="copyShareLink">
+            <AppButton size="sm" @click="copyShareLink">
               {{ copyState === 'copied' ? 'Link copied' : 'Copy share link' }}
-            </button>
-            <LandingPrimaryButton
+            </AppButton>
+            <AppButton
               :href="rebuildHref"
               label="Open comparison builder"
+              size="sm"
+              show-arrow
             />
           </div>
 

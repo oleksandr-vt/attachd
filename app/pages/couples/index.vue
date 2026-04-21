@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
+import AppButton from '~/components/AppButton.vue'
 import CouplesReportView from '~/components/CouplesReportView.vue'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 import { useAttachmentPrimaryAction } from '~/composables/useAttachmentPrimaryAction'
 import { useTest } from '~/composables/useTest'
 import { buildAttachmentCouplesReport } from '~~/shared/attachment/couples-report'
@@ -26,8 +26,6 @@ const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
 const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
-const primaryButtonClass =
-  'inline-flex items-center justify-center rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk disabled:cursor-not-allowed disabled:opacity-60'
 const inputClass =
   'w-full rounded-2xl border border-border bg-white px-4 py-3 text-sm text-dark outline-none transition-colors duration-200 placeholder:text-muted focus:border-terra'
 
@@ -312,9 +310,11 @@ useHead({
           </p>
 
           <div class="mt-6 flex flex-wrap items-center gap-4">
-            <LandingPrimaryButton
+            <AppButton
               :href="selfResultHref"
               :label="couplesReport ? 'Open your result' : primaryActionLabel"
+              size="sm"
+              show-arrow
             />
             <span class="landing-action-note">
               {{ hasSelfContext ? 'Add your partner result below' : 'Needs two completed results' }}
@@ -364,13 +364,13 @@ useHead({
             </label>
 
             <div class="md:col-span-2 flex flex-wrap items-center gap-4">
-              <button
+              <AppButton
                 type="submit"
-                :class="primaryButtonClass"
+                size="sm"
                 :disabled="selfLoading || partnerLoading"
               >
                 {{ selfLoading || partnerLoading ? 'Loading results' : 'Build couples report' }}
-              </button>
+              </AppButton>
               <span class="text-sm text-muted">Supports raw tokens or full shared result URLs.</span>
             </div>
           </form>
@@ -393,7 +393,7 @@ useHead({
             {{ missingStateCopy }}
           </p>
           <div class="mt-6 flex flex-wrap items-center gap-4">
-            <LandingPrimaryButton :href="primaryActionHref" :label="primaryActionLabel" />
+            <AppButton :href="primaryActionHref" :label="primaryActionLabel" size="sm" show-arrow />
             <span class="text-sm text-muted">One completed result for each person.</span>
           </div>
         </div>
@@ -407,14 +407,13 @@ useHead({
             </p>
 
             <div class="mt-6 flex flex-wrap items-center gap-4">
-              <button
-                type="button"
-                :class="primaryButtonClass"
+              <AppButton
+                size="sm"
                 :disabled="!canPersistReport || savingReport"
                 @click="createShareLink"
               >
                 {{ savingReport ? 'Creating share link' : 'Create share link' }}
-              </button>
+              </AppButton>
               <span class="text-sm text-muted">Saves this exact couples comparison.</span>
             </div>
 

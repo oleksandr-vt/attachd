@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import ProgressBar from '~/components/ProgressBar.vue'
 import TestQuestion from '~/components/TestQuestion.vue'
@@ -70,15 +71,6 @@ const progressMeta = computed(() =>
 const continueLabel = computed(() =>
   currentQuestionNumber.value === totalQuestions ? 'See my results' : 'Next question',
 )
-
-const primaryButtonClass =
-  'inline-flex items-center justify-center whitespace-nowrap rounded-full bg-terra px-6 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0'
-
-const secondaryButtonClass =
-  'inline-flex items-center justify-center whitespace-nowrap rounded-full border border-border bg-sec-bg px-6 py-4 text-sm font-medium text-dark transition-all duration-200 hover:-translate-y-px hover:border-soft-muted hover:bg-white disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0'
-
-const tertiaryButtonClass =
-  'inline-flex items-center justify-center whitespace-nowrap rounded-full border border-border bg-white px-6 py-4 text-sm font-medium text-muted transition-all duration-200 hover:-translate-y-px hover:border-soft-muted hover:text-dark'
 
 const canContinue = computed(() =>
   currentAnswer.value !== null && !continueLocked.value,
@@ -295,9 +287,9 @@ useHead({
               </ul>
 
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" :class="primaryButtonClass" @click="startTest()">
+                <AppButton size="sm" @click="startTest()">
                   {{ beginLabel }}
-                </button>
+                </AppButton>
                 <span class="text-sm text-muted">No signup required to start</span>
               </div>
             </div>
@@ -320,12 +312,12 @@ useHead({
               </p>
 
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <button type="button" :class="primaryButtonClass" @click="handleViewResult">
+                <AppButton size="sm" @click="handleViewResult">
                   View my results
-                </button>
-                <button type="button" :class="secondaryButtonClass" @click="openRestartConfirm">
+                </AppButton>
+                <AppButton variant="outline" size="sm" @click="openRestartConfirm">
                   Retake the test
-                </button>
+                </AppButton>
               </div>
             </div>
 
@@ -341,17 +333,17 @@ useHead({
 
               <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    :class="secondaryButtonClass"
+                  <AppButton
+                    variant="secondary"
+                    size="sm"
                     :disabled="currentQuestionNumber === 1"
                     @click="goToPreviousQuestion"
                   >
                     Back
-                  </button>
-                  <button type="button" :class="tertiaryButtonClass" @click="openRestartConfirm">
+                  </AppButton>
+                  <AppButton variant="tertiary" size="sm" @click="openRestartConfirm">
                     Restart
-                  </button>
+                  </AppButton>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-4">
@@ -362,14 +354,13 @@ useHead({
                     Review your choice, then continue
                   </span>
 
-                  <button
-                    type="button"
-                    :class="primaryButtonClass"
+                  <AppButton
+                    size="sm"
                     :disabled="!canContinue"
                     @click="handleContinue"
                   >
                     {{ continueLabel }}
-                  </button>
+                  </AppButton>
                 </div>
               </div>
             </div>

@@ -5,7 +5,7 @@ import { benefitCards } from '~/data/landing'
 <template>
   <section id="results" aria-labelledby="results-heading" class="landing-section bg-sec-bg">
     <div class="landing-container">
-      <header class="mb-14 max-w-160">
+      <header class="mb-10 max-w-160 sm:mb-14">
         <p class="landing-section-kicker">
           What you get
         </p>

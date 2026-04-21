@@ -75,25 +75,25 @@
     width: 100%;
     max-width: calc(72.5rem + 2.5rem);
     margin-inline: auto;
-    padding-inline: 1.25rem;
+    padding-inline: 1rem;
   }
 
   .landing-section {
-    padding-block: 4.5rem;
+    padding-block: 4rem;
   }
 
   .landing-page-section {
-    padding-top: 6.25rem;
-    padding-bottom: 4.5rem;
+    padding-top: 5.5rem;
+    padding-bottom: 4rem;
   }
 
   .landing-hero-section {
-    padding-top: 6.25rem;
-    padding-bottom: 4.5rem;
+    padding-top: 5.5rem;
+    padding-bottom: 4rem;
   }
 
   .landing-finale-section {
-    padding-block: 6rem;
+    padding-block: 5rem;
   }
 
   .landing-section-kicker {

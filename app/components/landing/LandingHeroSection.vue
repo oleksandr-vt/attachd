@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import { heroStats, landingPrimaryActionHref } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
@@ -13,7 +13,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         'radial-gradient(ellipse 600px 400px at 70% 50%, var(--landing-hero-glow) 0%, transparent 70%)',
     }"
   >
-    <div class="landing-container flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-20">
+    <div class="landing-container flex flex-col gap-10 sm:gap-12 lg:flex-row lg:items-center lg:gap-20">
       <header class="min-w-0 flex-1">
         <p
           class="landing-section-kicker landing-fade-up"
@@ -24,7 +24,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
         <h1
           id="hero-heading"
-          class="mb-6 font-display text-4xl leading-none font-medium tracking-tight text-dark landing-fade-up sm:text-5xl lg:text-6xl"
+          class="mb-5 font-display text-4xl leading-none font-medium tracking-tight text-dark landing-fade-up sm:mb-6 sm:text-5xl lg:text-6xl"
           style="animation-delay: 0.15s"
         >
           Attachment style test<br>
@@ -32,7 +32,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </h1>
 
         <p
-          class="landing-section-copy landing-fade-up mb-8 max-w-125"
+          class="landing-section-copy landing-fade-up mb-6 max-w-125 sm:mb-8"
           style="animation-delay: 0.25s"
         >
           Take a 25-question attachment style test grounded in attachment theory. Learn whether
@@ -41,17 +41,17 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </p>
 
         <div
-          class="landing-fade-up mb-11 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5"
+          class="landing-fade-up mb-8 flex flex-col items-start gap-4 sm:mb-11 sm:flex-row sm:items-center sm:gap-5"
           style="animation-delay: 0.35s"
         >
-          <LandingPrimaryButton :href="landingPrimaryActionHref" label="Start the free test" />
+          <AppButton :href="landingPrimaryActionHref" label="Start the free test" show-arrow />
           <span class="landing-action-note">
             25 questions &middot; about 4 minutes
           </span>
         </div>
 
         <div
-          class="landing-fade-up flex flex-wrap items-center gap-4 sm:gap-6"
+          class="landing-fade-up flex flex-wrap items-center gap-3 sm:gap-6"
           style="animation-delay: 0.45s"
         >
           <template v-for="(stat, index) in heroStats" :key="stat.label">

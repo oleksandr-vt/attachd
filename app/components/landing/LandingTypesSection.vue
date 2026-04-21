@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import { attachmentStyleCards, landingPrimaryActionHref } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
   <section id="types" aria-labelledby="types-heading" class="landing-section bg-sec-bg">
     <div class="landing-container">
-      <header class="mb-14 max-w-160">
+      <header class="mb-10 max-w-160 sm:mb-14">
         <p class="landing-section-kicker">
           The four styles
         </p>
@@ -25,7 +25,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         <article
           v-for="card in attachmentStyleCards"
           :key="card.title"
-          class="flex flex-col gap-2 rounded-2xl border p-7.5 transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card"
+          class="flex flex-col gap-2 rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-elevated-card sm:p-7.5"
           :class="card.surfaceClass"
         >
           <span class="text-xs text-soft-muted">{{ card.eyebrow }}</span>
@@ -47,8 +47,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </article>
       </div>
 
-      <div class="mt-14 flex flex-wrap items-center gap-5">
-        <LandingPrimaryButton :href="landingPrimaryActionHref" label="Find your style - it's free" />
+      <div class="mt-10 flex flex-wrap items-center gap-5 sm:mt-14">
+        <AppButton :href="landingPrimaryActionHref" label="Find your style - it's free" show-arrow />
       </div>
     </div>
   </section>

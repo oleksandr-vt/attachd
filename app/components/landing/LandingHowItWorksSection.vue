@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import { landingPrimaryActionHref, processSteps } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
   <section id="how" aria-labelledby="how-heading" class="landing-section bg-cream">
     <div class="landing-container">
-      <header class="mb-14 flex flex-col items-center text-center">
+      <header class="mb-10 flex flex-col items-center text-center sm:mb-14">
         <p class="landing-section-kicker">
           The process
         </p>
@@ -28,7 +28,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
             </div>
 
             <div class="min-w-0 flex-1">
-              <div class="mb-6 hidden items-center gap-4 lg:flex">
+              <div class="mb-5 hidden items-center gap-4 lg:flex sm:mb-6">
                 <span
                   class="h-px flex-1"
                   :class="index === 0 ? 'opacity-0' : 'bg-linear-to-r from-transparent via-border to-border'"
@@ -51,8 +51,8 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </article>
       </div>
 
-      <div class="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
-        <LandingPrimaryButton :href="landingPrimaryActionHref" label="Start the assessment" />
+      <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:mt-14 sm:flex-row sm:gap-5">
+        <AppButton :href="landingPrimaryActionHref" label="Start the assessment" show-arrow />
         <span class="landing-action-note">
           Quick first result &middot; private and simple
         </span>

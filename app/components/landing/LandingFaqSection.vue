@@ -11,7 +11,7 @@ const toggleFaq = (index: number) => {
 <template>
   <section id="faq" aria-labelledby="faq-heading" class="landing-section bg-cream">
     <div class="landing-container">
-      <header class="mx-auto mb-12 max-w-170 text-center">
+      <header class="mx-auto mb-10 max-w-170 text-center sm:mb-12">
         <p class="landing-section-kicker">
           FAQ
         </p>

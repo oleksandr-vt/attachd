@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import {
   landingPrimaryActionHref,
   reportChecklist,
   reportPreviewSlides,
   type ReportPreviewSlide,
 } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 
 const reportSection = ref<HTMLElement | null>(null)
 const activePreviewIndex = ref(0)
@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
     aria-labelledby="report-heading"
     class="landing-section bg-sec-bg"
   >
-    <div class="landing-container flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-20">
+    <div class="landing-container flex flex-col gap-8 sm:gap-10 xl:flex-row xl:items-center xl:gap-20">
       <header class="min-w-0 flex-1">
         <p class="landing-section-kicker">
           Full in-depth report
@@ -103,12 +103,12 @@ onBeforeUnmount(() => {
         <h2 id="report-heading" class="landing-section-title">
           Go beyond the label.
         </h2>
-        <p class="landing-section-copy mb-8 max-w-125">
+        <p class="landing-section-copy mb-6 max-w-125 sm:mb-8">
           The premium report is a 15-page PDF that explains how your pattern formed, where it shows
           up most often, and what more secure behavior can look like in real relationships.
         </p>
 
-        <ul class="my-8 flex list-none flex-col gap-3">
+        <ul class="my-6 flex list-none flex-col gap-3 sm:my-8">
           <li
             v-for="item in reportChecklist"
             :key="item"
@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
         </ul>
 
         <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-          <LandingPrimaryButton :href="landingPrimaryActionHref" label="Start the free test" />
+          <AppButton :href="landingPrimaryActionHref" label="Start the free test" show-arrow />
           <span class="landing-action-note">Free to start &middot; $9 for the 15-page report</span>
         </div>
       </header>
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
             :leave-from-class="prefersReducedMotion ? '' : 'translate-x-0 scale-100 opacity-100'"
             :leave-to-class="prefersReducedMotion ? '' : '-translate-x-6 scale-95 opacity-0'"
           >
-            <div :key="activePreview.title" class="p-6">
+            <div :key="activePreview.title" class="p-5 sm:p-6">
               <div class="mb-5 flex items-start justify-between gap-3">
                 <div class="min-w-0">
                   <p class="mb-1.5 text-xs font-medium uppercase tracking-widest text-terra">

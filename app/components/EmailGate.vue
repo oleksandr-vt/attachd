@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
+
 const props = withDefaults(
   defineProps<{
     open: boolean
@@ -108,12 +110,9 @@ onBeforeUnmount(() => {
 
             <p v-if="errorMessage" class="text-sm text-terra-dk">{{ errorMessage }}</p>
 
-            <button
-              type="submit"
-              class="inline-flex items-center justify-center rounded-full bg-terra px-5 py-4 text-sm font-medium text-cream transition-all duration-200 hover:-translate-y-px hover:bg-terra-dk"
-            >
+            <AppButton type="submit" size="sm">
               Continue to full results
-            </button>
+            </AppButton>
           </form>
         </div>
       </div>

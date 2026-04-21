@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import { couplesChecklist, landingCouplesActionHref } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
   <section id="couples" aria-labelledby="couples-heading" class="landing-section bg-cream">
-    <div class="landing-container flex flex-col gap-10 xl:flex-row xl:items-center xl:gap-20">
+    <div class="landing-container flex flex-col gap-8 sm:gap-10 xl:flex-row xl:items-center xl:gap-20">
       <header class="min-w-0 flex-1">
         <p class="landing-section-kicker">
           For couples
@@ -13,13 +13,13 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         <h2 id="couples-heading" class="landing-section-title">
           Understand the dynamic between both styles.
         </h2>
-        <p class="landing-section-copy mb-8 max-w-125">
+        <p class="landing-section-copy mb-6 max-w-125 sm:mb-8">
           Compare two completed attachment results side by side so you can see where conflict
           starts, what each person is protecting, and what kind of repair is most likely to help
           both people feel safer.
         </p>
 
-        <ul class="my-8 flex list-none flex-col gap-3">
+        <ul class="my-6 flex list-none flex-col gap-3 sm:my-8">
           <li
             v-for="item in couplesChecklist"
             :key="item"
@@ -31,7 +31,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         </ul>
 
         <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-          <LandingPrimaryButton :href="landingCouplesActionHref" label="Open couples report" />
+          <AppButton :href="landingCouplesActionHref" label="Open couples report" show-arrow />
           <span class="landing-action-note">Use two completed result links</span>
         </div>
       </header>

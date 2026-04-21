@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AppButton from '~/components/AppButton.vue'
 import { landingPrimaryActionHref } from '~/data/landing'
-import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
 </script>
 
 <template>
@@ -18,7 +18,7 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
       </p>
       <h2
         id="final-cta-heading"
-        class="mb-5 font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-5xl lg:text-6xl"
+        class="mb-4 font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:mb-5 sm:text-5xl lg:text-6xl"
       >
         Find your attachment style<br>
         and get a clearer relationship map.
@@ -27,10 +27,11 @@ import LandingPrimaryButton from '~/components/landing/LandingPrimaryButton.vue'
         Start with the 25-question test and see which attachment pattern fits best.<br class="hidden sm:block">
         A clearer read of your relationship habits starts here.
       </p>
-      <LandingPrimaryButton
+      <AppButton
         :href="landingPrimaryActionHref"
         label="Start the free test"
         size="lg"
+        show-arrow
       />
       <p class="max-w-100 text-center text-sm text-body">
         Educational, not diagnostic.

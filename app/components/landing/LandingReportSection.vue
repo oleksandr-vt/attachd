@@ -42,7 +42,7 @@ const syncRotationTimer = () => {
 
   rotationTimer = window.setInterval(() => {
     activePreviewIndex.value = (activePreviewIndex.value + 1) % reportPreviewSlides.length
-  }, 3200)
+  }, 3700)
 }
 
 const setActivePreview = (index: number) => {

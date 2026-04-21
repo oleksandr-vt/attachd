@@ -176,12 +176,6 @@ useHead({
                 size="sm"
                 show-arrow
               />
-              <AppButton
-                :href="'/'"
-                :label="hasPersonalizedResult ? 'Back to landing' : 'See the landing page'"
-                size="sm"
-                show-arrow
-              />
             </div>
           </header>
 

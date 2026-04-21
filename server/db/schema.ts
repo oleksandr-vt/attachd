@@ -1,5 +1,7 @@
 import { boolean, jsonb, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import type { AttachmentCouplesPersistedReportRecord } from '~~/shared/attachment/couples-persistence'
 import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
+import type { AttachmentCouplesReport } from '~~/shared/attachment/couples-report'
 import type { AttachmentAnswerMap, AttachmentComputedResult } from '~~/shared/attachment/scoring'
 
 export const attachmentResults = pgTable('attachment_results', {
@@ -16,8 +18,24 @@ export const attachmentResults = pgTable('attachment_results', {
   emailUnlocked: boolean('email_unlocked').notNull().default(false),
 })
 
+export const attachmentCouplesReports = pgTable('attachment_couples_reports', {
+  token: varchar('token', { length: 16 }).primaryKey(),
+  slug: varchar('slug', { length: 32 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull(),
+  reportVersion: text('report_version').notNull(),
+  leftSourceToken: varchar('left_source_token', { length: 16 }).notNull().default(''),
+  rightSourceToken: varchar('right_source_token', { length: 16 }).notNull().default(''),
+  leftPrimaryType: varchar('left_primary_type', { length: 32 }).notNull(),
+  rightPrimaryType: varchar('right_primary_type', { length: 32 }).notNull(),
+  leftResult: jsonb('left_result').$type<AttachmentComputedResult>().notNull(),
+  rightResult: jsonb('right_result').$type<AttachmentComputedResult>().notNull(),
+  report: jsonb('report').$type<AttachmentCouplesReport>().notNull(),
+})
+
 export type AttachmentResultRow = typeof attachmentResults.$inferSelect
 export type AttachmentResultInsert = typeof attachmentResults.$inferInsert
+export type AttachmentCouplesReportRow = typeof attachmentCouplesReports.$inferSelect
+export type AttachmentCouplesReportInsert = typeof attachmentCouplesReports.$inferInsert
 
 export const mapAttachmentResultRowToRecord = (
   row: AttachmentResultRow,
@@ -49,4 +67,36 @@ export const mapAttachmentResultRecordToRow = (
   secondaryType: record.secondaryType,
   email: record.email,
   emailUnlocked: record.emailUnlocked,
+})
+
+export const mapAttachmentCouplesReportRowToRecord = (
+  row: AttachmentCouplesReportRow,
+): AttachmentCouplesPersistedReportRecord => ({
+  token: row.token,
+  slug: row.slug as AttachmentCouplesPersistedReportRecord['slug'],
+  createdAt: row.createdAt,
+  reportVersion: row.reportVersion,
+  leftSourceToken: row.leftSourceToken,
+  rightSourceToken: row.rightSourceToken,
+  leftPrimaryType: row.leftPrimaryType as AttachmentCouplesPersistedReportRecord['leftPrimaryType'],
+  rightPrimaryType: row.rightPrimaryType as AttachmentCouplesPersistedReportRecord['rightPrimaryType'],
+  leftResult: row.leftResult,
+  rightResult: row.rightResult,
+  report: row.report,
+})
+
+export const mapAttachmentCouplesReportRecordToRow = (
+  record: AttachmentCouplesPersistedReportRecord,
+): AttachmentCouplesReportInsert => ({
+  token: record.token,
+  slug: record.slug,
+  createdAt: record.createdAt,
+  reportVersion: record.reportVersion,
+  leftSourceToken: record.leftSourceToken,
+  rightSourceToken: record.rightSourceToken,
+  leftPrimaryType: record.leftPrimaryType,
+  rightPrimaryType: record.rightPrimaryType,
+  leftResult: record.leftResult,
+  rightResult: record.rightResult,
+  report: record.report,
 })

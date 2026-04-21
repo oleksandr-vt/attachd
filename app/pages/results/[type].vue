@@ -164,7 +164,7 @@ useHead({
               {{ resultContent.description }}
             </p>
 
-            <div class="mt-8 flex flex-wrap items-center gap-4">
+            <div class="mt-6 flex flex-wrap items-center gap-4">
               <button
                 v-if="hasPersonalizedResult"
                 type="button"

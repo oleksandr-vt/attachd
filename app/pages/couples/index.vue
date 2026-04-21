@@ -187,7 +187,7 @@ const missingStateTitle = computed(() => {
 
 const missingStateCopy = computed(() => {
   if (!hasSelfContext.value) {
-    return 'The first version of the couples report compares two completed attachment results. Finish your test or paste your own shared result link, then add your partner link.'
+    return 'The couples report compares two completed attachment results. Finish your test or paste your own shared result link, then add your partner link.'
   }
 
   return 'Paste your partner shared result link or token below. The report will compare both profiles side by side and highlight the most likely friction and repair pattern.'
@@ -311,7 +311,7 @@ useHead({
             {{ couplesReport ? couplesReport.overview : 'Paste two completed result links to see where the relationship is likely to feel safe, where it gets protective, and what repair move matters most for this pairing.' }}
           </p>
 
-          <div class="mt-8 flex flex-wrap items-center gap-4">
+          <div class="mt-6 flex flex-wrap items-center gap-4">
             <LandingPrimaryButton
               :href="selfResultHref"
               :label="couplesReport ? 'Open your result' : primaryActionLabel"

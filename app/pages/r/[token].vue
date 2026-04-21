@@ -124,7 +124,7 @@ useHead({
               {{ result.subprofileSummary }}
             </p>
 
-            <div class="mt-8 flex flex-wrap items-center gap-4">
+            <div class="mt-6 flex flex-wrap items-center gap-4">
               <button type="button" :class="primaryButtonClass" @click="copyShareLink">
                 {{ copyState === 'copied' ? 'Link copied' : 'Copy share link' }}
               </button>

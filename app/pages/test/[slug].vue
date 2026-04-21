@@ -294,7 +294,7 @@ useHead({
                 </li>
               </ul>
 
-              <div class="mt-8 flex flex-wrap items-center gap-4">
+              <div class="mt-6 flex flex-wrap items-center gap-4">
                 <button type="button" :class="primaryButtonClass" @click="startTest()">
                   {{ beginLabel }}
                 </button>
@@ -319,7 +319,7 @@ useHead({
                 {{ resultPublishError }}
               </p>
 
-              <div class="mt-8 flex flex-wrap items-center gap-4">
+              <div class="mt-6 flex flex-wrap items-center gap-4">
                 <button type="button" :class="primaryButtonClass" @click="handleViewResult">
                   View my results
                 </button>

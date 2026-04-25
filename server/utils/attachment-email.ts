@@ -24,6 +24,9 @@ type EmailShellOptions = {
   footerNote?: string
 }
 
+const brandName = 'Attachd'
+const brandMark = 'Attachd.'
+
 const colors = {
   cream: '#fff7ef',
   surface: '#f5eee7',
@@ -60,6 +63,14 @@ const getResendConfig = () => {
   }
 }
 
+const formatFromAddress = (from: string) => {
+  if (from.includes('<') && from.includes('>')) {
+    return from
+  }
+
+  return `"${brandMark}" <${from}>`
+}
+
 const sendResendEmail = async (payload: ResendEmailPayload) => {
   const config = getResendConfig()
 
@@ -75,7 +86,7 @@ const sendResendEmail = async (payload: ResendEmailPayload) => {
     },
     body: JSON.stringify({
       ...payload,
-      from: config.from,
+      from: formatFromAddress(config.from),
       ...(config.replyTo ? { reply_to: config.replyTo } : {}),
     }),
   })
@@ -109,9 +120,9 @@ const renderButton = (button: EmailButton, variant: 'primary' | 'secondary' = 'p
 const renderInfoRow = (label: string, copy: string) => `
   <tr>
     <td style="padding: 0 0 12px;">
-      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 18px;">
+      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="${colors.surface}" style="border-collapse: collapse; background: ${colors.surface};">
         <tr>
-          <td style="padding: 14px 16px;">
+          <td style="padding: 16px 18px;">
             <p style="margin: 0 0 5px; font-family: Arial, sans-serif; font-size: 11px; line-height: 15px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: ${colors.terra};">
               ${escapeHtml(label)}
             </p>
@@ -157,16 +168,16 @@ const renderEmailShell = ({
             <tr>
               <td style="padding: 0 4px 14px;">
                 <p style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 28px; line-height: 34px; color: ${colors.dark};">
-                  Attachd.
+                  ${brandMark}
                 </p>
               </td>
             </tr>
 
             <tr>
-              <td bgcolor="${colors.white}" style="border: 1px solid ${colors.border}; border-radius: 28px; overflow: hidden;">
+              <td bgcolor="${colors.white}" style="background: ${colors.white};">
                 <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
                   <tr>
-                    <td bgcolor="${colors.surface}" style="padding: 28px 28px 24px; border-bottom: 1px solid ${colors.border};">
+                    <td bgcolor="${colors.surface}" style="padding: 28px 28px 24px; background: ${colors.surface};">
                       <p style="margin: 0 0 12px; font-family: Arial, sans-serif; font-size: 11px; line-height: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: ${colors.terra};">
                         ${escapeHtml(eyebrow)}
                       </p>
@@ -203,8 +214,11 @@ const renderEmailShell = ({
 
             <tr>
               <td style="padding: 16px 4px 0;">
+                <p style="margin: 0 0 6px; font-family: Georgia, 'Times New Roman', serif; font-size: 18px; line-height: 24px; color: ${colors.dark};">
+                  ${brandMark}
+                </p>
                 <p style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; color: ${colors.muted};">
-                  ${escapeHtml(footerNote ?? 'Attachd emails are educational and are not diagnosis, therapy, medical care, or professional mental health advice.')}
+                  ${escapeHtml(footerNote ?? `${brandName} emails are educational and are not diagnosis, therapy, medical care, or professional mental health advice.`)}
                 </p>
               </td>
             </tr>
@@ -236,10 +250,10 @@ export const sendAttachmentResultVerificationEmail = async (
     preheader: `Confirm your email to keep your ${resultLabel} attachment result saved.`,
     eyebrow: 'Email confirmation',
     title: `Your ${resultLabel} result is ready.`,
-    intro: 'Confirm this inbox so your saved result and future Attachd emails are connected to a real email address.',
+    intro: `Confirm this inbox so your saved result and future ${brandName} emails are connected to a real email address.`,
     bodyHtml: `
       <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-        ${renderInfoRow('Why confirm?', 'It keeps your saved result tied to a real inbox and helps us send attachment follow-ups and Attachd updates only to confirmed emails.')}
+        ${renderInfoRow('Why confirm?', `It keeps your saved result tied to a real inbox and helps us send attachment follow-ups and ${brandName} updates only to confirmed emails.`)}
         ${renderInfoRow('Your saved result', shareUrl)}
       </table>
       <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 13px; line-height: 21px; color: ${colors.muted};">
@@ -259,16 +273,17 @@ export const sendAttachmentResultVerificationEmail = async (
 
   return sendAttachmentEmail({
     to: [record.email],
-    subject: 'Confirm your Attachd email',
+    subject: `Confirm your ${brandName} email`,
     html,
     text: [
       `Your ${resultLabel} attachment result is ready.`,
       '',
-      'Confirm this inbox so your saved result and future Attachd emails are connected to a real email address.',
+      `Confirm this inbox so your saved result and future ${brandName} emails are connected to a real email address.`,
       verificationUrl,
       '',
       `Open your result: ${shareUrl}`,
       '',
+      brandMark,
       'You can unsubscribe from future update emails anytime. The result itself is educational and not a diagnosis.',
     ].join('\n'),
   })
@@ -282,7 +297,7 @@ export const sendAttachmentWelcomeEmail = async (
   const resultLabel = record.result.content.label
   const html = renderEmailShell({
     preheader: `Your ${resultLabel} result is confirmed. Here is the deeper next step.`,
-    eyebrow: 'Welcome to Attachd',
+    eyebrow: `Welcome to ${brandName}`,
     title: 'Your result is saved.',
     intro: `Thanks for confirming your email. Your ${resultLabel} attachment result is now saved and ready whenever you want to return to it.`,
     bodyHtml: `
@@ -303,12 +318,12 @@ export const sendAttachmentWelcomeEmail = async (
       href: resultUrl,
       label: 'Open my result',
     },
-    footerNote: 'Attachd is educational and does not replace therapy, medical care, or professional mental health support.',
+    footerNote: `${brandName} is educational and does not replace therapy, medical care, or professional mental health support.`,
   })
 
   return sendAttachmentEmail({
     to: [record.email],
-    subject: 'Welcome to Attachd',
+    subject: `Welcome to ${brandName}`,
     html,
     text: [
       `Thanks for confirming your email. Your ${resultLabel} attachment result is saved.`,
@@ -320,7 +335,8 @@ export const sendAttachmentWelcomeEmail = async (
       `Get the paid PDF report: ${paidReportUrl}`,
       `Open your result: ${resultUrl}`,
       '',
-      'Attachd is educational and does not replace therapy, medical care, or professional mental health support.',
+      brandMark,
+      `${brandName} is educational and does not replace therapy, medical care, or professional mental health support.`,
     ].join('\n'),
   })
 }

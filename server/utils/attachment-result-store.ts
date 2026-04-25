@@ -21,6 +21,15 @@ export const getAttachmentResultRecord = async (token: string) => {
   return record ? mapAttachmentResultRowToRecord(record) : null
 }
 
+export const getAttachmentResultRecordByEmailVerificationHash = async (tokenHash: string) => {
+  const db = getDb()
+  const record = await db.query.attachmentResults.findFirst({
+    where: eq(attachmentResults.emailVerificationTokenHash, tokenHash),
+  })
+
+  return record ? mapAttachmentResultRowToRecord(record) : null
+}
+
 export const saveAttachmentResultRecord = async (record: AttachmentPersistedResultRecord) => {
   const db = getDb()
   const row = mapAttachmentResultRecordToRow(record)

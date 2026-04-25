@@ -27,6 +27,36 @@ const payload = ref(await fetchPersistedResult())
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 const pageMounted = ref(false)
 
+const emailNotice = computed(() => {
+  const value = Array.isArray(route.query.email) ? route.query.email[0] : route.query.email
+
+  if (value === 'pending') {
+    return {
+      tone: 'bg-sec-bg',
+      title: 'Check your inbox',
+      body: 'Your result is open now. Use the confirmation link we sent to verify this email for saved-result, follow-up, and update emails.',
+    }
+  }
+
+  if (value === 'verified') {
+    return {
+      tone: 'bg-sec-bg',
+      title: 'Email confirmed',
+      body: 'Thanks, your email is verified for this saved result.',
+    }
+  }
+
+  if (value === 'expired') {
+    return {
+      tone: 'bg-cream',
+      title: 'Confirmation link expired',
+      body: 'Your result is still available. You can request a fresh confirmation link the next time you update your email.',
+    }
+  }
+
+  return null
+})
+
 const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
 const bodyCopyClass = 'text-[15px] leading-7 text-body'
@@ -123,6 +153,16 @@ useHead({
           </header>
 
           <div class="lg:mt-10 grid gap-5 max-lg:order-3">
+            <div
+              v-if="emailNotice"
+              :class="[panelShellClass, emailNotice.tone]"
+            >
+              <p :class="noteKickerClass">{{ emailNotice.title }}</p>
+              <p :class="noteCopyClass">
+                {{ emailNotice.body }}
+              </p>
+            </div>
+
             <div :class="[panelShellClass, 'bg-sec-bg']">
               <p :class="noteKickerClass">Saved result snapshot</p>
               <p :class="noteCopyClass">

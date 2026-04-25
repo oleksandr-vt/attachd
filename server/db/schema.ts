@@ -16,6 +16,10 @@ export const attachmentResults = pgTable('attachment_results', {
   secondaryType: varchar('secondary_type', { length: 32 }).notNull(),
   email: text('email').notNull().default(''),
   emailUnlocked: boolean('email_unlocked').notNull().default(false),
+  emailVerificationTokenHash: text('email_verification_token_hash').notNull().default(''),
+  emailVerificationSentAt: timestamp('email_verification_sent_at', { withTimezone: true, mode: 'string' }),
+  emailVerificationExpiresAt: timestamp('email_verification_expires_at', { withTimezone: true, mode: 'string' }),
+  emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true, mode: 'string' }),
 })
 
 export const attachmentCouplesReports = pgTable('attachment_couples_reports', {
@@ -51,6 +55,10 @@ export const mapAttachmentResultRowToRecord = (
   secondaryType: row.secondaryType as AttachmentPersistedResultRecord['secondaryType'],
   email: row.email,
   emailUnlocked: row.emailUnlocked,
+  emailVerificationTokenHash: row.emailVerificationTokenHash,
+  emailVerificationSentAt: row.emailVerificationSentAt,
+  emailVerificationExpiresAt: row.emailVerificationExpiresAt,
+  emailVerifiedAt: row.emailVerifiedAt,
 })
 
 export const mapAttachmentResultRecordToRow = (
@@ -67,6 +75,10 @@ export const mapAttachmentResultRecordToRow = (
   secondaryType: record.secondaryType,
   email: record.email,
   emailUnlocked: record.emailUnlocked,
+  emailVerificationTokenHash: record.emailVerificationTokenHash,
+  emailVerificationSentAt: record.emailVerificationSentAt,
+  emailVerificationExpiresAt: record.emailVerificationExpiresAt,
+  emailVerifiedAt: record.emailVerifiedAt,
 })
 
 export const mapAttachmentCouplesReportRowToRecord = (

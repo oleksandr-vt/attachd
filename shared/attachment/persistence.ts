@@ -16,9 +16,38 @@ export type AttachmentPersistedResultRecord = {
   secondaryType: AttachmentStyleType
   email: string
   emailUnlocked: boolean
+  emailVerificationTokenHash: string
+  emailVerificationSentAt: string | null
+  emailVerificationExpiresAt: string | null
+  emailVerifiedAt: string | null
 }
 
+export type AttachmentPersistedResultPublicRecord = Omit<
+  AttachmentPersistedResultRecord,
+  'email'
+  | 'emailUnlocked'
+  | 'emailVerificationTokenHash'
+  | 'emailVerificationExpiresAt'
+  | 'emailVerificationSentAt'
+  | 'emailVerifiedAt'
+>
+
 export type AttachmentPersistedResultResponse = {
-  record: AttachmentPersistedResultRecord
+  record: AttachmentPersistedResultPublicRecord
   shareUrl: string
+  emailVerificationSent: boolean
 }
+
+export const toAttachmentPersistedResultPublicRecord = (
+  record: AttachmentPersistedResultRecord,
+): AttachmentPersistedResultPublicRecord => ({
+  token: record.token,
+  slug: record.slug,
+  createdAt: record.createdAt,
+  questionSetVersion: record.questionSetVersion,
+  scoringVersion: record.scoringVersion,
+  answers: record.answers,
+  result: record.result,
+  primaryType: record.primaryType,
+  secondaryType: record.secondaryType,
+})

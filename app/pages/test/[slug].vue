@@ -175,7 +175,10 @@ const submitEmailForResults = async () => {
 
     unlockEmailGate(email)
     setSharedResultToken(response.record.token)
-    await navigateTo(`/r/${response.record.token}`)
+    await navigateTo({
+      path: `/r/${response.record.token}`,
+      query: response.emailVerificationSent ? { email: 'pending' } : {},
+    })
   } catch {
     resultPublishError.value = 'We could not save your result just now. Please try again.'
   } finally {
@@ -327,8 +330,8 @@ useHead({
                 Your answers are complete.
               </h2>
               <p class="landing-section-copy mt-4 max-w-140">
-                Add your email to open your result, keep a saved link for later, and continue to
-                your full attachment breakdown.
+                Add your email to open your result now. We will send a confirmation link so your
+                saved result and future Attachd emails are connected to a real inbox.
               </p>
 
               <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitEmailForResults">
@@ -342,6 +345,11 @@ useHead({
                     placeholder="you@example.com"
                   >
                 </label>
+
+                <p class="text-sm leading-6 text-muted">
+                  Confirming your email lets us send your saved result, attachment follow-ups, and
+                  Attachd updates. You can unsubscribe from future updates anytime.
+                </p>
 
                 <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
                   {{ emailError }}

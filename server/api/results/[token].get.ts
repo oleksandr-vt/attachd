@@ -1,4 +1,7 @@
-import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
+import {
+  toAttachmentPersistedResultPublicRecord,
+  type AttachmentPersistedResultResponse,
+} from '~~/shared/attachment/persistence'
 import { getAttachmentResultRecord } from '~~/server/utils/attachment-result-store'
 
 export default defineEventHandler(async (event): Promise<AttachmentPersistedResultResponse> => {
@@ -23,7 +26,8 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
   const requestUrl = getRequestURL(event)
 
   return {
-    record,
+    record: toAttachmentPersistedResultPublicRecord(record),
     shareUrl: `${requestUrl.origin}/r/${token}`,
+    emailVerificationSent: Boolean(record.emailVerificationSentAt),
   }
 })

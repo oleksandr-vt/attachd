@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppButton from '~/components/AppButton.vue'
 import CouplesReportView from '~/components/CouplesReportView.vue'
+import ShareLinkField from '~/components/ShareLinkField.vue'
 import type { AttachmentCouplesPersistedReportResponse } from '~~/shared/attachment/couples-persistence'
 
 const route = useRoute()
@@ -29,7 +30,6 @@ const pageMounted = ref(false)
 
 const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
-const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
 const record = computed(() => payload.value.record)
 const report = computed(() => record.value.report)
@@ -134,25 +134,15 @@ useHead({
           </p>
         </header>
 
-        <div class="grid gap-5 md:grid-cols-2">
-          <section :class="[panelShellClass, 'bg-white']">
-            <p :class="noteKickerClass">Saved snapshot</p>
-            <h2 :class="sectionTitleClass">Stored as its own report.</h2>
-            <p :class="bodyCopyClass">
-              This couples comparison is saved as a separate snapshot, so the share link opens the same pair read without needing the original builder query.
-            </p>
-          </section>
-
-          <section :class="[panelShellClass, 'bg-white']">
-            <p :class="noteKickerClass">Source pair</p>
-            <h2 :class="sectionTitleClass">
-              {{ record.leftResult.content.label }} + {{ record.rightResult.content.label }}
-            </h2>
-            <p :class="bodyCopyClass">
-              Based on two completed attachment results captured on {{ createdAtLabel }}.
-            </p>
-          </section>
-        </div>
+        <section :class="[panelShellClass, 'bg-white']">
+          <p :class="noteKickerClass">Source pair</p>
+          <h2 :class="sectionTitleClass">
+            {{ record.leftResult.content.label }} + {{ record.rightResult.content.label }}
+          </h2>
+          <p class="text-[15px] leading-7 text-body">
+            Based on two completed attachment results captured on {{ createdAtLabel }}.
+          </p>
+        </section>
 
         <CouplesReportView
           :report="report"
@@ -160,10 +150,7 @@ useHead({
         />
 
         <section :class="[panelShellClass, 'bg-white']">
-          <p :class="noteKickerClass">Share link</p>
-          <p class="text-sm leading-6 break-all text-body">
-            {{ shareUrl }}
-          </p>
+          <ShareLinkField :value="shareUrl" />
         </section>
       </div>
     </div>

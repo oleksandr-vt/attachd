@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppButton from '~/components/AppButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
+import ShareLinkField from '~/components/ShareLinkField.vue'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
 const route = useRoute()
@@ -369,10 +370,7 @@ useHead({
           </details>
 
           <div :class="[panelShellClass, 'mt-4 bg-sec-bg']">
-            <p :class="noteKickerClass">Share link</p>
-            <p class="text-sm leading-6 break-all text-body">
-              {{ shareUrl }}
-            </p>
+            <ShareLinkField :value="shareUrl" />
           </div>
         </aside>
       </div>

@@ -72,7 +72,7 @@ const resolvedProfileLabels = computed<[string, string]>(() => [
       <section
         v-for="(profile, index) in report.profiles"
         :key="`${resolvedProfileLabels[index] ?? 'Profile'}-${profile.type}`"
-        :class="[panelShellClass, 'bg-white']"
+        :class="[panelShellClass, 'bg-white flex flex-col']"
       >
         <p :class="noteKickerClass">{{ resolvedProfileLabels[index] }}</p>
 
@@ -101,7 +101,7 @@ const resolvedProfileLabels = computed<[string, string]>(() => [
           </p>
         </div>
 
-        <div class="mt-6 grid gap-5 md:grid-cols-2">
+        <div class="mt-6 mb-auto grid gap-5 md:grid-cols-2">
           <div>
             <p class="mb-3 text-xs font-medium uppercase tracking-widest text-pale">
               Feels safer with

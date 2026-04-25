@@ -191,6 +191,34 @@ const missingStateCopy = computed(() => {
   return 'Paste your partner shared result link or token below. The report will compare both profiles side by side and highlight the most likely friction and repair pattern.'
 })
 
+const comparisonBuilderKicker = computed(() =>
+  couplesReport.value ? 'Comparison loaded' : 'Build the comparison',
+)
+
+const comparisonBuilderTitle = computed(() => {
+  if (couplesReport.value) {
+    return 'These source links built the report below.'
+  }
+
+  return hasSelfContext.value ? 'Add your partner shared result.' : 'Paste both shared result links.'
+})
+
+const comparisonBuilderCopy = computed(() => {
+  if (couplesReport.value) {
+    return 'The comparison below is already generated from these results. You can still replace either link and update the comparison before creating a shareable report link.'
+  }
+
+  return missingStateCopy.value
+})
+
+const comparisonSubmitLabel = computed(() => {
+  if (selfLoading.value || partnerLoading.value) {
+    return 'Loading results'
+  }
+
+  return couplesReport.value ? 'Update comparison' : 'Build couples report'
+})
+
 const selfStatusNote = computed(() => {
   if (selfPayload.value?.record.token) {
     return 'Using your shared result link.'
@@ -323,12 +351,12 @@ useHead({
         </header>
 
         <section :class="[panelShellClass, 'bg-white']">
-          <p :class="noteKickerClass">Build the comparison</p>
+          <p :class="noteKickerClass">{{ comparisonBuilderKicker }}</p>
           <h2 :class="sectionTitleClass">
-            {{ hasSelfContext ? 'Add your partner shared result.' : 'Paste both shared result links.' }}
+            {{ comparisonBuilderTitle }}
           </h2>
           <p :class="bodyCopyClass">
-            {{ missingStateCopy }}
+            {{ comparisonBuilderCopy }}
           </p>
 
           <div
@@ -369,7 +397,7 @@ useHead({
                 size="sm"
                 :disabled="selfLoading || partnerLoading"
               >
-                {{ selfLoading || partnerLoading ? 'Loading results' : 'Build couples report' }}
+                {{ comparisonSubmitLabel }}
               </AppButton>
               <span class="text-sm text-muted">Supports raw tokens or full shared result URLs.</span>
             </div>

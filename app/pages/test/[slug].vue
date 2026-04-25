@@ -346,11 +346,6 @@ useHead({
                   >
                 </label>
 
-                <p class="text-sm leading-6 text-muted">
-                  Confirming your email lets us send your saved result, attachment follow-ups, and
-                  Attachd updates. You can unsubscribe from future updates anytime.
-                </p>
-
                 <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
                   {{ emailError }}
                 </p>

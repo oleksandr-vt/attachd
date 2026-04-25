@@ -49,9 +49,21 @@ const continueLocked = ref(false)
 const resultPublishError = ref('')
 const emailError = ref('')
 const savingResult = ref(false)
+const generatingResult = ref(false)
 const emailInput = ref(session.value.email)
 let continueUnlockTimeout: number | null = null
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const resultRevealDelayMs = 1700
+const resultLoadingSteps = [
+  'Scoring your answer patterns',
+  'Mapping your strongest triggers',
+  'Preparing your saved result',
+]
+
+const waitForResultReveal = () =>
+  new Promise<void>((resolve) => {
+    window.setTimeout(resolve, resultRevealDelayMs)
+  })
 
 const beginLabel = computed(() =>
   answeredCount.value > 0 ? `Resume at question ${currentQuestionNumber.value}` : 'Start the test',
@@ -163,15 +175,19 @@ const submitEmailForResults = async () => {
   emailError.value = ''
   resultPublishError.value = ''
   savingResult.value = true
+  generatingResult.value = true
 
   try {
-    const response = await $fetch<AttachmentPersistedResultResponse>('/api/results', {
-      method: 'POST',
-      body: {
-        answers: session.value.answers,
-        email,
-      },
-    })
+    const [response] = await Promise.all([
+      $fetch<AttachmentPersistedResultResponse>('/api/results', {
+        method: 'POST',
+        body: {
+          answers: session.value.answers,
+          email,
+        },
+      }),
+      waitForResultReveal(),
+    ])
 
     unlockEmailGate(email)
     setSharedResultToken(response.record.token)
@@ -180,6 +196,7 @@ const submitEmailForResults = async () => {
       query: response.emailVerificationSent ? { email: 'pending' } : {},
     })
   } catch {
+    generatingResult.value = false
     resultPublishError.value = 'We could not save your result just now. Please try again.'
   } finally {
     savingResult.value = false
@@ -325,43 +342,74 @@ useHead({
               key="capture"
               class="rounded-3xl border border-border bg-sec-bg p-6 md:p-8"
             >
-              <p class="landing-section-kicker">One more step</p>
-              <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-5xl">
-                Your answers are complete.
-              </h2>
-              <p class="landing-section-copy mt-4 max-w-140">
-                Add your email to open your result now. We will send a confirmation link so your
-                saved result and future Attachd emails are connected to a real inbox.
-              </p>
-
-              <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitEmailForResults">
-                <label class="grid gap-2">
-                  <span class="text-sm font-medium text-dark">Email address</span>
-                  <input
-                    v-model="emailInput"
-                    type="email"
-                    autocomplete="email"
-                    class="rounded-[18px] border border-border bg-white px-4 py-4 text-dark outline-none transition-all duration-200 focus:border-[#c9b8a9] focus:shadow-[0_0_0_3px_rgba(184,92,56,0.12)]"
-                    placeholder="you@example.com"
-                  >
-                </label>
-
-                <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
-                  {{ emailError }}
-                </p>
-                <p v-if="resultPublishError" class="text-sm leading-6 text-terra-dk">
-                  {{ resultPublishError }}
-                </p>
-
-                <div class="mt-2 flex flex-wrap items-center gap-4">
-                  <AppButton type="submit" size="sm" :disabled="savingResult">
-                    {{ savingResult ? 'Saving your result' : 'Continue to my results' }}
-                  </AppButton>
-                  <AppButton variant="outline" size="sm" @click="openRestartConfirm">
-                    Retake the test
-                  </AppButton>
+              <div v-if="generatingResult" class="grid gap-6">
+                <div>
+                  <p class="landing-section-kicker">Preparing result</p>
+                  <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-5xl">
+                    Reading your attachment pattern.
+                  </h2>
+                  <p class="landing-section-copy mt-4 max-w-140">
+                    We are turning your answers into a saved result snapshot.
+                  </p>
                 </div>
-              </form>
+
+                <div class="max-w-130 rounded-3xl border border-border bg-white p-5">
+                  <div class="h-2 overflow-hidden rounded-full bg-cream">
+                    <div class="h-full w-1/2 rounded-full bg-terra motion-safe:animate-[result-loader_1.35s_ease-in-out_infinite]" />
+                  </div>
+
+                  <ul class="mt-5 grid gap-3">
+                    <li
+                      v-for="step in resultLoadingSteps"
+                      :key="step"
+                      class="flex items-center gap-3 text-sm leading-6 text-dark2"
+                    >
+                      <span class="size-2 rounded-full bg-terra motion-safe:animate-pulse" aria-hidden="true" />
+                      <span>{{ step }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <template v-else>
+                <p class="landing-section-kicker">One more step</p>
+                <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-dark sm:text-5xl">
+                  Your answers are complete.
+                </h2>
+                <p class="landing-section-copy mt-4 max-w-140">
+                  Add your email to open your result now. We will send a confirmation link so your
+                  saved result and future Attachd emails are connected to a real inbox.
+                </p>
+
+                <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitEmailForResults">
+                  <label class="grid gap-2">
+                    <span class="text-sm font-medium text-dark">Email address</span>
+                    <input
+                      v-model="emailInput"
+                      type="email"
+                      autocomplete="email"
+                      class="rounded-[18px] border border-border bg-white px-4 py-4 text-dark outline-none transition-all duration-200 focus:border-[#c9b8a9] focus:shadow-[0_0_0_3px_rgba(184,92,56,0.12)]"
+                      placeholder="you@example.com"
+                    >
+                  </label>
+
+                  <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
+                    {{ emailError }}
+                  </p>
+                  <p v-if="resultPublishError" class="text-sm leading-6 text-terra-dk">
+                    {{ resultPublishError }}
+                  </p>
+
+                  <div class="mt-2 flex flex-wrap items-center gap-4">
+                    <AppButton type="submit" size="sm" :disabled="savingResult">
+                      {{ savingResult ? 'Saving your result' : 'Continue to my results' }}
+                    </AppButton>
+                    <AppButton variant="outline" size="sm" @click="openRestartConfirm">
+                      Retake the test
+                    </AppButton>
+                  </div>
+                </form>
+              </template>
             </div>
 
             <div
@@ -448,3 +496,19 @@ useHead({
     />
   </section>
 </template>
+
+<style>
+@keyframes result-loader {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  55% {
+    transform: translateX(80%);
+  }
+
+  100% {
+    transform: translateX(220%);
+  }
+}
+</style>

@@ -20,6 +20,7 @@ export const attachmentResults = pgTable('attachment_results', {
   emailVerificationSentAt: timestamp('email_verification_sent_at', { withTimezone: true, mode: 'string' }),
   emailVerificationExpiresAt: timestamp('email_verification_expires_at', { withTimezone: true, mode: 'string' }),
   emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true, mode: 'string' }),
+  welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
 })
 
 export const attachmentCouplesReports = pgTable('attachment_couples_reports', {
@@ -59,6 +60,7 @@ export const mapAttachmentResultRowToRecord = (
   emailVerificationSentAt: row.emailVerificationSentAt,
   emailVerificationExpiresAt: row.emailVerificationExpiresAt,
   emailVerifiedAt: row.emailVerifiedAt,
+  welcomeEmailSentAt: row.welcomeEmailSentAt,
 })
 
 export const mapAttachmentResultRecordToRow = (
@@ -79,6 +81,7 @@ export const mapAttachmentResultRecordToRow = (
   emailVerificationSentAt: record.emailVerificationSentAt,
   emailVerificationExpiresAt: record.emailVerificationExpiresAt,
   emailVerifiedAt: record.emailVerifiedAt,
+  welcomeEmailSentAt: record.welcomeEmailSentAt,
 })
 
 export const mapAttachmentCouplesReportRowToRecord = (

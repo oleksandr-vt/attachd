@@ -1,0 +1,1 @@
+ALTER TABLE "attachment_results" ADD COLUMN "welcome_email_sent_at" timestamp with time zone;

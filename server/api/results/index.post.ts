@@ -86,6 +86,7 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
     emailVerificationSentAt: null,
     emailVerificationExpiresAt,
     emailVerifiedAt: null,
+    welcomeEmailSentAt: null,
   }
 
   await saveAttachmentResultRecord(record)

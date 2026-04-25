@@ -20,6 +20,7 @@ export type AttachmentPersistedResultRecord = {
   emailVerificationSentAt: string | null
   emailVerificationExpiresAt: string | null
   emailVerifiedAt: string | null
+  welcomeEmailSentAt: string | null
 }
 
 export type AttachmentPersistedResultPublicRecord = Omit<
@@ -30,6 +31,7 @@ export type AttachmentPersistedResultPublicRecord = Omit<
   | 'emailVerificationExpiresAt'
   | 'emailVerificationSentAt'
   | 'emailVerifiedAt'
+  | 'welcomeEmailSentAt'
 >
 
 export type AttachmentPersistedResultResponse = {

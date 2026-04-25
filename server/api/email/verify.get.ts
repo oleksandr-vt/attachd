@@ -2,6 +2,7 @@ import {
   getAttachmentResultRecordByEmailVerificationHash,
   updateAttachmentResultRecord,
 } from '~~/server/utils/attachment-result-store'
+import { sendAttachmentWelcomeEmail } from '~~/server/utils/attachment-email'
 import {
   hashEmailVerificationToken,
   isEmailVerificationExpired,
@@ -32,11 +33,27 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, `/r/${record.token}?email=expired`, 302)
   }
 
+  let verifiedRecord = record
+
   if (!record.emailVerifiedAt) {
-    await updateAttachmentResultRecord(record.token, (currentRecord) => ({
+    verifiedRecord = await updateAttachmentResultRecord(record.token, (currentRecord) => ({
       ...currentRecord,
       emailVerifiedAt: new Date().toISOString(),
-    }))
+    })) ?? record
+  }
+
+  if (!verifiedRecord.welcomeEmailSentAt) {
+    const requestUrl = getRequestURL(event)
+    const resultUrl = `${requestUrl.origin}/r/${verifiedRecord.token}`
+    const paidReportUrl = `${requestUrl.origin}/#report`
+    const welcomeEmailSent = await sendAttachmentWelcomeEmail(verifiedRecord, resultUrl, paidReportUrl)
+
+    if (welcomeEmailSent) {
+      await updateAttachmentResultRecord(verifiedRecord.token, (currentRecord) => ({
+        ...currentRecord,
+        welcomeEmailSentAt: new Date().toISOString(),
+      }))
+    }
   }
 
   return sendRedirect(event, `/r/${record.token}?email=verified`, 302)

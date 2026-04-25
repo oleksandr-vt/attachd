@@ -8,6 +8,34 @@ type ResendEmailPayload = {
   reply_to?: string
 }
 
+type EmailButton = {
+  href: string
+  label: string
+}
+
+type EmailShellOptions = {
+  preheader: string
+  eyebrow: string
+  title: string
+  intro: string
+  bodyHtml: string
+  primaryButton: EmailButton
+  secondaryButton?: EmailButton
+  footerNote?: string
+}
+
+const colors = {
+  cream: '#fff7ef',
+  surface: '#f5eee7',
+  white: '#ffffff',
+  dark: '#2f2926',
+  body: '#625852',
+  muted: '#7d716a',
+  terra: '#9f4d31',
+  terraSoft: '#f0d2c2',
+  border: '#ded2c7',
+}
+
 const escapeHtml = (value: string) =>
   value
     .replaceAll('&', '&amp;')
@@ -60,41 +88,239 @@ const sendResendEmail = async (payload: ResendEmailPayload) => {
   return true
 }
 
+const renderButton = (button: EmailButton, variant: 'primary' | 'secondary' = 'primary') => {
+  const isPrimary = variant === 'primary'
+  const escapedHref = escapeHtml(button.href)
+  const escapedLabel = escapeHtml(button.label)
+
+  return `
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate;">
+      <tr>
+        <td align="center" bgcolor="${isPrimary ? colors.dark : colors.white}" style="border: 1px solid ${isPrimary ? colors.dark : colors.border}; border-radius: 999px;">
+          <a href="${escapedHref}" style="display: inline-block; padding: 12px 18px; font-family: Arial, sans-serif; font-size: 14px; line-height: 18px; font-weight: 700; color: ${isPrimary ? colors.cream : colors.dark}; text-decoration: none; border-radius: 999px;">
+            ${escapedLabel}
+          </a>
+        </td>
+      </tr>
+    </table>
+  `
+}
+
+const renderInfoRow = (label: string, copy: string) => `
+  <tr>
+    <td style="padding: 0 0 12px;">
+      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background: ${colors.surface}; border: 1px solid ${colors.border}; border-radius: 18px;">
+        <tr>
+          <td style="padding: 14px 16px;">
+            <p style="margin: 0 0 5px; font-family: Arial, sans-serif; font-size: 11px; line-height: 15px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: ${colors.terra};">
+              ${escapeHtml(label)}
+            </p>
+            <p style="margin: 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 22px; color: ${colors.body};">
+              ${escapeHtml(copy)}
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+`
+
+const renderEmailShell = ({
+  preheader,
+  eyebrow,
+  title,
+  intro,
+  bodyHtml,
+  primaryButton,
+  secondaryButton,
+  footerNote,
+}: EmailShellOptions) => {
+  const escapedPreheader = escapeHtml(preheader)
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>${escapeHtml(title)}</title>
+  </head>
+  <body style="margin: 0; padding: 0; background: ${colors.cream};">
+    <div style="display: none; max-height: 0; overflow: hidden; opacity: 0; color: transparent;">
+      ${escapedPreheader}
+    </div>
+
+    <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background: ${colors.cream};">
+      <tr>
+        <td align="center" style="padding: 32px 16px;">
+          <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 640px; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 0 4px 14px;">
+                <p style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 28px; line-height: 34px; color: ${colors.dark};">
+                  Attachd.
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td bgcolor="${colors.white}" style="border: 1px solid ${colors.border}; border-radius: 28px; overflow: hidden;">
+                <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                  <tr>
+                    <td bgcolor="${colors.surface}" style="padding: 28px 28px 24px; border-bottom: 1px solid ${colors.border};">
+                      <p style="margin: 0 0 12px; font-family: Arial, sans-serif; font-size: 11px; line-height: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: ${colors.terra};">
+                        ${escapeHtml(eyebrow)}
+                      </p>
+                      <h1 style="margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 34px; line-height: 38px; font-weight: 400; letter-spacing: 0; color: ${colors.dark};">
+                        ${escapeHtml(title)}
+                      </h1>
+                      <p style="margin: 16px 0 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 26px; color: ${colors.body};">
+                        ${escapeHtml(intro)}
+                      </p>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td style="padding: 26px 28px 28px;">
+                      ${bodyHtml}
+
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 8px 12px 0 0;">
+                            ${renderButton(primaryButton)}
+                          </td>
+                          ${secondaryButton ? `
+                            <td style="padding: 8px 0 0;">
+                              ${renderButton(secondaryButton, 'secondary')}
+                            </td>
+                          ` : ''}
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 16px 4px 0;">
+                <p style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; color: ${colors.muted};">
+                  ${escapeHtml(footerNote ?? 'Attachd emails are educational and are not diagnosis, therapy, medical care, or professional mental health advice.')}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`
+}
+
+const sendAttachmentEmail = async (payload: ResendEmailPayload) => {
+  try {
+    return await sendResendEmail(payload)
+  } catch (error) {
+    console.warn(error)
+    return false
+  }
+}
+
 export const sendAttachmentResultVerificationEmail = async (
   record: AttachmentPersistedResultRecord,
   verificationUrl: string,
   shareUrl: string,
 ) => {
+  const resultLabel = record.result.content.label
   const escapedVerificationUrl = escapeHtml(verificationUrl)
-  const escapedShareUrl = escapeHtml(shareUrl)
-  const resultLabel = escapeHtml(record.result.content.label)
+  const html = renderEmailShell({
+    preheader: `Confirm your email to keep your ${resultLabel} attachment result saved.`,
+    eyebrow: 'Email confirmation',
+    title: `Your ${resultLabel} result is ready.`,
+    intro: 'Confirm this inbox so your saved result and future Attachd emails are connected to a real email address.',
+    bodyHtml: `
+      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        ${renderInfoRow('Why confirm?', 'It keeps your saved result tied to a real inbox and helps us send attachment follow-ups and Attachd updates only to confirmed emails.')}
+        ${renderInfoRow('Your saved result', shareUrl)}
+      </table>
+      <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 13px; line-height: 21px; color: ${colors.muted};">
+        If the button does not work, open this link: <a href="${escapedVerificationUrl}" style="color: ${colors.terra}; text-decoration: underline;">${escapedVerificationUrl}</a>
+      </p>
+    `,
+    primaryButton: {
+      href: verificationUrl,
+      label: 'Confirm my email',
+    },
+    secondaryButton: {
+      href: shareUrl,
+      label: 'Open result',
+    },
+    footerNote: 'You can unsubscribe from future update emails anytime. The result itself is educational and not a diagnosis.',
+  })
 
-  try {
-    return await sendResendEmail({
-      to: [record.email],
-      subject: 'Confirm your Attachd email',
-      html: `
-        <div style="font-family: Inter, Arial, sans-serif; color: #2f2926; line-height: 1.6; max-width: 560px;">
-          <p style="margin: 0 0 16px;">Your ${resultLabel} attachment result is ready.</p>
-          <p style="margin: 0 0 20px;">Confirm this email address so we know where to send your saved result, attachment follow-ups, and Attachd updates. You can unsubscribe from future updates anytime.</p>
-          <p style="margin: 0 0 24px;">
-            <a href="${escapedVerificationUrl}" style="display: inline-block; background: #2f2926; color: #fff7ef; text-decoration: none; border-radius: 999px; padding: 12px 18px;">Confirm my email</a>
-          </p>
-          <p style="margin: 0 0 12px; font-size: 14px; color: #6d625c;">You can also open your result here:</p>
-          <p style="margin: 0; font-size: 14px;"><a href="${escapedShareUrl}" style="color: #9f4d31;">${escapedShareUrl}</a></p>
-        </div>
-      `,
-      text: [
-        `Your ${record.result.content.label} attachment result is ready.`,
-        '',
-        'Confirm this email address so we know where to send your saved result, attachment follow-ups, and Attachd updates. You can unsubscribe from future updates anytime.',
-        verificationUrl,
-        '',
-        `Open your result: ${shareUrl}`,
-      ].join('\n'),
-    })
-  } catch (error) {
-    console.warn(error)
-    return false
-  }
+  return sendAttachmentEmail({
+    to: [record.email],
+    subject: 'Confirm your Attachd email',
+    html,
+    text: [
+      `Your ${resultLabel} attachment result is ready.`,
+      '',
+      'Confirm this inbox so your saved result and future Attachd emails are connected to a real email address.',
+      verificationUrl,
+      '',
+      `Open your result: ${shareUrl}`,
+      '',
+      'You can unsubscribe from future update emails anytime. The result itself is educational and not a diagnosis.',
+    ].join('\n'),
+  })
+}
+
+export const sendAttachmentWelcomeEmail = async (
+  record: AttachmentPersistedResultRecord,
+  resultUrl: string,
+  paidReportUrl: string,
+) => {
+  const resultLabel = record.result.content.label
+  const html = renderEmailShell({
+    preheader: `Your ${resultLabel} result is confirmed. Here is the deeper next step.`,
+    eyebrow: 'Welcome to Attachd',
+    title: 'Your result is saved.',
+    intro: `Thanks for confirming your email. Your ${resultLabel} attachment result is now saved and ready whenever you want to return to it.`,
+    bodyHtml: `
+      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        ${renderInfoRow('What your free result gives you', 'A clear first read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.')}
+        ${renderInfoRow('What the paid PDF adds', 'A deeper guided breakdown of your protective pattern, likely relationship loops, practical repair moves, and a cleaner reference you can keep.')}
+        ${renderInfoRow('A useful next move', 'Open your result, pick one trigger that feels familiar, and notice where it shows up before you try to fix everything at once.')}
+      </table>
+      <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 23px; color: ${colors.body};">
+        If you want the full version, the paid PDF is built for a slower, more complete read than the share page.
+      </p>
+    `,
+    primaryButton: {
+      href: paidReportUrl,
+      label: 'Get the paid PDF report',
+    },
+    secondaryButton: {
+      href: resultUrl,
+      label: 'Open my result',
+    },
+    footerNote: 'Attachd is educational and does not replace therapy, medical care, or professional mental health support.',
+  })
+
+  return sendAttachmentEmail({
+    to: [record.email],
+    subject: 'Welcome to Attachd',
+    html,
+    text: [
+      `Thanks for confirming your email. Your ${resultLabel} attachment result is saved.`,
+      '',
+      'Your free result gives you a clear first read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.',
+      '',
+      'The paid PDF adds a deeper guided breakdown of your protective pattern, likely relationship loops, practical repair moves, and a cleaner reference you can keep.',
+      '',
+      `Get the paid PDF report: ${paidReportUrl}`,
+      `Open your result: ${resultUrl}`,
+      '',
+      'Attachd is educational and does not replace therapy, medical care, or professional mental health support.',
+    ].join('\n'),
+  })
 }

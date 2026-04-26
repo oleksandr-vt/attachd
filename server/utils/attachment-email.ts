@@ -340,3 +340,50 @@ export const sendAttachmentWelcomeEmail = async (
     ].join('\n'),
   })
 }
+
+export const sendAttachmentPdfReadyEmail = async (
+  record: AttachmentPersistedResultRecord,
+  reportUrl: string,
+) => {
+  const resultLabel = record.result.content.label
+  const html = renderEmailShell({
+    preheader: `Your ${resultLabel} attachment PDF report is ready to download.`,
+    eyebrow: 'PDF report ready',
+    title: 'Your paid report is ready.',
+    intro: `Your ${resultLabel} attachment PDF has been unlocked and is ready whenever you want to download it.`,
+    bodyHtml: `
+      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        ${renderInfoRow('What is inside', 'A deeper deterministic breakdown of your attachment pattern, trigger clusters, protective habits, repair scripts, and secure growth practices.')}
+        ${renderInfoRow('Keep this link', 'This access page lets you download the PDF connected to your paid report order.')}
+      </table>
+      <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 23px; color: ${colors.body};">
+        The report is educational and is not a diagnosis, therapy, medical care, or professional mental health advice.
+      </p>
+    `,
+    primaryButton: {
+      href: reportUrl,
+      label: 'Download my PDF',
+    },
+    secondaryButton: {
+      href: reportUrl,
+      label: 'Open access page',
+    },
+    footerNote: `${brandName} reports are educational and do not replace therapy, medical care, or professional mental health support.`,
+  })
+
+  return sendAttachmentEmail({
+    to: [record.email],
+    subject: `Your ${brandName} PDF report is ready`,
+    html,
+    text: [
+      `Your ${resultLabel} attachment PDF report is ready.`,
+      '',
+      'Open your paid report access page:',
+      reportUrl,
+      '',
+      'The report is educational and is not a diagnosis, therapy, medical care, or professional mental health advice.',
+      '',
+      brandMark,
+    ].join('\n'),
+  })
+}

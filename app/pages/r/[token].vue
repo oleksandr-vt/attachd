@@ -2,7 +2,27 @@
 import AppButton from '~/components/AppButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import ShareLinkField from '~/components/ShareLinkField.vue'
+import type { AttachmentReportCheckoutResponse } from '~~/shared/attachment/report-order'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
+
+type PaddleWindow = Window & {
+  Paddle?: {
+    Environment?: {
+      set: (environment: 'sandbox') => void
+    }
+    Initialize: (options: { token: string }) => void
+    Checkout: {
+      open: (options: {
+        settings: AttachmentReportCheckoutResponse['paddle']['settings']
+        items: AttachmentReportCheckoutResponse['paddle']['items']
+        customData: AttachmentReportCheckoutResponse['paddle']['customData']
+      }) => void
+    }
+  }
+  __attachdPaddleClientToken?: string
+}
+
+let paddleScriptLoadPromise: Promise<void> | null = null
 
 const route = useRoute()
 const requestUrl = useRequestURL()
@@ -27,6 +47,8 @@ const fetchPersistedResult = () =>
 const payload = ref(await fetchPersistedResult())
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 const pageMounted = ref(false)
+const paidReportError = ref('')
+const startingPaidReportCheckout = ref(false)
 
 const emailNotice = computed(() => {
   const value = Array.isArray(route.query.email) ? route.query.email[0] : route.query.email
@@ -77,8 +99,120 @@ const shareUrl = computed(() => {
 
   return `${window.location.origin}${sharePath.value}`
 })
-const paidReportHref = '/#report'
 const couplesReportHref = computed(() => `/couples?self=${routeToken.value}`)
+
+const loadPaddleScript = () => {
+  if (!import.meta.client) {
+    return Promise.resolve()
+  }
+
+  if (paddleScriptLoadPromise) {
+    return paddleScriptLoadPromise
+  }
+
+  paddleScriptLoadPromise = new Promise<void>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>('script[data-attachd-paddle]')
+
+    if ((window as PaddleWindow).Paddle) {
+      resolve()
+      return
+    }
+
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(), { once: true })
+      existingScript.addEventListener('error', () => reject(new Error('Paddle script failed to load.')), { once: true })
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js'
+    script.async = true
+    script.dataset.attachdPaddle = 'true'
+    script.addEventListener('load', () => resolve(), { once: true })
+    script.addEventListener('error', () => reject(new Error('Paddle script failed to load.')), { once: true })
+    document.head.appendChild(script)
+  })
+
+  return paddleScriptLoadPromise
+}
+
+const initializePaddle = async (checkout: AttachmentReportCheckoutResponse) => {
+  await loadPaddleScript()
+
+  const paddleWindow = window as PaddleWindow
+
+  if (!paddleWindow.Paddle) {
+    throw new Error('Paddle checkout is unavailable.')
+  }
+
+  if (checkout.paddle.environment === 'sandbox') {
+    paddleWindow.Paddle.Environment?.set('sandbox')
+  }
+
+  if (paddleWindow.__attachdPaddleClientToken !== checkout.paddle.clientToken) {
+    paddleWindow.Paddle.Initialize({
+      token: checkout.paddle.clientToken,
+    })
+    paddleWindow.__attachdPaddleClientToken = checkout.paddle.clientToken
+  }
+}
+
+const getPaidReportCheckoutErrorMessage = (error: unknown) => {
+  const fallback = 'We could not open paid PDF checkout just now. Please try again in a moment.'
+
+  if (!error || typeof error !== 'object') {
+    return fallback
+  }
+
+  const fetchError = error as {
+    data?: {
+      statusMessage?: unknown
+      message?: unknown
+    }
+    statusMessage?: unknown
+    message?: unknown
+  }
+  const message =
+    fetchError.data?.statusMessage ??
+    fetchError.data?.message ??
+    fetchError.statusMessage ??
+    fetchError.message
+
+  return typeof message === 'string' && message ? message : fallback
+}
+
+const startPaidReportCheckout = async () => {
+  paidReportError.value = ''
+  startingPaidReportCheckout.value = true
+
+  try {
+    const checkout = await $fetch<AttachmentReportCheckoutResponse>(
+      `/api/reports/attachment/${routeToken.value}/checkout`,
+      {
+        method: 'POST',
+      },
+    )
+
+    if (!import.meta.client) {
+      await navigateTo(checkout.accessUrl)
+      return
+    }
+
+    await initializePaddle(checkout)
+
+    const paddleWindow = window as PaddleWindow
+
+    paddleWindow.Paddle?.Checkout.open({
+      settings: checkout.paddle.settings,
+      items: checkout.paddle.items,
+      customData: checkout.paddle.customData,
+    })
+  } catch (error) {
+    paidReportError.value = getPaidReportCheckoutErrorMessage(error)
+  } finally {
+    startingPaidReportCheckout.value = false
+  }
+}
 
 const copyShareLink = async () => {
   if (!import.meta.client) {
@@ -246,7 +380,7 @@ useHead({
               </section>
             </div>
 
-            <div :class="[panelShellClass, 'bg-dark text-cream']">
+            <div id="paid-report" :class="[panelShellClass, 'bg-dark text-cream']">
               <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft">Paid PDF report</p>
               <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
                 Get the full PDF report.
@@ -259,11 +393,19 @@ useHead({
                 relationship dynamics, and practical growth moves.
               </p>
               <div class="mt-6 flex flex-wrap items-center gap-4">
-                <AppButton :href="paidReportHref" size="sm" show-arrow>
-                  Get the paid PDF report
+                <AppButton
+                  size="sm"
+                  :disabled="startingPaidReportCheckout"
+                  show-arrow
+                  @click="startPaidReportCheckout"
+                >
+                  {{ startingPaidReportCheckout ? 'Opening checkout' : 'Get the paid PDF report' }}
                 </AppButton>
                 <span class="text-sm text-pale">$9 · full downloadable breakdown</span>
               </div>
+              <p v-if="paidReportError" class="mt-4 text-sm leading-6 text-terra-soft">
+                {{ paidReportError }}
+              </p>
             </div>
 
             <div class="grid gap-5 md:grid-cols-2">
@@ -329,11 +471,19 @@ useHead({
                   {{ resultContent.reportPromo }}
                 </p>
                 <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <AppButton :href="paidReportHref" size="sm" show-arrow>
-                    Get the paid PDF report
+                  <AppButton
+                    size="sm"
+                    :disabled="startingPaidReportCheckout"
+                    show-arrow
+                    @click="startPaidReportCheckout"
+                  >
+                    {{ startingPaidReportCheckout ? 'Opening checkout' : 'Get the paid PDF report' }}
                   </AppButton>
                   <span class="text-sm text-muted">15-page paid add-on.</span>
                 </div>
+                <p v-if="paidReportError" class="mt-4 text-sm leading-6 text-terra">
+                  {{ paidReportError }}
+                </p>
               </section>
 
               <section :class="[panelShellClass, 'bg-cream']">

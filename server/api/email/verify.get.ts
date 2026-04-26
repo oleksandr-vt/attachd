@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   if (!verifiedRecord.welcomeEmailSentAt) {
     const requestUrl = getRequestURL(event)
     const resultUrl = `${requestUrl.origin}/r/${verifiedRecord.token}`
-    const paidReportUrl = `${requestUrl.origin}/#report`
+    const paidReportUrl = `${resultUrl}#paid-report`
     const welcomeEmailSent = await sendAttachmentWelcomeEmail(verifiedRecord, resultUrl, paidReportUrl)
 
     if (welcomeEmailSent) {

@@ -25,7 +25,8 @@ export type AttachmentPersistedResultRecord = {
 
 export type AttachmentPersistedResultPublicRecord = Omit<
   AttachmentPersistedResultRecord,
-  'email'
+  'answers'
+  | 'email'
   | 'emailUnlocked'
   | 'emailVerificationTokenHash'
   | 'emailVerificationExpiresAt'
@@ -48,7 +49,6 @@ export const toAttachmentPersistedResultPublicRecord = (
   createdAt: record.createdAt,
   questionSetVersion: record.questionSetVersion,
   scoringVersion: record.scoringVersion,
-  answers: record.answers,
   result: record.result,
   primaryType: record.primaryType,
   secondaryType: record.secondaryType,

@@ -1,36 +1,39 @@
 {
-  "name": "Attachd",
+  "name": "attachd",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "typecheck": "nuxi typecheck",
+    "dev": "next dev",
+    "lint": "eslint",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit",
     "test:e2e": "playwright test --project=mobile --project=desktop",
-    "test:visual": "playwright test --project=visual-mobile --project=visual-tablet --project=visual-desktop",
-    "postinstall": "nuxt prepare"
+    "test:visual": "playwright test --project=visual-mobile --project=visual-tablet --project=visual-desktop"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.0.0",
-    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
-    "nuxt": "^4.4.2",
+    "next": "16.4.0",
     "postgres": "^3.4.9",
-    "tailwindcss": "^4.0.0",
-    "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
+    "@tailwindcss/postcss": "4.2.2",
     "@types/node": "^25.6.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.7",
-    "typescript": "~5.9.3",
-    "vue-tsc": "^3.3.13"
+    "eslint": "^9",
+    "eslint-config-next": "16.4.0",
+    "tailwindcss": "4.2.2",
+    "typescript": "~5.9.3"
   }
 }

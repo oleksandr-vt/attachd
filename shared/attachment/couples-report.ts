@@ -1,8 +1,8 @@
-import { attachmentResults } from '../../app/data/tests/results'
+import { attachmentResults } from '../../lib/data/tests/results'
 import {
   attachmentStyleTypes,
   type AttachmentStyleType,
-} from '../../app/data/tests/attachment'
+} from '../../lib/data/tests/attachment'
 import type {
   AttachmentComputedResult,
   AttachmentDimensionKey,

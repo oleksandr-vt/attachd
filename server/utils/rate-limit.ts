@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto'
 import { lt, sql } from 'drizzle-orm'
-import { getDb } from '~~/server/db/client'
-import { rateLimitBuckets } from '~~/server/db/schema'
-import { getAbuseLimit, type AbuseLimitName } from '~~/server/utils/abuse-limits'
+import { getDb } from '@/server/db/client'
+import { rateLimitBuckets } from '@/server/db/schema'
+import { getAbuseLimit, type AbuseLimitName } from '@/server/utils/abuse-limits'
 
 const PRUNE_PROBABILITY = 0.02
 const BUCKET_RETENTION_MS = 2 * 24 * 60 * 60 * 1000

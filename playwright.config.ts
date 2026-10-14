@@ -9,8 +9,8 @@ const serverEnv: Record<string, string> = {
     Object.entries(process.env).filter((entry): entry is [string, string] => entry[1] !== undefined),
   ),
   PORT: String(port),
-  NUXT_PUBLIC_SITE_URL: baseURL,
-  NUXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000BB',
+  NEXT_PUBLIC_SITE_URL: baseURL,
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000BB',
   TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
   TURNSTILE_ALLOW_TEST_KEYS: 'true',
   RATE_LIMIT_MULTIPLIER: '1000',
@@ -72,8 +72,8 @@ export default defineConfig({
     ? undefined
     : {
         command: process.env.E2E_SKIP_BUILD
-          ? 'node .output/server/index.mjs'
-          : 'npx nuxi build && node .output/server/index.mjs',
+          ? `npx next start -p ${port}`
+          : `npx next build && npx next start -p ${port}`,
         url: baseURL,
         env: serverEnv,
         timeout: 300_000,

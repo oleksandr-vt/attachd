@@ -1,4 +1,4 @@
-import type { AttachmentStyleType } from '../../app/data/tests/attachment'
+import type { AttachmentStyleType } from '../../lib/data/tests/attachment'
 import type { AttachmentCouplesReport } from './couples-report'
 import type { AttachmentComputedResult } from './scoring'
 

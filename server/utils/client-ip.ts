@@ -31,7 +31,7 @@ export const toRateLimitIpKey = (address: string) => {
   return `${expandIpv6(address).slice(0, 4).join(':')}::/64`
 }
 
-// null when the IP is unknown (e.g. `nuxi dev`); callers then skip per-IP limits
+// null when the IP is unknown (e.g. `next dev`); callers then skip per-IP limits
 export const resolveClientIp = ({
   forwardedFor,
   realIp,

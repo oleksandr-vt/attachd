@@ -1,4 +1,4 @@
-import type { AttachmentStyleType } from '../../app/data/tests/attachment'
+import type { AttachmentStyleType } from '../../lib/data/tests/attachment'
 import type { AttachmentAnswerMap, AttachmentComputedResult } from './scoring'
 
 export const ATTACHMENT_QUESTION_SET_VERSION = '2026-04-21-v1'

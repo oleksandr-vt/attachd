@@ -1,11 +1,11 @@
 import { and, eq, isNull } from 'drizzle-orm'
-import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
-import { getDb } from '~~/server/db/client'
+import type { AttachmentPersistedResultRecord } from '@/shared/attachment/persistence'
+import { getDb } from '@/server/db/client'
 import {
   attachmentResults,
   mapAttachmentResultRecordToRow,
   mapAttachmentResultRowToRecord,
-} from '~~/server/db/schema'
+} from '@/server/db/schema'
 
 export const getAttachmentResultRecord = async (token: string) => {
   const db = getDb()

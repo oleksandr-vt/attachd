@@ -3,8 +3,8 @@ import {
   attachmentTest,
   type AttachmentQuestion,
   type AttachmentStyleType,
-} from '../../app/data/tests/attachment'
-import { attachmentResults } from '../../app/data/tests/results'
+} from '../../lib/data/tests/attachment'
+import { attachmentResults } from '../../lib/data/tests/results'
 
 export type AttachmentAnswerMap = Record<string, number | null>
 export type AttachmentScoreMap = Record<AttachmentStyleType, number>

@@ -1,5 +1,6 @@
-import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
-import { consumeRateLimit } from '~~/server/utils/rate-limit'
+import 'server-only'
+import type { AttachmentPersistedResultRecord } from '@/shared/attachment/persistence'
+import { consumeRateLimit } from '@/server/utils/rate-limit'
 
 type ResendEmailPayload = {
   to: string[]

@@ -1,8 +1,8 @@
 import { index, integer, jsonb, pgTable, primaryKey, text, timestamp, varchar } from 'drizzle-orm/pg-core'
-import type { AttachmentCouplesPersistedReportRecord } from '~~/shared/attachment/couples-persistence'
-import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
-import type { AttachmentCouplesReport } from '~~/shared/attachment/couples-report'
-import type { AttachmentAnswerMap, AttachmentComputedResult } from '~~/shared/attachment/scoring'
+import type { AttachmentCouplesPersistedReportRecord } from '@/shared/attachment/couples-persistence'
+import type { AttachmentPersistedResultRecord } from '@/shared/attachment/persistence'
+import type { AttachmentCouplesReport } from '@/shared/attachment/couples-report'
+import type { AttachmentAnswerMap, AttachmentComputedResult } from '@/shared/attachment/scoring'
 
 export const attachmentResults = pgTable('attachment_results', {
   token: varchar('token', { length: 16 }).primaryKey(),

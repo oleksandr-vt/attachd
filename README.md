@@ -3,7 +3,8 @@
 A free attachment-style test. Answer 25 questions, get a personalized result page you can revisit and
 share, optionally email yourself a copy, and compare your result with a partner's in a couples report.
 
-Built as a portfolio project with Nuxt 4, Tailwind CSS v4, Drizzle ORM on Postgres (Neon) and Resend.
+Built as a portfolio project with Next.js 16 (App Router, React 19), Tailwind CSS v4, Drizzle ORM on
+Postgres (Neon) and Resend.
 
 > Educational and self-reflective only — not a diagnosis, therapy or mental health care.
 
@@ -12,8 +13,9 @@ Built as a portfolio project with Nuxt 4, Tailwind CSS v4, Drizzle ORM on Postgr
 - **Test runner** — 25 questions with progress saved in `localStorage`, so visitors can leave and resume.
 - **Shared scoring** — the same scoring module runs in the browser (instant preview) and on the server,
   which recomputes every result instead of trusting the client.
-- **Saved results** (`/r/:token`) — immutable snapshots tagged with question-set and scoring versions.
-- **Type guides** (`/results/:type`) — prerendered pages for the four attachment styles.
+- **Saved results** (`/r/:token`) — immutable snapshots tagged with question-set and scoring versions,
+  rendered on the server with real 404s for unknown links.
+- **Type guides** (`/results/:type`) — statically generated pages for the four attachment styles.
 - **Couples report** (`/couples`) — compares two saved results and can be saved as its own snapshot.
 - **Optional email copy** — double opt-in: a confirmation link first, then a one-time welcome email.
 
@@ -21,7 +23,7 @@ Built as a portfolio project with Nuxt 4, Tailwind CSS v4, Drizzle ORM on Postgr
 
 | Concern | Choice |
 |---|---|
-| Framework | Nuxt 4 (Vue 3, Nitro server routes) |
+| Framework | Next.js 16 App Router (React 19, Server Components, route handlers) |
 | Styling | Tailwind CSS v4 |
 | Database | Postgres via Drizzle ORM + `postgres` driver (hosted on Neon) |
 | Email | Resend HTTP API |
@@ -46,12 +48,13 @@ link is also printed to the server console, so the email flow can be tested with
 |---|---|
 | `DATABASE_URL` | Postgres connection string (use Neon's pooled URL in serverless deployments) |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL` | Email sending; optional |
-| `NUXT_PUBLIC_SITE_URL` | Canonical origin for email links and canonical URLs |
-| `NUXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile keys |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for email links and canonical URLs |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile keys |
 | `TURNSTILE_ALLOW_TEST_KEYS` | Allows Cloudflare's test keys in a production build (e2e runs only) |
 | `RATE_LIMIT_MULTIPLIER` | Scales every abuse limit (e.g. `1000` for e2e, `0.01` to exercise daily caps) |
 
-`NUXT_PUBLIC_*` values are baked into prerendered pages, so set them in the **build** environment too.
+`NEXT_PUBLIC_*` values are inlined at build time, so set them in the **build** environment too and
+rebuild after changing them.
 
 ## Abuse protection
 
@@ -70,17 +73,19 @@ so automated traffic never reaches the database:
 5. **Email hygiene** — links are built from the configured site URL (never the `Host` header), the
    welcome email is claimed atomically so it cannot be sent twice, and Resend calls time out.
 
-Client IPs come from `x-forwarded-for` only when running on Vercel (which overwrites that header);
-elsewhere the socket address is used. When no address is available (as under `nuxi dev`), per-IP
-limits are skipped while Turnstile and the global caps still apply. Adjust `getClientIp` in
-[server/utils/h3-guards.ts](server/utils/h3-guards.ts) if you deploy behind a different proxy.
+On Vercel the client IP comes from `x-real-ip` / `x-forwarded-for`, which Vercel overwrites. Under
+`next start` elsewhere it is the socket address Next.js copies into `x-forwarded-for` (spoofable unless
+a proxy in front overwrites that header), and under `next dev` per-IP limits are skipped while
+Turnstile and the global caps still apply. Adjust `getClientIp` in
+[server/utils/next-guards.ts](server/utils/next-guards.ts) if you deploy behind a different proxy.
 
 ## Scripts
 
 | Script | What it does |
 |---|---|
-| `npm run dev` / `build` / `preview` | Nuxt development server, production build, local preview |
-| `npm run typecheck` | Type-checks the app and server with `vue-tsc` |
+| `npm run dev` / `build` / `start` | Next.js development server, production build, production server |
+| `npm run lint` | ESLint with the Next.js core-web-vitals and TypeScript rules |
+| `npm run typecheck` | Generates route types and type-checks the whole project |
 | `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle migrations and studio |
 | `npm run test:e2e` | Builds the app, starts it with e2e settings and runs the journey and API tests |
 | `npm run test:visual` | Full-page screenshots of every route at 390 / 768 / 1440 px |
@@ -90,18 +95,24 @@ baselines are not committed; create them with `npm run test:visual -- --update-s
 `E2E_SKIP_BUILD=1` to reuse an existing build, or `E2E_BASE_URL` to test an already running server.
 E2E runs write test rows to the configured database, so point `DATABASE_URL` at a development branch.
 
+## Deployment
+
+The app targets Vercel: import the repository, set the environment variables above for the
+production build (Neon's pooled connection string for `DATABASE_URL`, real Turnstile keys for the
+deployment's hostname), and pick a function region close to the database.
+
 ## Project structure
 
 ```text
-app/
-  pages/            routes: landing, test runner, results, type guides, couples
-  components/       UI components (landing sections, result card, Turnstile widget, ...)
-  composables/      test session state (localStorage) and primary call-to-action
+app/                routes: landing, test runner, results, type guides, couples, 404 and error pages
+  api/              route handlers for results, couples and email verification
+components/         UI components (landing sections, result card, transitions, Turnstile widget, ...)
+lib/
   data/             question set, result copy and landing content
+  hooks/            test session store (localStorage) and other client hooks
 server/
-  api/              results, couples and email verification endpoints
   db/               Drizzle schema and client
-  utils/            stores, email, abuse protection (plain functions + thin h3 adapters)
+  utils/            stores, email, abuse protection (plain functions + a thin Next.js adapter)
 shared/             scoring and couples logic used by both client and server
 drizzle/            SQL migrations
 e2e/                Playwright tests

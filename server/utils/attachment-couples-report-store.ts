@@ -1,11 +1,11 @@
 import { and, eq } from 'drizzle-orm'
-import type { AttachmentCouplesPersistedReportRecord } from '~~/shared/attachment/couples-persistence'
-import { getDb } from '~~/server/db/client'
+import type { AttachmentCouplesPersistedReportRecord } from '@/shared/attachment/couples-persistence'
+import { getDb } from '@/server/db/client'
 import {
   attachmentCouplesReports,
   mapAttachmentCouplesReportRecordToRow,
   mapAttachmentCouplesReportRowToRecord,
-} from '~~/server/db/schema'
+} from '@/server/db/schema'
 
 export const getAttachmentCouplesReportRecord = async (token: string) => {
   const db = getDb()

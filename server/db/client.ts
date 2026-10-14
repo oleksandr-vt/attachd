@@ -1,14 +1,7 @@
+import 'server-only'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema'
-
-let client: postgres.Sql | null = null
-
-const createDb = () => drizzle(getClient(), { schema })
-
-type Database = ReturnType<typeof createDb>
-
-let dbInstance: Database | null = null
 
 const getDatabaseUrl = () => {
   const databaseUrl = process.env.DATABASE_URL?.trim()
@@ -20,31 +13,12 @@ const getDatabaseUrl = () => {
   return databaseUrl
 }
 
-const getClient = () => {
-  if (!client) {
-    client = postgres(getDatabaseUrl(), {
-      prepare: false,
-      max: 5,
-    })
-  }
+const createDb = () => drizzle(postgres(getDatabaseUrl(), { prepare: false, max: 5 }), { schema })
 
-  return client
-}
+// Kept on globalThis so dev hot reloads reuse one connection pool
+const globalForDb = globalThis as typeof globalThis & { attachdDb?: ReturnType<typeof createDb> }
 
 export const getDb = () => {
-  if (!dbInstance) {
-    dbInstance = createDb()
-  }
-
-  return dbInstance
-}
-
-export const closeDb = async () => {
-  if (!client) {
-    return
-  }
-
-  await client.end()
-  client = null
-  dbInstance = null
+  globalForDb.attachdDb ??= createDb()
+  return globalForDb.attachdDb
 }

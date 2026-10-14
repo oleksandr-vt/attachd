@@ -1,7 +1,6 @@
-import { boolean, jsonb, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { index, integer, jsonb, pgTable, primaryKey, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 import type { AttachmentCouplesPersistedReportRecord } from '~~/shared/attachment/couples-persistence'
 import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
-import type { AttachmentReportOrderRecord } from '~~/shared/attachment/report-order'
 import type { AttachmentCouplesReport } from '~~/shared/attachment/couples-report'
 import type { AttachmentAnswerMap, AttachmentComputedResult } from '~~/shared/attachment/scoring'
 
@@ -16,13 +15,14 @@ export const attachmentResults = pgTable('attachment_results', {
   primaryType: varchar('primary_type', { length: 32 }).notNull(),
   secondaryType: varchar('secondary_type', { length: 32 }).notNull(),
   email: text('email').notNull().default(''),
-  emailUnlocked: boolean('email_unlocked').notNull().default(false),
   emailVerificationTokenHash: text('email_verification_token_hash').notNull().default(''),
   emailVerificationSentAt: timestamp('email_verification_sent_at', { withTimezone: true, mode: 'string' }),
   emailVerificationExpiresAt: timestamp('email_verification_expires_at', { withTimezone: true, mode: 'string' }),
   emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true, mode: 'string' }),
   welcomeEmailSentAt: timestamp('welcome_email_sent_at', { withTimezone: true, mode: 'string' }),
-})
+}, (table) => [
+  index('attachment_results_email_verification_token_hash_idx').on(table.emailVerificationTokenHash),
+])
 
 export const attachmentCouplesReports = pgTable('attachment_couples_reports', {
   token: varchar('token', { length: 16 }).primaryKey(),
@@ -36,43 +36,26 @@ export const attachmentCouplesReports = pgTable('attachment_couples_reports', {
   leftResult: jsonb('left_result').$type<AttachmentComputedResult>().notNull(),
   rightResult: jsonb('right_result').$type<AttachmentComputedResult>().notNull(),
   report: jsonb('report').$type<AttachmentCouplesReport>().notNull(),
-})
+}, (table) => [
+  index('attachment_couples_reports_source_pair_idx').on(
+    table.leftSourceToken,
+    table.rightSourceToken,
+    table.reportVersion,
+  ),
+])
 
-export const attachmentReportOrders = pgTable('attachment_report_orders', {
-  token: varchar('token', { length: 32 }).primaryKey(),
-  resultToken: varchar('result_token', { length: 16 }).notNull(),
-  reportVersion: text('report_version').notNull(),
-  status: varchar('status', { length: 16 }).notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).notNull(),
-  paidAt: timestamp('paid_at', { withTimezone: true, mode: 'string' }),
-  downloadedAt: timestamp('downloaded_at', { withTimezone: true, mode: 'string' }),
-  paddleTransactionId: text('paddle_transaction_id').notNull().default(''),
-  paddleEventId: text('paddle_event_id').notNull().default(''),
-  paddleCustomerId: text('paddle_customer_id').notNull().default(''),
-  customerEmail: text('customer_email').notNull().default(''),
-  currencyCode: varchar('currency_code', { length: 3 }).notNull().default(''),
-  totalAmount: text('total_amount').notNull().default(''),
-  reportReadyEmailSentAt: timestamp('report_ready_email_sent_at', { withTimezone: true, mode: 'string' }),
-})
-
-export const paddleWebhookEvents = pgTable('paddle_webhook_events', {
-  eventId: text('event_id').primaryKey(),
-  eventType: text('event_type').notNull(),
-  notificationId: text('notification_id').notNull().default(''),
-  receivedAt: timestamp('received_at', { withTimezone: true, mode: 'string' }).notNull(),
-  processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' }),
-  processingError: text('processing_error').notNull().default(''),
-})
+export const rateLimitBuckets = pgTable('rate_limit_buckets', {
+  key: varchar('key', { length: 128 }).notNull(),
+  windowStart: timestamp('window_start', { withTimezone: true, mode: 'string' }).notNull(),
+  hits: integer('hits').notNull().default(0),
+}, (table) => [
+  primaryKey({ columns: [table.key, table.windowStart] }),
+])
 
 export type AttachmentResultRow = typeof attachmentResults.$inferSelect
 export type AttachmentResultInsert = typeof attachmentResults.$inferInsert
 export type AttachmentCouplesReportRow = typeof attachmentCouplesReports.$inferSelect
 export type AttachmentCouplesReportInsert = typeof attachmentCouplesReports.$inferInsert
-export type AttachmentReportOrderRow = typeof attachmentReportOrders.$inferSelect
-export type AttachmentReportOrderInsert = typeof attachmentReportOrders.$inferInsert
-export type PaddleWebhookEventRow = typeof paddleWebhookEvents.$inferSelect
-export type PaddleWebhookEventInsert = typeof paddleWebhookEvents.$inferInsert
 
 export const mapAttachmentResultRowToRecord = (
   row: AttachmentResultRow,
@@ -87,7 +70,6 @@ export const mapAttachmentResultRowToRecord = (
   primaryType: row.primaryType as AttachmentPersistedResultRecord['primaryType'],
   secondaryType: row.secondaryType as AttachmentPersistedResultRecord['secondaryType'],
   email: row.email,
-  emailUnlocked: row.emailUnlocked,
   emailVerificationTokenHash: row.emailVerificationTokenHash,
   emailVerificationSentAt: row.emailVerificationSentAt,
   emailVerificationExpiresAt: row.emailVerificationExpiresAt,
@@ -108,7 +90,6 @@ export const mapAttachmentResultRecordToRow = (
   primaryType: record.primaryType,
   secondaryType: record.secondaryType,
   email: record.email,
-  emailUnlocked: record.emailUnlocked,
   emailVerificationTokenHash: record.emailVerificationTokenHash,
   emailVerificationSentAt: record.emailVerificationSentAt,
   emailVerificationExpiresAt: record.emailVerificationExpiresAt,
@@ -146,44 +127,4 @@ export const mapAttachmentCouplesReportRecordToRow = (
   leftResult: record.leftResult,
   rightResult: record.rightResult,
   report: record.report,
-})
-
-export const mapAttachmentReportOrderRowToRecord = (
-  row: AttachmentReportOrderRow,
-): AttachmentReportOrderRecord => ({
-  token: row.token,
-  resultToken: row.resultToken,
-  reportVersion: row.reportVersion,
-  status: row.status as AttachmentReportOrderRecord['status'],
-  createdAt: row.createdAt,
-  updatedAt: row.updatedAt,
-  paidAt: row.paidAt,
-  downloadedAt: row.downloadedAt,
-  paddleTransactionId: row.paddleTransactionId,
-  paddleEventId: row.paddleEventId,
-  paddleCustomerId: row.paddleCustomerId,
-  customerEmail: row.customerEmail,
-  currencyCode: row.currencyCode,
-  totalAmount: row.totalAmount,
-  reportReadyEmailSentAt: row.reportReadyEmailSentAt,
-})
-
-export const mapAttachmentReportOrderRecordToRow = (
-  record: AttachmentReportOrderRecord,
-): AttachmentReportOrderInsert => ({
-  token: record.token,
-  resultToken: record.resultToken,
-  reportVersion: record.reportVersion,
-  status: record.status,
-  createdAt: record.createdAt,
-  updatedAt: record.updatedAt,
-  paidAt: record.paidAt,
-  downloadedAt: record.downloadedAt,
-  paddleTransactionId: record.paddleTransactionId,
-  paddleEventId: record.paddleEventId,
-  paddleCustomerId: record.paddleCustomerId,
-  customerEmail: record.customerEmail,
-  currencyCode: record.currencyCode,
-  totalAmount: record.totalAmount,
-  reportReadyEmailSentAt: record.reportReadyEmailSentAt,
 })

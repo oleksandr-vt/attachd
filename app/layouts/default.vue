@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen flex-col overflow-x-hidden">
+  <div class="flex min-h-screen flex-col overflow-x-clip">
     <AppNavbar />
 
     <main class="flex-1">

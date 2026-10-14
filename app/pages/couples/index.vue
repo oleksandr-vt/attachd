@@ -2,16 +2,18 @@
 import type { Ref } from 'vue'
 import AppButton from '~/components/AppButton.vue'
 import CouplesReportView from '~/components/CouplesReportView.vue'
+import TurnstileWidget from '~/components/TurnstileWidget.vue'
 import { useAttachmentPrimaryAction } from '~/composables/useAttachmentPrimaryAction'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 import { useTest } from '~/composables/useTest'
+import { getApiErrorMessage } from '~/utils/api-error'
 import { buildAttachmentCouplesReport } from '~~/shared/attachment/couples-report'
 import type { AttachmentCouplesPersistedReportResponse } from '~~/shared/attachment/couples-persistence'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 import type { AttachmentAnswerMap, AttachmentComputedResult } from '~~/shared/attachment/scoring'
 
 const route = useRoute()
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 
 const {
   computedResult,
@@ -77,6 +79,7 @@ const saveError = ref('')
 const savingReport = ref(false)
 const selfPayload = ref<AttachmentPersistedResultResponse | null>(null)
 const partnerPayload = ref<AttachmentPersistedResultResponse | null>(null)
+const turnstileWidget = ref<InstanceType<typeof TurnstileWidget> | null>(null)
 
 const fetchPersistedResult = (token: string) =>
   $fetch<AttachmentPersistedResultResponse>(`/api/results/${token}`)
@@ -286,6 +289,7 @@ const createShareLink = async () => {
   savingReport.value = true
 
   try {
+    const turnstileToken = await turnstileWidget.value?.getToken() ?? ''
     const response = await $fetch<AttachmentCouplesPersistedReportResponse>('/api/couples', {
       method: 'POST',
       body: {
@@ -293,12 +297,14 @@ const createShareLink = async () => {
           ? { token: selfToken.value }
           : { answers: localSelfAnswers.value },
         right: { token: partnerToken.value },
+        turnstileToken,
       },
     })
 
     await navigateTo(`/couples/${response.record.token}`)
-  } catch {
-    saveError.value = 'We could not save a shareable couples report just now.'
+  } catch (error) {
+    saveError.value = getApiErrorMessage(error, 'We could not save a shareable couples report just now.')
+    turnstileWidget.value?.reset()
   } finally {
     savingReport.value = false
   }
@@ -448,6 +454,8 @@ useHead({
             <p v-if="saveError" class="mt-4 text-sm leading-6 text-terra">
               {{ saveError }}
             </p>
+
+            <TurnstileWidget ref="turnstileWidget" action="save-couples-report" />
           </section>
 
           <CouplesReportView

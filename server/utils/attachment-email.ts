@@ -1,4 +1,5 @@
 import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
+import { consumeRateLimit } from '~~/server/utils/rate-limit'
 
 type ResendEmailPayload = {
   to: string[]
@@ -26,6 +27,7 @@ type EmailShellOptions = {
 
 const brandName = 'Attachd'
 const brandMark = 'Attachd.'
+const RESEND_TIMEOUT_MS = 8000
 
 const colors = {
   cream: '#fff7ef',
@@ -89,6 +91,7 @@ const sendResendEmail = async (payload: ResendEmailPayload) => {
       from: formatFromAddress(config.from),
       ...(config.replyTo ? { reply_to: config.replyTo } : {}),
     }),
+    signal: AbortSignal.timeout(RESEND_TIMEOUT_MS),
   })
 
   if (!response.ok) {
@@ -231,7 +234,18 @@ const renderEmailShell = ({
 }
 
 const sendAttachmentEmail = async (payload: ResendEmailPayload) => {
+  if (!getResendConfig()) {
+    return false
+  }
+
   try {
+    const budget = await consumeRateLimit('emailsGlobal')
+
+    if (!budget.allowed) {
+      console.warn('Daily email budget reached; skipping email.')
+      return false
+    }
+
     return await sendResendEmail(payload)
   } catch (error) {
     console.warn(error)
@@ -247,13 +261,13 @@ export const sendAttachmentResultVerificationEmail = async (
   const resultLabel = record.result.content.label
   const escapedVerificationUrl = escapeHtml(verificationUrl)
   const html = renderEmailShell({
-    preheader: `Confirm your email to keep your ${resultLabel} attachment result saved.`,
+    preheader: `Confirm your email to get a copy of your ${resultLabel} attachment result.`,
     eyebrow: 'Email confirmation',
     title: `Your ${resultLabel} result is ready.`,
-    intro: `Confirm this inbox so your saved result and future ${brandName} emails are connected to a real email address.`,
+    intro: 'Confirm this address and we will email you a copy of your saved result link, so it is easy to find later.',
     bodyHtml: `
       <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-        ${renderInfoRow('Why confirm?', `It keeps your saved result tied to a real inbox and helps us send attachment follow-ups and ${brandName} updates only to confirmed emails.`)}
+        ${renderInfoRow('Why confirm?', 'It makes sure the copy of your result goes to the right inbox. We only email you about this result.')}
         ${renderInfoRow('Your saved result', shareUrl)}
       </table>
       <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 13px; line-height: 21px; color: ${colors.muted};">
@@ -268,7 +282,7 @@ export const sendAttachmentResultVerificationEmail = async (
       href: shareUrl,
       label: 'Open result',
     },
-    footerNote: 'You can unsubscribe from future update emails anytime. The result itself is educational and not a diagnosis.',
+    footerNote: `Did not take the ${brandName} test? Ignore this email and nothing else will be sent. The result itself is educational and not a diagnosis.`,
   })
 
   return sendAttachmentEmail({
@@ -278,13 +292,13 @@ export const sendAttachmentResultVerificationEmail = async (
     text: [
       `Your ${resultLabel} attachment result is ready.`,
       '',
-      `Confirm this inbox so your saved result and future ${brandName} emails are connected to a real email address.`,
+      'Confirm this address and we will email you a copy of your saved result link:',
       verificationUrl,
       '',
       `Open your result: ${shareUrl}`,
       '',
       brandMark,
-      'You can unsubscribe from future update emails anytime. The result itself is educational and not a diagnosis.',
+      `Did not take the ${brandName} test? Ignore this email and nothing else will be sent. The result itself is educational and not a diagnosis.`,
     ].join('\n'),
   })
 }
@@ -292,31 +306,28 @@ export const sendAttachmentResultVerificationEmail = async (
 export const sendAttachmentWelcomeEmail = async (
   record: AttachmentPersistedResultRecord,
   resultUrl: string,
-  paidReportUrl: string,
+  couplesUrl: string,
 ) => {
   const resultLabel = record.result.content.label
   const html = renderEmailShell({
-    preheader: `Your ${resultLabel} result is confirmed. Here is the deeper next step.`,
+    preheader: `Your ${resultLabel} result is confirmed and saved.`,
     eyebrow: `Welcome to ${brandName}`,
     title: 'Your result is saved.',
     intro: `Thanks for confirming your email. Your ${resultLabel} attachment result is now saved and ready whenever you want to return to it.`,
     bodyHtml: `
       <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-        ${renderInfoRow('What your free result gives you', 'A clear first read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.')}
-        ${renderInfoRow('What the paid PDF adds', 'A deeper guided breakdown of your protective pattern, likely relationship loops, practical repair moves, and a cleaner reference you can keep.')}
+        ${renderInfoRow('What your result gives you', 'A clear read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.')}
+        ${renderInfoRow('Compare with a partner', 'Send the test to your partner, then paste both result links into the couples report to see how your two patterns interact.')}
         ${renderInfoRow('A useful next move', 'Open your result, pick one trigger that feels familiar, and notice where it shows up before you try to fix everything at once.')}
       </table>
-      <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 23px; color: ${colors.body};">
-        If you want the full version, the paid PDF is built for a slower, more complete read than the share page.
-      </p>
     `,
     primaryButton: {
-      href: paidReportUrl,
-      label: 'Get the paid PDF report',
-    },
-    secondaryButton: {
       href: resultUrl,
       label: 'Open my result',
+    },
+    secondaryButton: {
+      href: couplesUrl,
+      label: 'Compare with a partner',
     },
     footerNote: `${brandName} is educational and does not replace therapy, medical care, or professional mental health support.`,
   })
@@ -328,62 +339,13 @@ export const sendAttachmentWelcomeEmail = async (
     text: [
       `Thanks for confirming your email. Your ${resultLabel} attachment result is saved.`,
       '',
-      'Your free result gives you a clear first read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.',
+      'Your result gives you a clear read on your strongest attachment pattern, trigger clusters, relationship needs, and next steps.',
       '',
-      'The paid PDF adds a deeper guided breakdown of your protective pattern, likely relationship loops, practical repair moves, and a cleaner reference you can keep.',
-      '',
-      `Get the paid PDF report: ${paidReportUrl}`,
       `Open your result: ${resultUrl}`,
+      `Compare with a partner: ${couplesUrl}`,
       '',
       brandMark,
       `${brandName} is educational and does not replace therapy, medical care, or professional mental health support.`,
-    ].join('\n'),
-  })
-}
-
-export const sendAttachmentPdfReadyEmail = async (
-  record: AttachmentPersistedResultRecord,
-  reportUrl: string,
-) => {
-  const resultLabel = record.result.content.label
-  const html = renderEmailShell({
-    preheader: `Your ${resultLabel} attachment PDF report is ready to download.`,
-    eyebrow: 'PDF report ready',
-    title: 'Your paid report is ready.',
-    intro: `Your ${resultLabel} attachment PDF has been unlocked and is ready whenever you want to download it.`,
-    bodyHtml: `
-      <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-        ${renderInfoRow('What is inside', 'A deeper deterministic breakdown of your attachment pattern, trigger clusters, protective habits, repair scripts, and secure growth practices.')}
-        ${renderInfoRow('Keep this link', 'This access page lets you download the PDF connected to your paid report order.')}
-      </table>
-      <p style="margin: 8px 0 0; font-family: Arial, sans-serif; font-size: 14px; line-height: 23px; color: ${colors.body};">
-        The report is educational and is not a diagnosis, therapy, medical care, or professional mental health advice.
-      </p>
-    `,
-    primaryButton: {
-      href: reportUrl,
-      label: 'Download my PDF',
-    },
-    secondaryButton: {
-      href: reportUrl,
-      label: 'Open access page',
-    },
-    footerNote: `${brandName} reports are educational and do not replace therapy, medical care, or professional mental health support.`,
-  })
-
-  return sendAttachmentEmail({
-    to: [record.email],
-    subject: `Your ${brandName} PDF report is ready`,
-    html,
-    text: [
-      `Your ${resultLabel} attachment PDF report is ready.`,
-      '',
-      'Open your paid report access page:',
-      reportUrl,
-      '',
-      'The report is educational and is not a diagnosis, therapy, medical care, or professional mental health advice.',
-      '',
-      brandMark,
     ].join('\n'),
   })
 }

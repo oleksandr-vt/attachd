@@ -2,7 +2,6 @@ import { useTest } from '~/composables/useTest'
 
 export const useAttachmentPrimaryAction = () => {
   const {
-    computedResult,
     hasStarted,
     hasSubmittedResults,
     session,
@@ -34,16 +33,8 @@ export const useAttachmentPrimaryAction = () => {
       return '/test/attachment'
     }
 
-    if (hasSubmittedResults.value) {
-      if (session.value.lastSharedResultToken) {
-        return `/r/${session.value.lastSharedResultToken}`
-      }
-
-      const resultType = session.value.lastResultType ?? computedResult.value?.type
-
-      if (resultType) {
-        return `/results/${resultType}`
-      }
+    if (hasSubmittedResults.value && session.value.lastSharedResultToken) {
+      return `/r/${session.value.lastSharedResultToken}`
     }
 
     return '/test/attachment'

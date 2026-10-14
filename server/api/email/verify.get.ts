@@ -1,6 +1,8 @@
 import {
+  claimAttachmentWelcomeEmail,
   getAttachmentResultRecordByEmailVerificationHash,
-  updateAttachmentResultRecord,
+  markAttachmentResultEmailVerified,
+  releaseAttachmentWelcomeEmailClaim,
 } from '~~/server/utils/attachment-result-store'
 import { sendAttachmentWelcomeEmail } from '~~/server/utils/attachment-email'
 import {
@@ -8,6 +10,7 @@ import {
   isEmailVerificationExpired,
   isEmailVerificationToken,
 } from '~~/server/utils/email-verification'
+import { getSiteOrigin } from '~~/server/utils/h3-guards'
 
 export default defineEventHandler(async (event) => {
   const token = getQuery(event).token
@@ -22,7 +25,7 @@ export default defineEventHandler(async (event) => {
   const tokenHash = hashEmailVerificationToken(token)
   const record = await getAttachmentResultRecordByEmailVerificationHash(tokenHash)
 
-  if (!record) {
+  if (!record || !record.email) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Email confirmation link is invalid or has already been replaced.',
@@ -33,26 +36,18 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, `/r/${record.token}?email=expired`, 302)
   }
 
-  let verifiedRecord = record
-
   if (!record.emailVerifiedAt) {
-    verifiedRecord = await updateAttachmentResultRecord(record.token, (currentRecord) => ({
-      ...currentRecord,
-      emailVerifiedAt: new Date().toISOString(),
-    })) ?? record
+    await markAttachmentResultEmailVerified(record.token)
   }
 
-  if (!verifiedRecord.welcomeEmailSentAt) {
-    const requestUrl = getRequestURL(event)
-    const resultUrl = `${requestUrl.origin}/r/${verifiedRecord.token}`
-    const paidReportUrl = `${resultUrl}#paid-report`
-    const welcomeEmailSent = await sendAttachmentWelcomeEmail(verifiedRecord, resultUrl, paidReportUrl)
+  if (await claimAttachmentWelcomeEmail(record.token)) {
+    const siteOrigin = getSiteOrigin(event)
+    const resultUrl = `${siteOrigin}/r/${record.token}`
+    const couplesUrl = `${siteOrigin}/couples?self=${record.token}`
+    const welcomeEmailSent = await sendAttachmentWelcomeEmail(record, resultUrl, couplesUrl)
 
-    if (welcomeEmailSent) {
-      await updateAttachmentResultRecord(verifiedRecord.token, (currentRecord) => ({
-        ...currentRecord,
-        welcomeEmailSentAt: new Date().toISOString(),
-      }))
+    if (!welcomeEmailSent) {
+      await releaseAttachmentWelcomeEmailClaim(record.token)
     }
   }
 

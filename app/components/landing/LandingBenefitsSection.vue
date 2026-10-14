@@ -13,8 +13,8 @@ import { benefitCards } from '~/data/landing'
           More useful than a vague personality score.
         </h2>
         <p class="landing-section-copy max-w-140">
-          The test is built to give you a fast, understandable first result and leave the deeper
-          follow-ups optional instead of forcing a heavy profile upfront.
+          The test is built to give you a fast, understandable result with real depth behind it,
+          without forcing an account or a heavy profile upfront.
         </p>
       </header>
 

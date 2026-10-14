@@ -2,31 +2,11 @@
 import AppButton from '~/components/AppButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import ShareLinkField from '~/components/ShareLinkField.vue'
-import type { AttachmentReportCheckoutResponse } from '~~/shared/attachment/report-order'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
-type PaddleWindow = Window & {
-  Paddle?: {
-    Environment?: {
-      set: (environment: 'sandbox') => void
-    }
-    Initialize: (options: { token: string }) => void
-    Checkout: {
-      open: (options: {
-        settings: AttachmentReportCheckoutResponse['paddle']['settings']
-        items: AttachmentReportCheckoutResponse['paddle']['items']
-        customData: AttachmentReportCheckoutResponse['paddle']['customData']
-      }) => void
-    }
-  }
-  __attachdPaddleClientToken?: string
-}
-
-let paddleScriptLoadPromise: Promise<void> | null = null
-
 const route = useRoute()
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 
 const routeToken = computed(() => {
   const value = Array.isArray(route.params.token) ? route.params.token[0] : route.params.token
@@ -41,14 +21,23 @@ const routeToken = computed(() => {
   return value
 })
 
-const fetchPersistedResult = () =>
-  $fetch<AttachmentPersistedResultResponse>(`/api/results/${routeToken.value}`)
+const { data: payload, error: payloadError } = await useAsyncData(
+  `attachment-result-${routeToken.value}`,
+  () => $fetch<AttachmentPersistedResultResponse>(`/api/results/${routeToken.value}`),
+)
 
-const payload = ref(await fetchPersistedResult())
+const resolvedPayload = payload.value
+
+if (!resolvedPayload) {
+  throw createError({
+    statusCode: payloadError.value?.statusCode ?? 404,
+    statusMessage: payloadError.value?.statusMessage ?? 'Result not found',
+    fatal: true,
+  })
+}
+
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 const pageMounted = ref(false)
-const paidReportError = ref('')
-const startingPaidReportCheckout = ref(false)
 
 const emailNotice = computed(() => {
   const value = Array.isArray(route.query.email) ? route.query.email[0] : route.query.email
@@ -57,7 +46,7 @@ const emailNotice = computed(() => {
     return {
       tone: 'bg-sec-bg',
       title: 'Check your inbox',
-      body: 'Your result is open now. Use the confirmation link we sent to verify this email for saved-result, follow-up, and update emails.',
+      body: 'Your result is open now. Confirm the link we just emailed you and we will send a copy of this result link to your inbox.',
     }
   }
 
@@ -65,7 +54,7 @@ const emailNotice = computed(() => {
     return {
       tone: 'bg-sec-bg',
       title: 'Email confirmed',
-      body: 'Thanks, your email is verified for this saved result.',
+      body: 'Thanks, your email is confirmed for this saved result.',
     }
   }
 
@@ -73,7 +62,15 @@ const emailNotice = computed(() => {
     return {
       tone: 'bg-cream',
       title: 'Confirmation link expired',
-      body: 'Your result is still available. You can request a fresh confirmation link the next time you update your email.',
+      body: 'Your result is still available here. The confirmation link has expired, so no further emails will be sent for it.',
+    }
+  }
+
+  if (value === 'unsent') {
+    return {
+      tone: 'bg-cream',
+      title: 'Email not sent',
+      body: 'Your result is saved, but we could not send the email right now. Keep this link to come back to it.',
     }
   }
 
@@ -86,7 +83,7 @@ const bodyCopyClass = 'text-[15px] leading-7 text-body'
 const noteCopyClass = 'text-[15px] leading-7 text-body'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
 const subtleDetailsClass = 'mt-3 rounded-2xl border border-border bg-white/70 px-4 py-3 text-sm leading-6 text-muted'
-const record = computed(() => payload.value.record)
+const record = computed(() => resolvedPayload.record)
 const result = computed(() => record.value.result)
 const resultContent = computed(() => result.value.content)
 const secondaryLabel = computed(() => result.value.ranking[1]?.label ?? resultContent.value.label)
@@ -100,119 +97,6 @@ const shareUrl = computed(() => {
   return `${window.location.origin}${sharePath.value}`
 })
 const couplesReportHref = computed(() => `/couples?self=${routeToken.value}`)
-
-const loadPaddleScript = () => {
-  if (!import.meta.client) {
-    return Promise.resolve()
-  }
-
-  if (paddleScriptLoadPromise) {
-    return paddleScriptLoadPromise
-  }
-
-  paddleScriptLoadPromise = new Promise<void>((resolve, reject) => {
-    const existingScript = document.querySelector<HTMLScriptElement>('script[data-attachd-paddle]')
-
-    if ((window as PaddleWindow).Paddle) {
-      resolve()
-      return
-    }
-
-    if (existingScript) {
-      existingScript.addEventListener('load', () => resolve(), { once: true })
-      existingScript.addEventListener('error', () => reject(new Error('Paddle script failed to load.')), { once: true })
-      return
-    }
-
-    const script = document.createElement('script')
-    script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js'
-    script.async = true
-    script.dataset.attachdPaddle = 'true'
-    script.addEventListener('load', () => resolve(), { once: true })
-    script.addEventListener('error', () => reject(new Error('Paddle script failed to load.')), { once: true })
-    document.head.appendChild(script)
-  })
-
-  return paddleScriptLoadPromise
-}
-
-const initializePaddle = async (checkout: AttachmentReportCheckoutResponse) => {
-  await loadPaddleScript()
-
-  const paddleWindow = window as PaddleWindow
-
-  if (!paddleWindow.Paddle) {
-    throw new Error('Paddle checkout is unavailable.')
-  }
-
-  if (checkout.paddle.environment === 'sandbox') {
-    paddleWindow.Paddle.Environment?.set('sandbox')
-  }
-
-  if (paddleWindow.__attachdPaddleClientToken !== checkout.paddle.clientToken) {
-    paddleWindow.Paddle.Initialize({
-      token: checkout.paddle.clientToken,
-    })
-    paddleWindow.__attachdPaddleClientToken = checkout.paddle.clientToken
-  }
-}
-
-const getPaidReportCheckoutErrorMessage = (error: unknown) => {
-  const fallback = 'We could not open paid PDF checkout just now. Please try again in a moment.'
-
-  if (!error || typeof error !== 'object') {
-    return fallback
-  }
-
-  const fetchError = error as {
-    data?: {
-      statusMessage?: unknown
-      message?: unknown
-    }
-    statusMessage?: unknown
-    message?: unknown
-  }
-  const message =
-    fetchError.data?.statusMessage ??
-    fetchError.data?.message ??
-    fetchError.statusMessage ??
-    fetchError.message
-
-  return typeof message === 'string' && message ? message : fallback
-}
-
-const startPaidReportCheckout = async () => {
-  paidReportError.value = ''
-  startingPaidReportCheckout.value = true
-
-  try {
-    const checkout = await $fetch<AttachmentReportCheckoutResponse>(
-      `/api/reports/attachment/${routeToken.value}/checkout`,
-      {
-        method: 'POST',
-      },
-    )
-
-    if (!import.meta.client) {
-      await navigateTo(checkout.accessUrl)
-      return
-    }
-
-    await initializePaddle(checkout)
-
-    const paddleWindow = window as PaddleWindow
-
-    paddleWindow.Paddle?.Checkout.open({
-      settings: checkout.paddle.settings,
-      items: checkout.paddle.items,
-      customData: checkout.paddle.customData,
-    })
-  } catch (error) {
-    paidReportError.value = getPaidReportCheckoutErrorMessage(error)
-  } finally {
-    startingPaidReportCheckout.value = false
-  }
-}
 
 const copyShareLink = async () => {
   if (!import.meta.client) {
@@ -230,10 +114,6 @@ const copyShareLink = async () => {
   }
 }
 
-watch(routeToken, async () => {
-  payload.value = await fetchPersistedResult()
-})
-
 onMounted(() => {
   pageMounted.value = true
 })
@@ -244,6 +124,7 @@ useSeoMeta({
   ogTitle: `${resultContent.value.label} Attachment Result | Attachd.`,
   ogDescription: resultContent.value.shortSummary,
   twitterCard: 'summary',
+  robots: 'noindex',
 })
 
 useHead({
@@ -380,32 +261,27 @@ useHead({
               </section>
             </div>
 
-            <div id="paid-report" :class="[panelShellClass, 'bg-dark text-cream']">
-              <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft">Paid PDF report</p>
+            <div id="compare" :class="[panelShellClass, 'bg-dark text-cream']">
+              <p class="mb-2.5 text-xs font-medium uppercase tracking-widest text-terra-soft">Partner flow</p>
               <h2 class="font-display text-4xl leading-tight font-medium tracking-tight text-cream sm:text-[2.7rem]">
-                Get the full PDF report.
+                Turn it into a couples read.
               </h2>
               <p class="mt-3.5 max-w-140 text-[15px] leading-7 text-pale">
-                {{ resultContent.reportPromo }}
+                {{ resultContent.partnerPrompt }}
               </p>
               <p class="mt-3 text-sm leading-6 text-pale">
-                A paid 15-page add-on can go deeper into your triggers, protective patterns,
-                relationship dynamics, and practical growth moves.
+                The couples report shows how your two patterns trigger each other, the conflict loop
+                to watch for, and what helps each of you feel safer.
               </p>
               <div class="mt-6 flex flex-wrap items-center gap-4">
                 <AppButton
+                  :href="couplesReportHref"
+                  label="Compare with partner"
                   size="sm"
-                  :disabled="startingPaidReportCheckout"
                   show-arrow
-                  @click="startPaidReportCheckout"
-                >
-                  {{ startingPaidReportCheckout ? 'Opening checkout' : 'Get the paid PDF report' }}
-                </AppButton>
-                <span class="text-sm text-pale">$9 · full downloadable breakdown</span>
+                />
+                <span class="text-sm text-pale">Paste your partner result link there.</span>
               </div>
-              <p v-if="paidReportError" class="mt-4 text-sm leading-6 text-terra-soft">
-                {{ paidReportError }}
-              </p>
             </div>
 
             <div class="grid gap-5 md:grid-cols-2">
@@ -460,47 +336,6 @@ useHead({
                     </div>
                   </li>
                 </ul>
-              </section>
-            </div>
-
-            <div class="grid gap-5 md:grid-cols-2">
-              <section :class="[panelShellClass, 'bg-cream']">
-                <p :class="noteKickerClass">Full PDF report</p>
-                <h2 :class="sectionTitleClass">Take this beyond the share page.</h2>
-                <p :class="bodyCopyClass">
-                  {{ resultContent.reportPromo }}
-                </p>
-                <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <AppButton
-                    size="sm"
-                    :disabled="startingPaidReportCheckout"
-                    show-arrow
-                    @click="startPaidReportCheckout"
-                  >
-                    {{ startingPaidReportCheckout ? 'Opening checkout' : 'Get the paid PDF report' }}
-                  </AppButton>
-                  <span class="text-sm text-muted">15-page paid add-on.</span>
-                </div>
-                <p v-if="paidReportError" class="mt-4 text-sm leading-6 text-terra">
-                  {{ paidReportError }}
-                </p>
-              </section>
-
-              <section :class="[panelShellClass, 'bg-cream']">
-                <p :class="noteKickerClass">Partner flow</p>
-                <h2 :class="sectionTitleClass">Turn it into a couples read.</h2>
-                <p :class="bodyCopyClass">
-                  {{ resultContent.partnerPrompt }}
-                </p>
-                <div class="mt-6 flex flex-wrap items-center gap-4">
-                  <AppButton
-                    :href="couplesReportHref"
-                    label="Compare with partner"
-                    size="sm"
-                    show-arrow
-                  />
-                  <span class="text-sm text-muted">Paste your partner result link there.</span>
-                </div>
               </section>
             </div>
           </div>

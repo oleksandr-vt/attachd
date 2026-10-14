@@ -15,7 +15,6 @@ export type AttachmentPersistedResultRecord = {
   primaryType: AttachmentStyleType
   secondaryType: AttachmentStyleType
   email: string
-  emailUnlocked: boolean
   emailVerificationTokenHash: string
   emailVerificationSentAt: string | null
   emailVerificationExpiresAt: string | null
@@ -27,7 +26,6 @@ export type AttachmentPersistedResultPublicRecord = Omit<
   AttachmentPersistedResultRecord,
   'answers'
   | 'email'
-  | 'emailUnlocked'
   | 'emailVerificationTokenHash'
   | 'emailVerificationExpiresAt'
   | 'emailVerificationSentAt'

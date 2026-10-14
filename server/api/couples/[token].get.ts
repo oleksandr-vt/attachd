@@ -1,5 +1,6 @@
 import type { AttachmentCouplesPersistedReportResponse } from '~~/shared/attachment/couples-persistence'
 import { getAttachmentCouplesReportRecord } from '~~/server/utils/attachment-couples-report-store'
+import { getSiteOrigin } from '~~/server/utils/h3-guards'
 
 export default defineEventHandler(async (event): Promise<AttachmentCouplesPersistedReportResponse> => {
   const token = getRouterParam(event, 'token')
@@ -20,10 +21,8 @@ export default defineEventHandler(async (event): Promise<AttachmentCouplesPersis
     })
   }
 
-  const requestUrl = getRequestURL(event)
-
   return {
     record,
-    shareUrl: `${requestUrl.origin}/couples/${token}`,
+    shareUrl: `${getSiteOrigin(event)}/couples/${token}`,
   }
 })

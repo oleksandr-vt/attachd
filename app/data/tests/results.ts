@@ -12,7 +12,6 @@ export type AttachmentResultContent = {
   relationshipNeeds: string[]
   growthMoves: string[]
   sharePrompt: string
-  reportPromo: string
   partnerPrompt: string
   accentClass: string
   surfaceClass: string
@@ -54,7 +53,6 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
       'Use your security to build boundaries, not just patience.',
     ],
     sharePrompt: 'I got Secure Attachment. What did you get?',
-    reportPromo: 'See the behaviors that keep your security steady under real pressure.',
     partnerPrompt: 'Send the test to your partner and compare how you each handle closeness and conflict.',
     accentClass: 'text-secure',
     surfaceClass: 'bg-secure-bg',
@@ -95,7 +93,6 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
       'Build self-trust so distance does not automatically mean danger.',
     ],
     sharePrompt: 'I got Anxious Attachment. What did you get?',
-    reportPromo: 'See the triggers, protest patterns, and stabilizers that matter most for you.',
     partnerPrompt: 'A partner comparison can show where pursuit starts and how to slow the loop down.',
     accentClass: 'text-anxious',
     surfaceClass: 'bg-anxious-bg',
@@ -136,7 +133,6 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
       'Practice staying present through small doses of discomfort.',
     ],
     sharePrompt: 'I got Avoidant Attachment. What did you get?',
-    reportPromo: 'See the hidden triggers behind withdrawal and what secure openness can look like for you.',
     partnerPrompt: 'A couples breakdown can map the exact pursuit-withdrawal cycle you tend to fall into.',
     accentClass: 'text-avoid',
     surfaceClass: 'bg-avoid-bg',
@@ -177,7 +173,6 @@ export const attachmentResults: Record<AttachmentStyleType, AttachmentResultCont
       'Build trust through repeated small moments of dependable closeness.',
     ],
     sharePrompt: 'I got Fearful-Avoidant Attachment. What did you get?',
-    reportPromo: 'Get a clearer map of your push-pull triggers, protective reflexes, and secure next steps.',
     partnerPrompt: 'A partner comparison can reveal where fear, pursuit, and distance keep crossing wires.',
     accentClass: 'text-fearful',
     surfaceClass: 'bg-fearful-bg',

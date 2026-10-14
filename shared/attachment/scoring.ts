@@ -81,7 +81,7 @@ export const normalizeAttachmentAnswers = (value: unknown): AttachmentAnswerMap 
 
   for (const question of attachmentTest.questions) {
     const rawAnswer = (value as Record<string, unknown>)[question.id]
-    baseAnswers[question.id] = typeof rawAnswer === 'number' && rawAnswer >= 0 && rawAnswer <= 4
+    baseAnswers[question.id] = typeof rawAnswer === 'number' && Number.isInteger(rawAnswer) && rawAnswer >= 0 && rawAnswer <= 4
       ? rawAnswer
       : null
   }

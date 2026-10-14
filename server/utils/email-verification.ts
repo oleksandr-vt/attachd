@@ -13,7 +13,7 @@ export const createEmailVerificationExpiresAt = () =>
   new Date(Date.now() + EMAIL_VERIFICATION_TTL_DAYS * 24 * 60 * 60 * 1000).toISOString()
 
 export const isEmailVerificationExpired = (expiresAt: string | null) =>
-  Boolean(expiresAt) && new Date(expiresAt).getTime() < Date.now()
+  expiresAt ? new Date(expiresAt).getTime() < Date.now() : false
 
 export const isEmailVerificationToken = (token: unknown): token is string =>
   typeof token === 'string' && /^[a-f0-9]{64}$/i.test(token)

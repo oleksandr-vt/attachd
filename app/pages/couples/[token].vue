@@ -2,11 +2,11 @@
 import AppButton from '~/components/AppButton.vue'
 import CouplesReportView from '~/components/CouplesReportView.vue'
 import ShareLinkField from '~/components/ShareLinkField.vue'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 import type { AttachmentCouplesPersistedReportResponse } from '~~/shared/attachment/couples-persistence'
 
 const route = useRoute()
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 
 const routeToken = computed(() => {
   const value = Array.isArray(route.params.token) ? route.params.token[0] : route.params.token
@@ -21,17 +21,28 @@ const routeToken = computed(() => {
   return value
 })
 
-const fetchPersistedReport = () =>
-  $fetch<AttachmentCouplesPersistedReportResponse>(`/api/couples/${routeToken.value}`)
+const { data: payload, error: payloadError } = await useAsyncData(
+  `attachment-couples-report-${routeToken.value}`,
+  () => $fetch<AttachmentCouplesPersistedReportResponse>(`/api/couples/${routeToken.value}`),
+)
 
-const payload = ref(await fetchPersistedReport())
+const resolvedPayload = payload.value
+
+if (!resolvedPayload) {
+  throw createError({
+    statusCode: payloadError.value?.statusCode ?? 404,
+    statusMessage: payloadError.value?.statusMessage ?? 'Couples report not found',
+    fatal: true,
+  })
+}
+
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 const pageMounted = ref(false)
 
 const panelShellClass = 'rounded-3xl border border-border p-6'
 const sectionTitleClass = 'mb-4 font-display text-[1.75rem] leading-tight font-medium tracking-tight text-dark'
 const noteKickerClass = 'mb-2.5 text-xs font-medium uppercase tracking-widest text-terra'
-const record = computed(() => payload.value.record)
+const record = computed(() => resolvedPayload.record)
 const report = computed(() => record.value.report)
 const sharePath = computed(() => `/couples/${routeToken.value}`)
 const shareUrl = computed(() => {
@@ -78,10 +89,6 @@ const copyShareLink = async () => {
   }
 }
 
-watch(routeToken, async () => {
-  payload.value = await fetchPersistedReport()
-})
-
 onMounted(() => {
   pageMounted.value = true
 })
@@ -92,6 +99,7 @@ useSeoMeta({
   ogTitle: `${report.value.dynamicLabel} Couples Report | Attachd.`,
   ogDescription: report.value.triggerSummary,
   twitterCard: 'summary',
+  robots: 'noindex',
 })
 
 useHead({

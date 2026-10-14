@@ -1,0 +1,84 @@
+import 'dotenv/config'
+import { defineConfig, devices } from '@playwright/test'
+
+const port = Number(process.env.E2E_PORT ?? 3100)
+const baseURL = process.env.E2E_BASE_URL ?? `http://localhost:${port}`
+
+const serverEnv: Record<string, string> = {
+  ...Object.fromEntries(
+    Object.entries(process.env).filter((entry): entry is [string, string] => entry[1] !== undefined),
+  ),
+  PORT: String(port),
+  NUXT_PUBLIC_SITE_URL: baseURL,
+  NUXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000BB',
+  TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA',
+  TURNSTILE_ALLOW_TEST_KEYS: 'true',
+  RATE_LIMIT_MULTIPLIER: '1000',
+  RESEND_API_KEY: '',
+}
+
+const mobileViewport = {
+  ...devices['Desktop Chrome'],
+  viewport: { width: 390, height: 844 },
+  isMobile: true,
+  hasTouch: true,
+}
+
+export default defineConfig({
+  testDir: './e2e',
+  workers: 1,
+  timeout: 90_000,
+  expect: {
+    timeout: 15_000,
+    toHaveScreenshot: {
+      animations: 'disabled',
+      maxDiffPixelRatio: 0.01,
+    },
+  },
+  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
+  use: {
+    baseURL,
+    reducedMotion: 'reduce',
+    trace: 'retain-on-failure',
+  },
+  projects: [
+    {
+      name: 'mobile',
+      testIgnore: /visual\.spec\.ts/,
+      use: mobileViewport,
+    },
+    {
+      name: 'desktop',
+      testIgnore: /visual\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+    {
+      name: 'visual-mobile',
+      testMatch: /visual\.spec\.ts/,
+      use: mobileViewport,
+    },
+    {
+      name: 'visual-tablet',
+      testMatch: /visual\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
+    },
+    {
+      name: 'visual-desktop',
+      testMatch: /visual\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
+    },
+  ],
+  webServer: process.env.E2E_BASE_URL
+    ? undefined
+    : {
+        command: process.env.E2E_SKIP_BUILD
+          ? 'node .output/server/index.mjs'
+          : 'npx nuxi build && node .output/server/index.mjs',
+        url: baseURL,
+        env: serverEnv,
+        timeout: 300_000,
+        reuseExistingServer: false,
+        stdout: 'ignore',
+        stderr: 'pipe',
+      },
+})

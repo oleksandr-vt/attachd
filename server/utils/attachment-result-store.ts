@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import type { AttachmentPersistedResultRecord } from '~~/shared/attachment/persistence'
 import { getDb } from '~~/server/db/client'
 import {
@@ -6,11 +6,6 @@ import {
   mapAttachmentResultRecordToRow,
   mapAttachmentResultRowToRecord,
 } from '~~/server/db/schema'
-
-const getUpdatableAttachmentResultRow = (record: AttachmentPersistedResultRecord) => {
-  const { token: _token, ...row } = mapAttachmentResultRecordToRow(record)
-  return row
-}
 
 export const getAttachmentResultRecord = async (token: string) => {
   const db = getDb()
@@ -30,41 +25,49 @@ export const getAttachmentResultRecordByEmailVerificationHash = async (tokenHash
   return record ? mapAttachmentResultRowToRecord(record) : null
 }
 
-export const saveAttachmentResultRecord = async (record: AttachmentPersistedResultRecord) => {
-  const db = getDb()
-  const row = mapAttachmentResultRecordToRow(record)
-
-  await db
+export const insertAttachmentResultRecord = async (record: AttachmentPersistedResultRecord) => {
+  const inserted = await getDb()
     .insert(attachmentResults)
-    .values(row)
-    .onConflictDoUpdate({
-      target: attachmentResults.token,
-      set: getUpdatableAttachmentResultRow(record),
-    })
+    .values(mapAttachmentResultRecordToRow(record))
+    .onConflictDoNothing({ target: attachmentResults.token })
+    .returning({ token: attachmentResults.token })
+
+  return inserted.length > 0
 }
 
-export const updateAttachmentResultRecord = async (
-  token: string,
-  updater: (record: AttachmentPersistedResultRecord) => AttachmentPersistedResultRecord,
-) => {
-  const db = getDb()
+export const markAttachmentResultVerificationEmailSent = async (token: string) => {
+  await getDb()
+    .update(attachmentResults)
+    .set({ emailVerificationSentAt: new Date().toISOString() })
+    .where(eq(attachmentResults.token, token))
+}
 
-  return db.transaction(async (tx) => {
-    const currentRecord = await tx.query.attachmentResults.findFirst({
-      where: eq(attachmentResults.token, token),
-    })
+export const markAttachmentResultEmailVerified = async (token: string) => {
+  await getDb()
+    .update(attachmentResults)
+    .set({ emailVerifiedAt: new Date().toISOString() })
+    .where(and(
+      eq(attachmentResults.token, token),
+      isNull(attachmentResults.emailVerifiedAt),
+    ))
+}
 
-    if (!currentRecord) {
-      return null
-    }
+export const claimAttachmentWelcomeEmail = async (token: string) => {
+  const claimed = await getDb()
+    .update(attachmentResults)
+    .set({ welcomeEmailSentAt: new Date().toISOString() })
+    .where(and(
+      eq(attachmentResults.token, token),
+      isNull(attachmentResults.welcomeEmailSentAt),
+    ))
+    .returning({ token: attachmentResults.token })
 
-    const nextRecord = updater(mapAttachmentResultRowToRecord(currentRecord))
+  return claimed.length > 0
+}
 
-    await tx
-      .update(attachmentResults)
-      .set(getUpdatableAttachmentResultRow(nextRecord))
-      .where(eq(attachmentResults.token, token))
-
-    return nextRecord
-  })
+export const releaseAttachmentWelcomeEmailClaim = async (token: string) => {
+  await getDb()
+    .update(attachmentResults)
+    .set({ welcomeEmailSentAt: null })
+    .where(eq(attachmentResults.token, token))
 }

@@ -21,9 +21,9 @@ import LandingHeroSection from '~/components/landing/LandingHeroSection.vue'
 import LandingHowItWorksSection from '~/components/landing/LandingHowItWorksSection.vue'
 import LandingReportSection from '~/components/landing/LandingReportSection.vue'
 import LandingTypesSection from '~/components/landing/LandingTypesSection.vue'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 const pageTitle = 'Attachment Style Test'
 const pageDescription =
   'Take a 25-question attachment style test to learn whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant, then open a personalized result you can revisit or share.'

@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { attachmentTest } from '~~/app/data/tests/attachment'
+import { normalizeOptionalEmail } from '~~/shared/email'
 import {
   ATTACHMENT_QUESTION_SET_VERSION,
   ATTACHMENT_SCORING_VERSION,
@@ -13,9 +14,8 @@ import {
   normalizeAttachmentAnswers,
 } from '~~/shared/attachment/scoring'
 import {
-  getAttachmentResultRecord,
-  saveAttachmentResultRecord,
-  updateAttachmentResultRecord,
+  insertAttachmentResultRecord,
+  markAttachmentResultVerificationEmailSent,
 } from '~~/server/utils/attachment-result-store'
 import { sendAttachmentResultVerificationEmail } from '~~/server/utils/attachment-email'
 import {
@@ -23,29 +23,30 @@ import {
   createEmailVerificationToken,
   hashEmailVerificationToken,
 } from '~~/server/utils/email-verification'
+import {
+  assertTurnstileToken,
+  enforceRateLimit,
+  getClientIp,
+  getSiteOrigin,
+  readGuardedJsonBody,
+} from '~~/server/utils/h3-guards'
+import { consumeRateLimit } from '~~/server/utils/rate-limit'
 
-type CreateAttachmentResultBody = {
-  answers?: unknown
-  email?: string
-}
+const MAX_TOKEN_ATTEMPTS = 3
 
 const createShareToken = () => randomBytes(8).toString('hex')
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const createUniqueShareToken = async () => {
-  let token = createShareToken()
+const canSendVerificationEmail = async (email: string, clientIp: string | null) => {
+  const recipientBudget = await consumeRateLimit('emailsPerRecipient', email)
+  const ipBudget = clientIp ? await consumeRateLimit('emailsPerIp', clientIp) : null
 
-  while (await getAttachmentResultRecord(token)) {
-    token = createShareToken()
-  }
-
-  return token
+  return recipientBudget.allowed && (ipBudget?.allowed ?? true)
 }
 
 export default defineEventHandler(async (event): Promise<AttachmentPersistedResultResponse> => {
-  const body = await readBody<CreateAttachmentResultBody>(event)
+  const body = await readGuardedJsonBody(event)
   const answers = normalizeAttachmentAnswers(body.answers)
-  const email = body.email?.trim() ?? ''
+  const emailInput = normalizeOptionalEmail(body.email)
 
   if (!isAttachmentAnswerComplete(answers)) {
     throw createError({
@@ -54,55 +55,88 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
     })
   }
 
-  if (!emailPattern.test(email)) {
+  if (!emailInput.valid) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Enter a valid email address before viewing your result.',
+      statusMessage: 'Enter a valid email address, or leave the field empty.',
     })
   }
 
-  const result = computeAttachmentResult(answers)
-  const token = await createUniqueShareToken()
-  const createdAt = new Date().toISOString()
-  const requestUrl = getRequestURL(event)
-  const shareUrl = `${requestUrl.origin}/r/${token}`
-  const emailVerificationToken = createEmailVerificationToken()
-  const emailVerificationTokenHash = hashEmailVerificationToken(emailVerificationToken)
-  const emailVerificationExpiresAt = createEmailVerificationExpiresAt()
+  await assertTurnstileToken(event, body.turnstileToken, 'save-result')
 
-  const record: AttachmentPersistedResultRecord = {
-    token,
-    slug: 'attachment',
-    createdAt,
-    questionSetVersion: ATTACHMENT_QUESTION_SET_VERSION,
-    scoringVersion: ATTACHMENT_SCORING_VERSION,
-    answers,
-    result,
-    primaryType: result.type,
-    secondaryType: result.secondaryType,
-    email,
-    emailUnlocked: true,
-    emailVerificationTokenHash,
-    emailVerificationSentAt: null,
-    emailVerificationExpiresAt,
-    emailVerifiedAt: null,
-    welcomeEmailSentAt: null,
+  const clientIp = getClientIp(event)
+
+  await enforceRateLimit(
+    event,
+    'resultsPerIp',
+    'You have saved several results in a short time. Please try again a little later.',
+    clientIp,
+  )
+  await enforceRateLimit(
+    event,
+    'resultsGlobal',
+    'Attachd has reached its daily limit for new saved results. Please try again tomorrow.',
+  )
+
+  const { email } = emailInput
+  const siteOrigin = getSiteOrigin(event)
+  const result = computeAttachmentResult(answers)
+  const emailVerificationToken = email ? createEmailVerificationToken() : ''
+  let record: AttachmentPersistedResultRecord | null = null
+
+  for (let attempt = 0; attempt < MAX_TOKEN_ATTEMPTS && !record; attempt += 1) {
+    const candidate: AttachmentPersistedResultRecord = {
+      token: createShareToken(),
+      slug: 'attachment',
+      createdAt: new Date().toISOString(),
+      questionSetVersion: ATTACHMENT_QUESTION_SET_VERSION,
+      scoringVersion: ATTACHMENT_SCORING_VERSION,
+      answers,
+      result,
+      primaryType: result.type,
+      secondaryType: result.secondaryType,
+      email,
+      emailVerificationTokenHash: email ? hashEmailVerificationToken(emailVerificationToken) : '',
+      emailVerificationSentAt: null,
+      emailVerificationExpiresAt: email ? createEmailVerificationExpiresAt() : null,
+      emailVerifiedAt: null,
+      welcomeEmailSentAt: null,
+    }
+
+    if (await insertAttachmentResultRecord(candidate)) {
+      record = candidate
+    }
   }
 
-  await saveAttachmentResultRecord(record)
+  if (!record) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'We could not save your result just now. Please try again.',
+    })
+  }
 
-  const verificationUrl = `${requestUrl.origin}/api/email/verify?token=${emailVerificationToken}`
-  const emailSent = await sendAttachmentResultVerificationEmail(record, verificationUrl, shareUrl)
-  const responseRecord = emailSent
-    ? await updateAttachmentResultRecord(token, (currentRecord) => ({
-        ...currentRecord,
-        emailVerificationSentAt: new Date().toISOString(),
-      }))
-    : record
+  const shareUrl = `${siteOrigin}/r/${record.token}`
+  let emailVerificationSent = false
+
+  if (email) {
+    const verificationUrl = `${siteOrigin}/api/email/verify?token=${emailVerificationToken}`
+
+    if (import.meta.dev) {
+      console.info(`[dev] Email verification link for result ${record.token}: ${verificationUrl}`)
+    }
+
+    if (await canSendVerificationEmail(email, clientIp)) {
+      emailVerificationSent = await sendAttachmentResultVerificationEmail(record, verificationUrl, shareUrl)
+    }
+
+    if (emailVerificationSent) {
+      await markAttachmentResultVerificationEmailSent(record.token)
+    }
+  }
 
   return {
-    record: toAttachmentPersistedResultPublicRecord(responseRecord ?? record),
+    record: toAttachmentPersistedResultPublicRecord(record),
     shareUrl,
-    emailVerificationSent: Boolean(responseRecord?.emailVerificationSentAt),
+    emailVerificationSent,
   }
 })

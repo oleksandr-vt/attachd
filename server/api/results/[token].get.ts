@@ -3,6 +3,7 @@ import {
   type AttachmentPersistedResultResponse,
 } from '~~/shared/attachment/persistence'
 import { getAttachmentResultRecord } from '~~/server/utils/attachment-result-store'
+import { getSiteOrigin } from '~~/server/utils/h3-guards'
 
 export default defineEventHandler(async (event): Promise<AttachmentPersistedResultResponse> => {
   const token = getRouterParam(event, 'token')
@@ -23,11 +24,9 @@ export default defineEventHandler(async (event): Promise<AttachmentPersistedResu
     })
   }
 
-  const requestUrl = getRequestURL(event)
-
   return {
     record: toAttachmentPersistedResultPublicRecord(record),
-    shareUrl: `${requestUrl.origin}/r/${token}`,
+    shareUrl: `${getSiteOrigin(event)}/r/${token}`,
     emailVerificationSent: Boolean(record.emailVerificationSentAt),
   }
 })

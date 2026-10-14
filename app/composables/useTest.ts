@@ -18,7 +18,6 @@ type AttachmentTestSession = {
   lastComputedResult: AttachmentStoredResult | null
   lastSharedResultToken: string | null
   email: string
-  emailUnlocked: boolean
 }
 
 const STORAGE_KEY = 'attachd:attachment-test'
@@ -38,7 +37,6 @@ const createDefaultSession = (): AttachmentTestSession => ({
   lastComputedResult: null,
   lastSharedResultToken: null,
   email: '',
-  emailUnlocked: false,
 })
 
 const normalizeStoredRanking = (value: unknown): AttachmentRankingItem[] => {
@@ -124,7 +122,6 @@ const normalizeSession = (value: unknown): AttachmentTestSession => {
       ? candidate.lastSharedResultToken
       : null,
     email: typeof candidate.email === 'string' ? candidate.email : '',
-    emailUnlocked: Boolean(candidate.emailUnlocked),
   }
 }
 
@@ -284,27 +281,20 @@ export const useTest = (slug: string = 'attachment') => {
     return result
   }
 
-  const unlockEmailGate = (email: string) => {
+  const rememberEmail = (email: string) => {
     session.value.email = email.trim()
-    session.value.emailUnlocked = true
   }
 
   const setSharedResultToken = (token: string) => {
     session.value.lastSharedResultToken = token
   }
 
-  const lockEmailGate = () => {
-    session.value.emailUnlocked = false
-  }
-
   const resetTest = () => {
     const preservedEmail = session.value.email
-    const preservedUnlockState = session.value.emailUnlocked
 
     session.value = {
       ...createDefaultSession(),
       email: preservedEmail,
-      emailUnlocked: preservedUnlockState,
     }
   }
 
@@ -339,8 +329,7 @@ export const useTest = (slug: string = 'attachment') => {
     goToNextQuestion,
     goToPreviousQuestion,
     completeTest,
-    unlockEmailGate,
-    lockEmailGate,
+    rememberEmail,
     setSharedResultToken,
     resetTest,
     clearStoredSession,

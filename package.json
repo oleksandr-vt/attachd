@@ -11,6 +11,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "typecheck": "nuxi typecheck",
+    "test:e2e": "playwright test --project=mobile --project=desktop",
+    "test:visual": "playwright test --project=visual-mobile --project=visual-tablet --project=visual-desktop",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -18,15 +21,16 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "nuxt": "^4.4.2",
-    "pdfkit": "^0.18.0",
     "postgres": "^3.4.9",
     "tailwindcss": "^4.0.0",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@types/node": "^25.6.0",
-    "@types/pdfkit": "^0.17.6",
-    "drizzle-kit": "^0.31.7"
+    "drizzle-kit": "^0.31.7",
+    "typescript": "~5.9.3",
+    "vue-tsc": "^3.3.13"
   }
 }

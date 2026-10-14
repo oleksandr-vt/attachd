@@ -38,10 +38,10 @@ export type FaqItem = {
 export type ReportPreviewSlide = {
   title: string
   summary: string
-  primaryPattern: string
-  coreFear: string
+  subprofile: string
+  strongestTrigger: string
   growthEdge: string
-  progress: number
+  security: number
   badgeClass: string
   surfaceClass: string
   borderClass: string
@@ -128,7 +128,7 @@ export const processSteps: ProcessStep[] = [
     number: '02',
     title: 'Open your personalized result',
     description:
-      'After the last question, add your email to open a saved result page you can revisit and share.',
+      'After the last question, your saved result page opens right away. Add your email if you want a link to it in your inbox.',
   },
   {
     number: '03',
@@ -155,7 +155,7 @@ export const benefitCards: BenefitCard[] = [
     eyebrow: 'Next step',
     title: 'More than a personality label',
     description:
-      'The deeper breakdown focuses on your common triggers, protective habits, and the behaviors that move you toward a more secure pattern.',
+      'Your result page breaks down your common triggers, protective habits, and the behaviors that move you toward a more secure pattern.',
   },
 ]
 
@@ -167,21 +167,21 @@ export const couplesChecklist = [
 ]
 
 export const reportChecklist = [
-  'Core triggers and protective habits',
-  'Strengths and blind spots in relationships',
-  'Conflict patterns to watch for',
-  'What secure attachment looks like for you',
-  'Practical exercises and reflection prompts',
+  'Scores for security, anxiety, avoidance, and push-pull',
+  'Your strongest trigger clusters',
+  'Strengths and protective habits in relationships',
+  'What helps you feel secure',
+  'Next steps tailored to your mix',
 ]
 
 export const reportPreviewSlides: ReportPreviewSlide[] = [
   {
     title: 'Avoidant',
     summary: 'Self-protective and independence-first under emotional pressure.',
-    primaryPattern: 'Emotional deactivation under intimacy pressure',
-    coreFear: 'Loss of autonomy and being overwhelmed',
+    subprofile: 'Self-protective under pressure',
+    strongestTrigger: 'Space protection when closeness feels loaded',
     growthEdge: 'Tolerating vulnerability without withdrawal',
-    progress: 38,
+    security: 38,
     badgeClass: 'bg-avoid-soft text-avoid',
     surfaceClass: 'bg-avoid-bg',
     borderClass: 'border-avoid-bd',
@@ -191,10 +191,10 @@ export const reportPreviewSlides: ReportPreviewSlide[] = [
   {
     title: 'Anxious',
     summary: 'Connection-seeking, hyper-alert, and quick to read distance as threat.',
-    primaryPattern: 'Protest behavior when reassurance feels inconsistent',
-    coreFear: 'Abandonment and emotional unpredictability',
+    subprofile: 'Closeness-seeking under uncertainty',
+    strongestTrigger: 'Distance alarm when replies slow down',
     growthEdge: 'Self-soothing before escalating for closeness',
-    progress: 57,
+    security: 57,
     badgeClass: 'bg-anxious-soft text-anxious',
     surfaceClass: 'bg-anxious-bg',
     borderClass: 'border-anxious-bd',
@@ -204,10 +204,10 @@ export const reportPreviewSlides: ReportPreviewSlide[] = [
   {
     title: 'Secure',
     summary: 'Grounded, direct, and usually able to stay open through tension.',
-    primaryPattern: 'Balanced closeness and independence in relationships',
-    coreFear: 'Disconnection is manageable rather than defining',
+    subprofile: 'Grounded and balanced',
+    strongestTrigger: 'A mild conflict spiral that repairs quickly',
     growthEdge: 'Maintaining openness while holding healthy boundaries',
-    progress: 82,
+    security: 82,
     badgeClass: 'bg-secure-bg text-secure',
     surfaceClass: 'bg-secure-bg',
     borderClass: 'border-secure-bd',
@@ -217,10 +217,10 @@ export const reportPreviewSlides: ReportPreviewSlide[] = [
   {
     title: 'Fearful-Avoidant',
     summary: 'Wanting intimacy deeply while bracing for hurt or rejection.',
-    primaryPattern: 'Push-pull closeness with sharp swings in trust',
-    coreFear: 'Being hurt, trapped, or left after opening up',
+    subprofile: 'Push-pull under stress',
+    strongestTrigger: 'Push-pull intensity after moments of closeness',
     growthEdge: 'Building safety slowly enough to stay emotionally present',
-    progress: 49,
+    security: 49,
     badgeClass: 'bg-fearful-bg text-fearful',
     surfaceClass: 'bg-fearful-bg',
     borderClass: 'border-fearful-bd',
@@ -243,12 +243,12 @@ export const faqItems: FaqItem[] = [
   {
     question: 'Do I need to create an account?',
     answer:
-      'No account is needed to start. The test begins right away, and there is just one quick step before your personalized result opens.',
+      'No. The test begins right away, and your personalized result opens as soon as you finish. Adding your email is optional.',
   },
   {
-    question: 'What do I get after the free result?',
+    question: 'What do I get at the end?',
     answer:
-      'You get your primary attachment style, a more detailed interpretation of your relationship patterns, and a result page you can revisit or share.',
+      'You get your primary attachment style, a detailed read of your relationship patterns and triggers, and a saved result page you can revisit, share, or compare with a partner.',
   },
   {
     question: 'Is this a diagnosis or therapy?',

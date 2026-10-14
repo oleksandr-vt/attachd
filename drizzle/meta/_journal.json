@@ -36,6 +36,20 @@
       "when": 1777162826432,
       "tag": "0004_sudden_lucky_pierre",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791896938452,
+      "tag": "0005_remove_paddle_and_email_unlocked",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791897095828,
+      "tag": "0006_add_rate_limits_and_indexes",
+      "breakpoints": true
     }
   ]
 }

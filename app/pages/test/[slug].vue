@@ -3,8 +3,12 @@ import AppButton from '~/components/AppButton.vue'
 import ConfirmDialog from '~/components/ConfirmDialog.vue'
 import ProgressBar from '~/components/ProgressBar.vue'
 import TestQuestion from '~/components/TestQuestion.vue'
+import TurnstileWidget from '~/components/TurnstileWidget.vue'
 import { attachmentResults } from '~/data/tests/results'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 import { useTest } from '~/composables/useTest'
+import { getApiErrorMessage } from '~/utils/api-error'
+import { isEmailFormatValid } from '~~/shared/email'
 import type { AttachmentPersistedResultResponse } from '~~/shared/attachment/persistence'
 
 const route = useRoute()
@@ -32,18 +36,18 @@ const {
   isComplete,
   progressPercentage,
   remainingQuestions,
+  rememberEmail,
   resetTest,
   session,
   setAnswer,
   setSharedResultToken,
-  unlockEmailGate,
+  storageHydrated,
   totalQuestions,
   completeTest,
   startTest,
 } = useTest('attachment')
 
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 const showRestartConfirm = ref(false)
 const continueLocked = ref(false)
 const resultPublishError = ref('')
@@ -51,8 +55,8 @@ const emailError = ref('')
 const savingResult = ref(false)
 const generatingResult = ref(false)
 const emailInput = ref(session.value.email)
+const turnstileWidget = ref<InstanceType<typeof TurnstileWidget> | null>(null)
 let continueUnlockTimeout: number | null = null
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const resultRevealDelayMs = 1700
 const resultLoadingSteps = [
   'Scoring your answer patterns',
@@ -81,7 +85,7 @@ const progressMeta = computed(() =>
   hasSubmittedResults.value
     ? session.value.lastSharedResultToken
       ? 'Results ready'
-      : 'Email required'
+      : 'Ready to save'
     : hasStarted.value
       ? `${remainingQuestions.value} left - about ${estimatedMinutesLeft.value} min`
       : 'No account needed',
@@ -160,48 +164,69 @@ const handleViewResult = async () => {
   await navigateTo(`/r/${session.value.lastSharedResultToken}`)
 }
 
-const submitEmailForResults = async () => {
-  if (!hasSubmittedResults.value || !computedResult.value) {
+const getEmailNoticeQuery = (email: string, emailVerificationSent: boolean) => {
+  if (emailVerificationSent) {
+    return { email: 'pending' }
+  }
+
+  return email ? { email: 'unsent' } : {}
+}
+
+const submitResult = async () => {
+  if (!hasSubmittedResults.value || !computedResult.value || savingResult.value) {
     return
   }
 
   const email = emailInput.value.trim()
 
-  if (!emailPattern.test(email)) {
-    emailError.value = 'Enter a valid email address to continue to your result.'
+  if (email && !isEmailFormatValid(email)) {
+    emailError.value = 'Enter a valid email address, or leave the field empty.'
     return
   }
 
   emailError.value = ''
   resultPublishError.value = ''
   savingResult.value = true
-  generatingResult.value = true
 
   try {
+    const turnstileToken = await turnstileWidget.value?.getToken() ?? ''
+    generatingResult.value = true
+
     const [response] = await Promise.all([
       $fetch<AttachmentPersistedResultResponse>('/api/results', {
         method: 'POST',
         body: {
           answers: session.value.answers,
           email,
+          turnstileToken,
         },
       }),
       waitForResultReveal(),
     ])
 
-    unlockEmailGate(email)
+    if (email) {
+      rememberEmail(email)
+    }
+
     setSharedResultToken(response.record.token)
     await navigateTo({
       path: `/r/${response.record.token}`,
-      query: response.emailVerificationSent ? { email: 'pending' } : {},
+      query: getEmailNoticeQuery(email, response.emailVerificationSent),
     })
-  } catch {
+  } catch (error) {
     generatingResult.value = false
-    resultPublishError.value = 'We could not save your result just now. Please try again.'
+    resultPublishError.value = getApiErrorMessage(error, 'We could not save your result just now. Please try again.')
+    turnstileWidget.value?.reset()
   } finally {
     savingResult.value = false
   }
 }
+
+watch(storageHydrated, (hydrated) => {
+  if (hydrated && !emailInput.value) {
+    emailInput.value = session.value.email
+  }
+}, { immediate: true })
 
 onBeforeUnmount(() => {
   if (continueUnlockTimeout) {
@@ -215,7 +240,7 @@ useSeoMeta({
     'Take the 25-question attachment style test to see whether your relationship pattern is secure, anxious, avoidant, or fearful-avoidant and get clear results.',
   ogTitle: 'Attachment Style Test | Attachd.',
   ogDescription:
-    'A fast 25-question attachment style test with clear results and a polished follow-up flow.',
+    'A fast 25-question attachment style test with clear results and a shareable result page.',
   twitterCard: 'summary',
 })
 
@@ -338,7 +363,7 @@ useHead({
             </div>
 
             <div
-              v-else-if="hasSubmittedResults && computedResult && !session.lastSharedResultToken"
+              v-else-if="hasSubmittedResults && computedResult && (!session.lastSharedResultToken || generatingResult)"
               key="capture"
               class="rounded-3xl border border-border bg-sec-bg p-6 md:p-8"
             >
@@ -377,13 +402,13 @@ useHead({
                   Your answers are complete.
                 </h2>
                 <p class="landing-section-copy mt-4 max-w-140">
-                  Add your email to open your result now. We will send a confirmation link so your
-                  saved result and future Attachd emails are connected to a real inbox.
+                  Want a copy? Add your email and we will send you a link to your saved result,
+                  or leave it empty and open your result right away.
                 </p>
 
-                <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitEmailForResults">
+                <form class="mt-6 grid max-w-120 gap-3" @submit.prevent="submitResult">
                   <label class="grid gap-2">
-                    <span class="text-sm font-medium text-dark">Email address</span>
+                    <span class="text-sm font-medium text-dark">Email address (optional)</span>
                     <input
                       v-model="emailInput"
                       type="email"
@@ -391,6 +416,9 @@ useHead({
                       class="rounded-[18px] border border-border bg-white px-4 py-4 text-dark outline-none transition-all duration-200 focus:border-[#c9b8a9] focus:shadow-[0_0_0_3px_rgba(184,92,56,0.12)]"
                       placeholder="you@example.com"
                     >
+                    <span class="text-xs leading-5 text-muted">
+                      Used only to send you this result. Reply to that email anytime to have it deleted.
+                    </span>
                   </label>
 
                   <p v-if="emailError" class="text-sm leading-6 text-terra-dk">
@@ -410,6 +438,8 @@ useHead({
                   </div>
                 </form>
               </template>
+
+              <TurnstileWidget ref="turnstileWidget" action="save-result" />
             </div>
 
             <div

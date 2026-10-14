@@ -98,14 +98,15 @@ onBeforeUnmount(() => {
     <div class="landing-container flex flex-col gap-8 sm:gap-10 xl:flex-row xl:items-center xl:gap-20">
       <header class="min-w-0 flex-1">
         <p class="landing-section-kicker">
-          Full in-depth report
+          Your full result
         </p>
         <h2 id="report-heading" class="landing-section-title">
           Go beyond the label.
         </h2>
         <p class="landing-section-copy mb-6 max-w-125 sm:mb-8">
-          The premium report is a 15-page PDF that explains how your pattern formed, where it shows
-          up most often, and what more secure behavior can look like in real relationships.
+          Your result page goes deeper than a single style. It shows how your pattern plays out
+          across security, anxiety, avoidance, and push-pull, which moments trigger it fastest, and
+          what more secure behavior can look like in real relationships.
         </p>
 
         <ul class="my-6 flex list-none flex-col gap-3 sm:my-8">
@@ -121,7 +122,7 @@ onBeforeUnmount(() => {
 
         <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
           <AppButton :href="landingPrimaryActionHref" label="Start the free test" show-arrow />
-          <span class="landing-action-note">Free to start &middot; $9 for the 15-page report</span>
+          <span class="landing-action-note">Free &middot; no account needed</span>
         </div>
       </header>
 
@@ -149,7 +150,7 @@ onBeforeUnmount(() => {
               <div class="mb-5 flex items-start justify-between gap-3">
                 <div class="min-w-0">
                   <p class="mb-1.5 text-xs font-medium uppercase tracking-widest text-terra">
-                    Example full report
+                    Example result
                   </p>
                   <h3 class="font-display text-3xl leading-tight font-medium tracking-tight text-dark">
                     {{ activePreview.title }}
@@ -174,19 +175,19 @@ onBeforeUnmount(() => {
               >
                 <div>
                   <p class="mb-1 text-xs font-medium uppercase tracking-widest text-pale">
-                    Primary pattern
+                    Subprofile
                   </p>
                   <p class="text-sm leading-normal text-dark2">
-                    {{ activePreview.primaryPattern }}
+                    {{ activePreview.subprofile }}
                   </p>
                 </div>
 
                 <div>
                   <p class="mb-1 text-xs font-medium uppercase tracking-widest text-pale">
-                    Core fear
+                    Strongest trigger
                   </p>
                   <p class="text-sm leading-normal text-dark2">
-                    {{ activePreview.coreFear }}
+                    {{ activePreview.strongestTrigger }}
                   </p>
                 </div>
 
@@ -202,16 +203,16 @@ onBeforeUnmount(() => {
 
               <div class="mt-5">
                 <div class="mb-3 flex items-center justify-between gap-3">
-                  <p class="text-xs font-medium text-muted">Journey to secure</p>
+                  <p class="text-xs font-medium text-muted">Security</p>
                   <span class="text-xs font-medium" :class="activePreview.accentClass">
-                    {{ activePreview.progress }}%
+                    {{ activePreview.security }}%
                   </span>
                 </div>
                 <div class="h-1.5 overflow-hidden rounded-full bg-bar-bg">
                   <div
                     class="h-full rounded-full transition-all duration-500"
                     :class="activePreview.barClass"
-                    :style="{ width: `${activePreview.progress}%` }"
+                    :style="{ width: `${activePreview.security}%` }"
                   />
                 </div>
               </div>

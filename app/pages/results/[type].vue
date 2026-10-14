@@ -3,6 +3,7 @@ import AppButton from '~/components/AppButton.vue'
 import ResultCard from '~/components/ResultCard.vue'
 import { attachmentTest, isAttachmentStyleType, type AttachmentStyleType } from '~/data/tests/attachment'
 import { useResults } from '~/composables/useResults'
+import { useCanonicalUrl } from '~/composables/useSiteOrigin'
 import { useTest } from '~/composables/useTest'
 
 const route = useRoute()
@@ -39,8 +40,7 @@ const couplesReportHref = computed(() =>
   session.value.lastSharedResultToken ? `/couples?self=${session.value.lastSharedResultToken}` : '/couples',
 )
 
-const requestUrl = useRequestURL()
-const canonicalUrl = `${requestUrl.origin}${requestUrl.pathname}`
+const canonicalUrl = useCanonicalUrl()
 
 useSeoMeta({
   title: `${resultContent.value.label} Attachment Style`,

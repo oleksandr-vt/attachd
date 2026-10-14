@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { AttachmentCouplesPersistedReportRecord } from '~~/shared/attachment/couples-persistence'
 import { getDb } from '~~/server/db/client'
 import {
@@ -6,11 +6,6 @@ import {
   mapAttachmentCouplesReportRecordToRow,
   mapAttachmentCouplesReportRowToRecord,
 } from '~~/server/db/schema'
-
-const getUpdatableAttachmentCouplesReportRow = (record: AttachmentCouplesPersistedReportRecord) => {
-  const { token: _token, ...row } = mapAttachmentCouplesReportRecordToRow(record)
-  return row
-}
 
 export const getAttachmentCouplesReportRecord = async (token: string) => {
   const db = getDb()
@@ -21,15 +16,29 @@ export const getAttachmentCouplesReportRecord = async (token: string) => {
   return record ? mapAttachmentCouplesReportRowToRecord(record) : null
 }
 
-export const saveAttachmentCouplesReportRecord = async (record: AttachmentCouplesPersistedReportRecord) => {
+export const findAttachmentCouplesReportBySourcePair = async (
+  leftSourceToken: string,
+  rightSourceToken: string,
+  reportVersion: string,
+) => {
   const db = getDb()
-  const row = mapAttachmentCouplesReportRecordToRow(record)
+  const record = await db.query.attachmentCouplesReports.findFirst({
+    where: and(
+      eq(attachmentCouplesReports.leftSourceToken, leftSourceToken),
+      eq(attachmentCouplesReports.rightSourceToken, rightSourceToken),
+      eq(attachmentCouplesReports.reportVersion, reportVersion),
+    ),
+  })
 
-  await db
+  return record ? mapAttachmentCouplesReportRowToRecord(record) : null
+}
+
+export const insertAttachmentCouplesReportRecord = async (record: AttachmentCouplesPersistedReportRecord) => {
+  const inserted = await getDb()
     .insert(attachmentCouplesReports)
-    .values(row)
-    .onConflictDoUpdate({
-      target: attachmentCouplesReports.token,
-      set: getUpdatableAttachmentCouplesReportRow(record),
-    })
+    .values(mapAttachmentCouplesReportRecordToRow(record))
+    .onConflictDoNothing({ target: attachmentCouplesReports.token })
+    .returning({ token: attachmentCouplesReports.token })
+
+  return inserted.length > 0
 }

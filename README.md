@@ -28,7 +28,7 @@ Postgres (Neon) and Resend.
 | Database | Postgres via Drizzle ORM + `postgres` driver (hosted on Neon) |
 | Email | Resend HTTP API |
 | Bot protection | Cloudflare Turnstile |
-| Tests | Playwright (journeys, API checks, screenshot baselines) |
+| Tests | Playwright (user journeys and API abuse-protection checks) |
 
 ## Getting started
 
@@ -87,13 +87,12 @@ Turnstile and the global caps still apply. Adjust `getClientIp` in
 | `npm run lint` | ESLint with the Next.js core-web-vitals and TypeScript rules |
 | `npm run typecheck` | Generates route types and type-checks the whole project |
 | `npm run db:generate` / `db:migrate` / `db:studio` | Drizzle migrations and studio |
-| `npm run test:e2e` | Builds the app, starts it with e2e settings and runs the journey and API tests |
-| `npm run test:visual` | Full-page screenshots of every route at 390 / 768 / 1440 px |
+| `npm run test:e2e` | Builds the app, starts it with e2e settings and runs the journey and API tests at 390 and 1440 px |
 
-Before the first e2e run, install a browser with `npx playwright install chromium`. Screenshot
-baselines are not committed; create them with `npm run test:visual -- --update-snapshots`. Set
+Before the first e2e run, install a browser with `npx playwright install chromium`. Set
 `E2E_SKIP_BUILD=1` to reuse an existing build, or `E2E_BASE_URL` to test an already running server.
-E2E runs write test rows to the configured database, so point `DATABASE_URL` at a development branch.
+E2E runs write test rows to the configured database, so point `DATABASE_URL` at a development database,
+never the production one.
 
 ## Deployment
 

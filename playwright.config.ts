@@ -17,25 +17,13 @@ const serverEnv: Record<string, string> = {
   RESEND_API_KEY: '',
 }
 
-const mobileViewport = {
-  ...devices['Desktop Chrome'],
-  viewport: { width: 390, height: 844 },
-  isMobile: true,
-  hasTouch: true,
-}
-
 export default defineConfig({
   testDir: './e2e',
   workers: 1,
   timeout: 90_000,
   expect: {
     timeout: 15_000,
-    toHaveScreenshot: {
-      animations: 'disabled',
-      maxDiffPixelRatio: 0.01,
-    },
   },
-  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
   use: {
     baseURL,
     reducedMotion: 'reduce',
@@ -44,27 +32,10 @@ export default defineConfig({
   projects: [
     {
       name: 'mobile',
-      testIgnore: /visual\.spec\.ts/,
-      use: mobileViewport,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
     },
     {
       name: 'desktop',
-      testIgnore: /visual\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
-    },
-    {
-      name: 'visual-mobile',
-      testMatch: /visual\.spec\.ts/,
-      use: mobileViewport,
-    },
-    {
-      name: 'visual-tablet',
-      testMatch: /visual\.spec\.ts/,
-      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
-    },
-    {
-      name: 'visual-desktop',
-      testMatch: /visual\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
   ],

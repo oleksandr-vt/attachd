@@ -12,8 +12,7 @@ node_modules
 logs
 *.log
 
-# Local data and tools
-.data
+# Local tools
 .tools/
 
 # Misc
@@ -30,4 +29,3 @@ logs
 # Playwright
 test-results/
 playwright-report/
-e2e/__screenshots__/

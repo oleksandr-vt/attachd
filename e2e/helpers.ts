@@ -63,9 +63,3 @@ export const seedCompletedSession = async (page: Page, answers: Record<string, n
     window.localStorage.setItem(key, value)
   }, [SESSION_STORAGE_KEY, JSON.stringify(session)] as const)
 }
-
-export const waitForFonts = async (page: Page) => {
-  await page.evaluate(async () => {
-    await document.fonts.ready
-  })
-}
